@@ -1,0 +1,21 @@
+.app-body {
+    display: flex;
+    flex-flow: row;
+    width: 100%;
+    min-height: 300px;
+}
+
+.app-body-menu {
+    border: 2px solid #83d0f2;
+    min-width: 250px;
+    min-height: 400px;
+    margin: 100px 20px 0 0;
+    margin-left: auto;
+} 
+
+.app-body-screen {
+    border: 2px solid #83d0f2;
+    min-width: 960px;
+    min-height: 600px;
+    margin: 100px 20px 0 20px;
+} 
