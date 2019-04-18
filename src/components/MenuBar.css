@@ -20,11 +20,11 @@
 }
 
 
-.menu-bar button {
-    width: 48px;
+.menu-bar .menu-bar-link {
+    width: 24px;
 }
 
-.menu-bar button:hover {
+.menu-bar .menu-bar-link:hover {
     background-color: white;
     color: #83d0f2;
 }

@@ -1,0 +1,19 @@
+.menu {
+    border: 2px solid #83d0f2;
+    width: 960px;
+    height: 600px;
+    margin: 100px auto 0 auto;
+}
+
+.menu-link {
+    width: 128px;
+    height: 88px;
+    display: inline-block;
+    padding: 5px;
+    margin: 10px;
+    transition: 0.4s;
+}
+
+.menu-link:hover {
+    background-color: #83d0f2;
+}

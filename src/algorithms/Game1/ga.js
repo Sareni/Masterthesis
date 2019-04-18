@@ -1,7 +1,7 @@
 
 
 class Game1GA {
-    Game1GA(playerCount, strategyCount, generationCount, seedValue, populationSize, uiHandler) {
+    constructor(playerCount, strategyCount, generationCount, seedValue, populationSize, uiHandler, msgHandler) {
         if(strategyCount > 25) {
             console.log('Only 25 different strategys are allowed! Setting strategy count to 25...');
             this.strategyCount = 25;
@@ -14,58 +14,95 @@ class Game1GA {
         this.seedValue = seedValue;
         this.populationSize = populationSize;
         this.uiHandler = uiHandler;
+        this.msgHandler = msgHandler;
+
 
         this.max = 10;
         this.min = -5;
         this.strategyPool = 'ABCDEFGHIJKLMNOPQRSTUVWXY'; // limited to 25 different strategies per player
         this.mutationRate = 0.1;
+
+        this.interval = null;
+        this.counter = 0;
     }
 
     init() {
-        this.population = this.generateBasePopulation();
         this.playerTables = this.generatePlayerTables();
-
-        console.log(this.playerTables);
+        this.population = this.generateBasePopulation();
     }
 
-    run() {
-        for (let i = 0; i < this.generationCount; i++) {
-            const newPopulation = [];
+    runCycle(that) {
+        const newPopulation = [];
 
-            for (let j = 0; j < this.populationSize; j++) {
-                const firstCandidateIndex = Math.floor(Math.random() * this.populationSize);
-                let secondCandidateIndex = Math.floor(Math.random() * this.populationSize);
-                while (firstCandidateIndex === secondCandidateIndex && this.populationSize > 1) {
-                    secondCandidateIndex = Math.floor(Math.random() * this.populationSize);
-                }
-
-                let newCandidate = this.cross(this.population[firstCandidateIndex], this.population[secondCandidateIndex]);
-                if (Math.random() < this.mutationRate) {
-                    newCandidate = this.mutate(newCandidate);
-                }
-                newCandidate.fitness = this.evaluate(newCandidate);
-                newPopulation.push(newCandidate);
+        for (let j = 0; j < that.populationSize; j++) {
+            const firstCandidateIndex = Math.floor(Math.random() * that.populationSize);
+            let secondCandidateIndex = Math.floor(Math.random() * that.populationSize);
+            while (firstCandidateIndex === secondCandidateIndex && that.populationSize > 1) {
+                secondCandidateIndex = Math.floor(Math.random() * that.populationSize);
             }
 
-            this.population = this.select(this.population.concat(newPopulation));
+            let newCandidate = that.cross(that.population[firstCandidateIndex], that.population[secondCandidateIndex]);
+            if (Math.random() < that.mutationRate) {
+                newCandidate = that.mutate(newCandidate);
+            }
+            newCandidate.fitness = that.evaluate(newCandidate);
+            newPopulation.push(newCandidate);
+        }
+
+        that.population = that.select(that.population.concat(newPopulation));
+        that.uiHandler({x: that.counter, y: that.population[0].fitness});
+        that.msgHandler(that.counter, 'status', `Best Candidate: ${JSON.stringify(that.population[0])}`);
+        that.counter += 1;
+        if(that.counter >= that.generationCount) {
+            that.stop();
         }
     }
 
-    // private
-    cross(e1, e2) {
-
+    run() {
+        this.interval = setInterval(this.runCycle, 10, this);
     }
 
-    mutate(e) {
+    stop() {
+        clearInterval(this.interval);
+        this.counter = 0;
+    }
 
+    // private
+    cross(c1, c2) {
+        // TODO: better return both candidates?
+        const newCandidate = {
+            fitness: 0,
+            strategy: '',
+        }
+
+        const split = Math.floor(Math.random() * (this.strategyCount-1)); // every candidate has to give at least one block to the new candidate
+        newCandidate.strategy = c1.strategy.substring(0, split) + c2.strategy.substring(split);
+
+        return newCandidate;
+    }
+
+    mutate(c) {
+        const newCandidate = {
+            fitness: 0,
+            strategy: '',
+        }
+        const strategy = this.strategyPool.charAt(Math.floor(Math.random() * this.strategyCount));
+        const player = Math.floor(Math.random() * this.playerCount);
+
+        let newStrategy = c.strategy.substring(0, player) + strategy;
+        newStrategy += (player+1) === this.playerCount ? '' : c.strategy.substring(player+1);
+
+        newCandidate.strategy = newStrategy;
+
+        return newCandidate;
     }
 
     select(pop) {
         const filteredPopulation = pop.sort((a,b) => {
-            if (a.value < b.value) {
-                return -1;
-            } else if (a.value > b.value) {
+            if (a.fitness < b.fitness) {
                 return 1;
+            } else if (a.fitness > b.fitness) {
+                return -1;
             } else {
                 return 0;
             }
@@ -89,21 +126,23 @@ class Game1GA {
         }
         candidate.strategy = this.generateStrategy();
         candidate.fitness = this.evaluate(candidate);
+
+        return candidate;
     }
 
     generateStrategy() {
         let strategy = '';
         for(let i = 0; i < this.playerCount; i++) {
-            strategy += this.strategyPool.charAt(Math.floor(Math.random() * this.strategyPool.length));
+            strategy += this.strategyPool.charAt(Math.floor(Math.random() * this.strategyCount));
         }
 
         return strategy;
     }
 
-    evaluate(e) {
+    evaluate(c) {
         let count = 0;
         for (let i = 0; i < this.playerCount; i++) {
-            count += e.strategy.charAt(i) === this.getBestStrategyForPlayer(i, e.strategy) ? 0 : -1;
+            count += c.strategy.charAt(i) === this.getBestStrategyForPlayer(i, c.strategy) ? 0 : -1;
         }
         return count;
     }
@@ -114,7 +153,7 @@ class Game1GA {
             value: this.evaluateStrategyForPlayer(playerNumber, baseStrategy),
         }
         for (let i = 0; i < this.strategyCount; i++) {
-            if (i === playerNumber) continue;
+            // if (i === playerNumber) continue; false !!
             const strategy = baseStrategy.substring(0, playerNumber) + this.strategyPool.charAt(i) + baseStrategy.substring(playerNumber + 1);
             if (this.evaluateStrategyForPlayer(playerNumber, strategy) > solution.value) {
                 return this.strategyPool.charAt(i);
@@ -145,7 +184,11 @@ class Game1GA {
                 const outputTable = [];
                 for(let k = 0; k < this.strategyCount; k++) { // with all strategies
                     for(let l = 0; l < this.strategyCount; l++) { // of both players
-                        outputTable.push(Math.floor(Math.random() * (this.max - this.min)) - this.min);
+                        if(i === j) {
+                            outputTable.push(0);
+                        } else {
+                            outputTable.push(Math.floor(Math.random() * (this.max - this.min)) + this.min);
+                        }
                     }
                 }
                 playersTables.push(outputTable);

@@ -2,9 +2,24 @@ import React from 'react';
 import './Console.css';
 
 class Console extends React.Component {
+
+    generateEntry(logEntry) {
+        return (
+            <p>
+                [{logEntry.gen}]: {logEntry.msg}
+            </p>
+            );
+    }
   
     render() {
-        return (<div className="console"></div>);
+        const log = this.props.log.map(logEntry => {
+            return this.generateEntry(logEntry);
+        });
+        return (
+            <div className="console">
+                { log }
+            </div>
+        );
     }
 }
 
