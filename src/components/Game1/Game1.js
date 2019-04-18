@@ -3,7 +3,8 @@ import Console from '../Console'
 import './Game1.css';
 import Menu from './Menu';
 import Screen from './Screen';
-import Game1GA from '../../algorithms/Game1/GA'
+import ExecutorGame1 from '../../algorithms/Game1/Executor1'
+import CandidateFactory1 from '../../algorithms/Game1/CandidateFactory1';
 
 class Game1 extends React.Component {
     constructor(props) {
@@ -13,7 +14,7 @@ class Game1 extends React.Component {
         log: [], // { gen: 1, type: 'status', msg: 'Bester Kandidat ...'}
         gameState: [],
         test: 0,
-        algo: {},
+        executor: {},
       }
       this.newMessage = this.newMessage.bind(this);
       this.triggerStart = this.triggerStart.bind(this);
@@ -38,16 +39,14 @@ class Game1 extends React.Component {
     }
 
     triggerStart() {
-      const ga = new Game1GA(5,25,100,1,100,this.newGameState,this.newMessage);
-      this.setState({ algo: ga });
-
-      // state probably not set
-      ga.init();
-      ga.run();
+      const factory = new CandidateFactory1(5,25);
+      const executor = new ExecutorGame1(100,1,100,50,factory,this.newGameState,this.newMessage);
+      this.setState({ executor });
+      executor.start();
     }
 
     clearGame() {
-      this.state.algo.stop();
+      this.state.executor.stop();
       this.setState({ log: [], gameState: [] });
     }
   

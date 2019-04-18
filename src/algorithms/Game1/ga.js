@@ -1,5 +1,3 @@
-
-
 class Game1GA {
     constructor(playerCount, strategyCount, generationCount, seedValue, populationSize, uiHandler, msgHandler) {
         if(strategyCount > 25) {
@@ -67,35 +65,7 @@ class Game1GA {
         this.counter = 0;
     }
 
-    // private
-    cross(c1, c2) {
-        // TODO: better return both candidates?
-        const newCandidate = {
-            fitness: 0,
-            strategy: '',
-        }
-
-        const split = Math.floor(Math.random() * (this.strategyCount-1)); // every candidate has to give at least one block to the new candidate
-        newCandidate.strategy = c1.strategy.substring(0, split) + c2.strategy.substring(split);
-
-        return newCandidate;
-    }
-
-    mutate(c) {
-        const newCandidate = {
-            fitness: 0,
-            strategy: '',
-        }
-        const strategy = this.strategyPool.charAt(Math.floor(Math.random() * this.strategyCount));
-        const player = Math.floor(Math.random() * this.playerCount);
-
-        let newStrategy = c.strategy.substring(0, player) + strategy;
-        newStrategy += (player+1) === this.playerCount ? '' : c.strategy.substring(player+1);
-
-        newCandidate.strategy = newStrategy;
-
-        return newCandidate;
-    }
+    
 
     select(pop) {
         const filteredPopulation = pop.sort((a,b) => {
