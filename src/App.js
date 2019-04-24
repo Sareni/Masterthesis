@@ -7,6 +7,8 @@ import AppBody from './components/AppBody';
 import { AppStates } from './helper/enum';
 import Menu from './components/Menu';
 import Game1 from './components/Game1/Game1';
+import Game2 from './components/Game1/Game2';
+import Game3 from './components/Game1/Game3';
 import Info from './components/Info';
 
 class App extends Component {
@@ -34,8 +36,8 @@ class App extends Component {
   generateGameRoutes() {
     return ([
       <Route path="/game1" component={Game1}/>,
-      <Route path="/game2" component={Game1}/>,
-      <Route path="/game3" component={Game1}/>,
+      <Route path="/game2" component={Game2}/>,
+      <Route path="/game3" component={Game3}/>,
       <Route path="/game4" component={Game1}/>,
       <Route path="/game5" component={Game1}/>,
       <Route path="/game6" component={Game1}/>,

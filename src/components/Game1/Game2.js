@@ -3,10 +3,10 @@ import Console from '../Console'
 import './Game1.css';
 import Menu from './Menu';
 import Screen from './Screen';
-import ExecutorGA1 from '../../algorithms/Game1/ExecutorGA';
-import ExecutorES1 from '../../algorithms/Game1/ExecutorES';
-import ExecutorBF1 from '../../algorithms/Game1/ExecutorBF';
-import CandidateFactory1 from '../../algorithms/Game1/CandidateFactory';
+import ExecutorGA2 from '../../algorithms/Game2/ExecutorGA';
+import ExecutorES2 from '../../algorithms/Game2/ExecutorES';
+import ExecutorBF2 from '../../algorithms/Game2/ExecutorBF';
+import CandidateFactory2 from '../../algorithms/Game2/CandidateFactory';
 
 class Game1 extends React.Component {
     constructor(props) {
@@ -50,12 +50,12 @@ class Game1 extends React.Component {
 
     triggerStart(data) {
       if (this.state.gameCounter < 4) {
-        const factory = new CandidateFactory1(data.playerCount,data.strategyCount, data.seedValue, data.fitnessType);
+        const factory = new CandidateFactory2(data.playerCount,data.strategyCount, data.seedValue);
         let executor;
         switch (data.gameType) {
-          case 'GA': executor = new ExecutorGA1(data.generationCount,data.seedValue,data.populationSize,data.timeout, data.mutationRate, factory,this.newGameState,this.newMessage); break;
-          case 'ES': executor = new ExecutorES1(data.generationCount,data.seedValue,data.populationSize,data.timeout, data.mutationRate, factory,this.newGameState,this.newMessage); break;
-          default: executor = new ExecutorBF1(data.generationCount,data.seedValue,data.populationSize,data.timeout, data.mutationRate, factory,this.newGameState,this.newMessage);
+          case 'GA': executor = new ExecutorGA2(data.generationCount,data.seedValue,data.populationSize,data.timeout, data.mutationRate, factory,this.newGameState,this.newMessage); break;
+          case 'ES': executor = new ExecutorES2(data.generationCount,data.seedValue,data.populationSize,data.timeout, data.mutationRate, factory,this.newGameState,this.newMessage); break;
+          default: executor = new ExecutorBF2(data.generationCount,data.seedValue,data.populationSize,data.timeout, data.mutationRate, factory,this.newGameState,this.newMessage);
         }
         this.gameCounter += 1;
         this.setState({ executor, running: true, gameCounter: this.gameCounter, fitnessType: data.fitnessType, generationCount: data.generationCount });

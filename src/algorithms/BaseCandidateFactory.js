@@ -1,4 +1,9 @@
+import Generator from 'random-seed';
+
 class BaseCandidateFactory {
+    constructor (seedValue) {
+        this.generator = Generator.create(seedValue);
+    }
     cross(c1, c2) {
         throw new Error('cross: not implemented');
     }

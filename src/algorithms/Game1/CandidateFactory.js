@@ -1,8 +1,8 @@
 import BaseCandidateFactory from '../BaseCandidateFactory';
 
-class CandidateFactory1 extends BaseCandidateFactory {
-    constructor(playerCount, strategyCount) {
-        super();
+class CandidateFactory extends BaseCandidateFactory {
+    constructor(playerCount, strategyCount, seedValue, fitnessType) {
+        super(seedValue);
 
         if(strategyCount > 25) {
             console.log('Only 25 different strategys are allowed! Setting strategy count to 25...');
@@ -14,6 +14,7 @@ class CandidateFactory1 extends BaseCandidateFactory {
         this.strategyPool = 'ABCDEFGHIJKLMNOPQRSTUVWXY'; // limited to 25 different strategies per player
         this.max = 10;
         this.min = -5;
+        this.fitnessType = fitnessType;
         this.playerTables = this.generatePlayerTables();
     }
     
@@ -24,7 +25,7 @@ class CandidateFactory1 extends BaseCandidateFactory {
             strategy: '',
         }
 
-        const split = Math.floor(Math.random() * (this.strategyCount-1)); // every candidate has to give at least one block to the new candidate
+        const split = this.generator.range(this.playerCount-2)+1; // every candidate has to give at least one block to the new candidate
         newCandidate.strategy = c1.strategy.substring(0, split) + c2.strategy.substring(split);
 
         return newCandidate;
@@ -35,8 +36,8 @@ class CandidateFactory1 extends BaseCandidateFactory {
             fitness: 0,
             strategy: '',
         }
-        const strategy = this.strategyPool.charAt(Math.floor(Math.random() * this.strategyCount));
-        const player = Math.floor(Math.random() * this.playerCount);
+        const strategy = this.strategyPool.charAt(this.generator.range(this.strategyCount));
+        const player = this.generator.range(this.playerCount);
 
         let newStrategy = c.strategy.substring(0, player) + strategy;
         newStrategy += (player+1) === this.playerCount ? '' : c.strategy.substring(player+1);
@@ -59,9 +60,17 @@ class CandidateFactory1 extends BaseCandidateFactory {
 
     evaluate(c) {
         let count = 0;
-        for (let i = 0; i < this.playerCount; i++) {
-            count += c.strategy.charAt(i) === this.getBestStrategyForPlayer(i, c.strategy) ? 0 : -1;
+
+        if (this.fitnessType === 'NE') {
+            for (let i = 0; i < this.playerCount; i++) {
+                count += c.strategy.charAt(i) === this.getBestStrategyForPlayer(i, c.strategy) ? 0 : -1;
+            }
+        } else if (this.fitnessType === 'MAX') {
+            for (let i = 0; i < this.playerCount; i++) {
+                count += this.evaluateStrategyForPlayer(i, c.strategy);
+            }
         }
+        
         return count;
     }
 
@@ -69,7 +78,7 @@ class CandidateFactory1 extends BaseCandidateFactory {
     generateStrategy() {
         let strategy = '';
         for(let i = 0; i < this.playerCount; i++) {
-            strategy += this.strategyPool.charAt(Math.floor(Math.random() * this.strategyCount));
+            strategy += this.strategyPool.charAt(this.generator.range(this.strategyCount));
         }
 
         return strategy;
@@ -86,7 +95,7 @@ class CandidateFactory1 extends BaseCandidateFactory {
                         if(i === j) {
                             outputTable.push(0);
                         } else {
-                            outputTable.push(Math.floor(Math.random() * (this.max - this.min)) + this.min);
+                            outputTable.push(this.generator.range(this.max - this.min) + this.min);
                         }
                     }
                 }
@@ -129,4 +138,4 @@ class CandidateFactory1 extends BaseCandidateFactory {
     }
 }
 
-export default CandidateFactory1;
+export default CandidateFactory;

@@ -4,4 +4,69 @@
     min-height: 400px;
     margin: 100px 20px 0 0;
     margin-left: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.game1-menu .inputBox {
+    margin: 10px 5px 5px 5px;
+}
+
+.game1-menu .start-button {
+    height: 40px;
+    background-color: #83d0f2;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    outline:none;
+    transition: 0.4s;
+    border: none;
+    margin: 10px 5px 5px 5px;
+}
+
+.game1-menu .start-button:hover {
+    background-color: white;
+    color: #83d0f2;
+    border: 1px solid #83d0f2;
+}
+
+.game1-menu .inputLabel {
+    margin-bottom: 5px;
+    font-size: 10px;
+}
+
+.game1-menu input {
+    width: 240px;
+    height: 20px;
+}
+
+.game1-menu .inputSwitch {
+    display: flex;
+    flex-direction: row;
+}
+
+.game1-menu .inputSwitch button {
+    flex-grow: 1;
+}
+
+.game1-menu .inputSwitch .button, .game1-menu .inputSwitch .buttonActive {
+    background-color: #83d0f2;
+    color: white;
+    padding: 8px 0 8px 0;
+    text-align: center;
+    text-decoration: none;
+    font-size: 12px;
+    border: 1px solid #83d0f2;
+    outline:none;
+    transition: 0.4s;
+}
+
+.game1-menu .inputSwitch .button:hover {
+    background-color: white;
+    color: #83d0f2;
+}
+.game1-menu .inputSwitch .buttonActive {
+    font-weight: bold;
 }
