@@ -10,10 +10,6 @@ const colorTable = [
     '0,0,0'
 ];
 
-const yDomainTable = {
-    'NE': [-5, 0],
-    'MAX': [-50, 100], //null
-}
 
 class Screen extends React.Component {
 
@@ -32,7 +28,7 @@ class Screen extends React.Component {
                 strokeWidth: '1px',
                 }}
                 size='3'
-                lineStyle={{stroke: 'black'}}
+                lineStyle={{stroke: 'white'}}
                 markStyle={{fill: `rgba(${colorTable[i]},0.5)`, strokeWidth: '1px'}}
                 data={this.props.gameState.filter(state => state.gameCounter === (i+1)).map(state => state.data)}
                 />
@@ -44,7 +40,7 @@ class Screen extends React.Component {
     render() {
         return (
             <div className="game1-screen">
-                <XYPlot width={960} height={600} xDomain={[0,this.props.generationCount-1]} >
+                <XYPlot width={960} height={600} xDomain={[0,this.props.xMax]} yDomain={[0,this.props.yMax]} >
                     <VerticalGridLines />
                     <HorizontalGridLines />
                     <XAxis />
