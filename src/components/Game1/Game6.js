@@ -1,12 +1,12 @@
 import React from 'react';
 import Console from '../Console'
 import './Game1.css';
-import Menu from './Menu';
-import Screen from './Screen';
-import ExecutorGA3 from '../../algorithms/Game3/ExecutorGA';
-import ExecutorES3 from '../../algorithms/Game3/ExecutorES';
-import ExecutorBF3 from '../../algorithms/Game3/ExecutorBF';
-import CandidateFactory3 from '../../algorithms/Game3/CandidateFactory';
+import Menu from './Menu2';
+import Screen from './Screen2';
+import ExecutorGA6 from '../../algorithms/Game6/ExecutorGA';
+import ExecutorES6 from '../../algorithms/Game6/ExecutorES';
+import ExecutorBF6 from '../../algorithms/Game6/ExecutorBF';
+import CandidateFactory6 from '../../algorithms/Game6/CandidateFactory';
 
 class Game1 extends React.Component {
     constructor(props) {
@@ -18,8 +18,9 @@ class Game1 extends React.Component {
         runnig: false,
         gameCounter: 0,
         executor: {},
-        fitnessType: 'NE',
         generationCount: 10,
+        xMax: 0,
+        yMax: 0,
       }
 
       this.gameCounter = this.state.gameCounter;
@@ -43,22 +44,25 @@ class Game1 extends React.Component {
     }
 
     newGameState(data) {
-      const gameState = this.state.gameState;
-      gameState.push({ data: { x: data.x, y: data.y } , gameCounter: data.playerNumber });
+      let gameState = [];
+      if (data.playerNumber !== -1) {
+        gameState = this.state.gameState;
+        gameState.push({ data: { x: data.x, y: data.y }, gameCounter: data.playerNumber });
+      }
       this.setState({ gameState });
     }
 
     triggerStart(data) {
       if (this.state.gameCounter < data.playerCount) {
-        const factory = new CandidateFactory3(data.playerCount,data.strategyCount, data.seedValue);
+        const factory = new CandidateFactory6(data.playerCount, data.xMax, data.yMax, data.seedValue);
         let executor;
         switch (data.gameType) {
-          case 'GA': executor = new ExecutorGA3(data.generationCount,data.seedValue,data.populationSize,data.timeout, data.mutationRate, factory,this.newGameState,this.newMessage); break;
-          case 'ES': executor = new ExecutorES3(data.generationCount,data.seedValue,data.populationSize,data.timeout, data.mutationRate, factory,this.newGameState,this.newMessage); break;
-          default: executor = new ExecutorBF3(data.generationCount,data.seedValue,data.populationSize,data.timeout, data.mutationRate, factory,this.newGameState,this.newMessage);
+          case 'GA': executor = new ExecutorGA6(data.generationCount,data.seedValue,data.populationSize,data.timeout, data.mutationRate, factory,this.newGameState,this.newMessage); break;
+          case 'ES': executor = new ExecutorES6(data.generationCount,data.seedValue,data.populationSize,data.timeout, data.mutationRate, factory,this.newGameState,this.newMessage); break;
+          default: executor = new ExecutorBF6(data.generationCount,data.seedValue,data.populationSize,data.timeout, data.mutationRate, factory,this.newGameState,this.newMessage);
         }
         this.gameCounter += data.playerCount;
-        this.setState({ executor, running: true, gameCounter: this.gameCounter, fitnessType: data.fitnessType, generationCount: data.generationCount });
+        this.setState({ executor, running: true, gameCounter: this.gameCounter, generationCount: data.generationCount, xMax: data.xMax, yMax: data.yMax });
         executor.start();
       }
     }
@@ -79,8 +83,8 @@ class Game1 extends React.Component {
     render() {
       return (
         <div className="game1-body">
-          <Menu triggerStart={this.triggerStart} clearGame={this.clearGame} type={this.state.running ? 'Reset' : 'Start'} fitnessType={this.state.fitnessType} generationCount={this.state.generationCount} changeStartResetButton={this.changeStartToResetButton}/>
-          <Screen gameState={this.state.gameState} gameCounter={this.gameCounter} fitnessType={this.state.fitnessType} generationCount={this.state.generationCount}/>
+          <Menu triggerStart={this.triggerStart} clearGame={this.clearGame} type={this.state.running ? 'Reset' : 'Start'}  generationCount={this.state.generationCount} changeStartResetButton={this.changeStartToResetButton}/>
+          <Screen gameState={this.state.gameState} gameCounter={this.gameCounter} generationCount={this.state.generationCount} xMax={this.state.xMax} yMax={this.state.yMax} />
           <Console log={this.state.log} />
         </div>
 

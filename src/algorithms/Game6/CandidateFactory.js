@@ -1,30 +1,26 @@
 import BaseCandidateFactory from '../BaseCandidateFactory';
 
 class CandidateFactory extends BaseCandidateFactory {
-    constructor(playerCount, strategyCount, seedValue) {
+    constructor(playerCount, xMax, yMax, seedValue) {
         super(seedValue);
 
         this.playerCount = playerCount;
-        this.strategyCount = strategyCount;
-        this.max = 10;
-        this.min = -5;
-        this.maxDelta = 0.5;
-        this.minDelta = -0.5;
-        this.playerNumber = 0;
-        this.playerTables = this.generatePlayerTables();
+        this.xMax = xMax;
+        this.yMax = yMax;
+
+        this.deltaX = 10;
+        this.deltaY = 10;
+
+        this.populationCounter = 0;
     }
     
     cross(c1, c2) {
         const newCandidate = {
             fitness: 0,
-            properties: [],
+            x: c1.x,
+            y: c2.y,
             playerNumber: c1.playerNumber,
         }
-
-        const split = this.generator.range(this.strategyCount-2)+1; // every candidate has to give at least one block to the new candidate
-        newCandidate.properties = c1.properties.slice(0, split).concat(c2.properties.slice(split));
-
-        newCandidate.properties = this.fixProperties(newCandidate.properties);
 
         return newCandidate;
     }
@@ -32,196 +28,53 @@ class CandidateFactory extends BaseCandidateFactory {
     mutate(c) {
         const newCandidate = {
             fitness: 0,
-            properties: [],
+            x: c.x,
+            y: c.y,
             playerNumber: c.playerNumber,
         }
-
-        const delta = (this.generator.random() * (this.maxDelta - this.minDelta)) + this.minDelta;
-        const deltaPart = delta / (this.strategyCount - 1);
-
-        newCandidate.properties = c.properties.map(p => p - deltaPart);
-
-        const index = this.generator.range(this.strategyCount);
-        newCandidate.properties[index] += delta + deltaPart;
-
-        newCandidate.properties = this.fixProperties(newCandidate.properties);
-
+        if (this.generator.random() < 0.5) {
+            newCandidate.x += this.deltaX * (this.generator.random() - 0.5);
+        } else {
+            newCandidate.y += this.deltaY * (this.generator.random() - 0.5);
+        }
         return newCandidate;
     }
 
-    fixProperties(p) {
-
-        const newProperties = p.map(prop => {
-            if (prop < 0) return 0;
-            if (prop > 1) return 1;
-            return prop;
-        });
-
-        const sum = newProperties.reduce((acc, cur) => {
-            return acc + cur;
-        });
-
-        if(sum === 1) {
-            return newProperties;
-        }
-
-        let counter = newProperties.length;
-        let diff = sum - 1;
-        const originalDiff = diff;
-
-        while (diff > Math.abs(0.00001)) {
-            const diffPart = diff / counter;
-            for (let i = 0; i < newProperties.length; i++) {
-                const newVal = newProperties[i] - diffPart;
-                if (newVal > 1) {
-                    if (newProperties[i] !== 1) {
-                        counter -= 1;
-                        diff -= 1 - newProperties[i];
-                        newProperties[i] = 1;
-                    }
-          
-                } else if (newVal < 0) {
-                    if (newProperties[i] !== 0) {
-                        const test = newProperties[i];
-                        const test2 = diff;
-                        counter -= 1;
-                        diff -= newProperties[i];
-                        newProperties[i] = 0;  
-                    }
-                } else {
-                    newProperties[i] = newVal;
-                    diff -= diffPart;
-                }
-            }
-        }
-
-
-        // correction for inaccuracy
-        for (let i = 0; i < newProperties.length; i++) {
-            const newVal = newProperties[i] - diff;
-            if (newVal <= 1 || newVal >= 0) {
-                newProperties[i] += newVal;
-                break;
-            }
-        }
-        
-        return newProperties;
-    }
 
     generate() {
-
         const candidate = {
             fitness: 0,
-            properties: [],
-            playerNumber: this.playerNumber,
+            x: 0,
+            y: 0,
+            playerNumber: 0,
         }
-        candidate.properties = this.generateProperties();
+        candidate.x = this.generator.range(this.xMax) + 1;
+        candidate.y = this.generator.range(this.yMax) + 1;
 
-        candidate.fitness = this.evaluate(candidate);
+        candidate.playerNumber = this.populationCounter % this.playerCount;
+        this.populationCounter += 1;
+
+
+        // candidate.fitness = this.evaluate(candidate);
 
         return candidate;
     }
 
-    evaluate(c) {
+    evaluate(c1, c2) {
         let count = 0;
-        let index = -1;
-
-        if (c.properties.find((p, idx, arr) => {
-            if (p === 1) {
-                index = idx;
-                return true;
-            };
-            return false;
-        })) {
-            for (let i = 0; i < this.playerCount; i++) {
-                const otherOutput = this.playerTables[i][c.playerNumber];
-                let otherHighest = this.min;
-                let otherHighestIndex = -1;
-                for (let j = 0; j < this.strategyCount; j++) {
-                    if(otherOutput[this.strategyCount * j + index] > otherHighest) {
-                        otherHighest = otherOutput[this.strategyCount * j + index];
-                        otherHighestIndex = j;
-                    }
-                }
-
-                const thisOutput = this.playerTables[c.playerNumber][i];
-                let thisHighest = this.min;
-                let thisHighestIndex = -1;
-                for (let j = 0; j < this.strategyCount; j++) {
-                    if(thisOutput[this.strategyCount * index + j] > thisHighest) {
-                        thisHighest = thisOutput[this.strategyCount * j + index];
-                        thisHighestIndex = j;
-                    }
-                }
-
-                if (thisHighestIndex !== otherHighestIndex) {
-                    count -= 1;
-                } 
-            }
-
-        } else {
-            for (let i = 0; i < this.playerCount; i++) {
-
-                let results;
-
-                if (typeof this.strategyCount === 'string') {
-                    results = new Array(parseInt(this.strategyCount));
-                } else {
-                    results = new Array(this.strategyCount);
-                }
-    
-                for (let j = 0; j < this.strategyCount; j++) {
-                    results[j] = 0;
-                    for (let k = 0; k < this.strategyCount; k++) {
-                        results[j] += this.playerTables[i][c.playerNumber][this.strategyCount * j + k] * c.properties[k];
-                    }
-                }
-                const sum = results.reduce((acc, cur) => acc + cur);
-                const mean = sum / results.length;
-    
-                for(let j = 0; j < results.length; j++) {
-                    count -= Math.abs(mean - results[j])
+        for (let i = 0; i <= this.xMax; i++) {
+            for (let j = 0; j <= this.yMax; j++) {
+                const dist1 = Math.sqrt(Math.pow(c1.x - i, 2) + Math.pow(c1.y - j, 2));
+                const dist2 = Math.sqrt(Math.pow(c2.x - i, 2) + Math.pow(c2.y - j, 2));
+                if (dist1 < dist2) {
+                    count += 1;
+                } else if (dist1 === dist2) {
+                    count += 0.5;
                 }
             }
         }
+
         return count;
-    }
-
-    setPlayerNumber(playerNumber) {
-        this.playerNumber = playerNumber;
-    }
-
-    // ---
-    generateProperties() {
-        let properties = [];
-        for(let i = 0; i < this.strategyCount; i++) {
-            properties.push(this.generator.random());
-        }
-
-        return this.fixProperties(properties);
-    }
-
-    generatePlayerTables() {
-        const playerTables = [];                    // Create
-        for(let i = 0; i < this.playerCount; i++) { // for every player a table
-            const playersTables = [];
-            for(let j = 0; j < this.playerCount; j++) { // for every (other) player
-                const outputTable = [];
-                for(let k = 0; k < this.strategyCount; k++) { // with all strategies
-                    for(let l = 0; l < this.strategyCount; l++) { // of both players
-                        if(i === j) {
-                            outputTable.push(0);
-                        } else {
-                            outputTable.push(this.generator.range(this.max - this.min) + this.min);
-                        }
-                    }
-                }
-                playersTables.push(outputTable);
-            }
-            playerTables.push(playersTables)
-        }
-
-        return playerTables;
     }
 }
 

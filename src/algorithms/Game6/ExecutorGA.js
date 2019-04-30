@@ -1,93 +1,66 @@
 import BaseExecutor from '../BaseExecutor';
 
-
-/*
-    TODOs: rewrite ES
-           document changes
-
-
-*/
-
 class ExecutorGA extends BaseExecutor {
 
     constructor(generationCount, seedValue, populationSize, timeout, mutationRate, candidateFactory, uiHandler, msgHandler) {
         super(populationSize, timeout, generationCount, seedValue, mutationRate, candidateFactory, uiHandler, msgHandler);
-        this.population = new Array(parseInt(this.candidateFactory.playerCount));
-        this.history = new Array(parseInt(this.candidateFactory.playerCount));
-
-        console.log(this.population.length);
-
-        for(let i = 0; i < this.population.length; i++) {
-            this.history[i] = [];
-            this.candidateFactory.setPlayerNumber(i);
-            this.population[i] = this.generateBasePopulation();
-        }
+        this.population = this.generateBasePopulation();
     }
 
     generateBasePopulation() {
         const population = [];
-        for(let i = 0; i < this.populationSize; i++) {
+        const totalSize = this.populationSize * this.candidateFactory.playerCount;
+
+        for(let i = 0; i < totalSize; i++) {
             population.push(this.candidateFactory.generate());
         }
         return population;
     }
 
     runCycle(that) {
+        const newPopulation = [];
+        let tmpPopulation = [];
 
-        for(let h = 0; h < that.candidateFactory.playerCount; h++) {
-            const newPopulation = [];
-
-            for (let j = 0; j < that.populationSize; j++) {
-                const firstCandidateIndex = that.generator.range(that.populationSize);
-                let secondCandidateIndex = that.generator.range(that.populationSize);
+        for (let i = 0; i < that.candidateFactory.playerCount; i++) {
+            const thisPopulation = that.population.filter(candidate => candidate.playerNumber === i);
+            const thatPopulation = that.population.filter(candidate => candidate.playerNumber !== i);
+            
+            for (let j = 0; j < thisPopulation.length; j++) {
+                const firstCandidateIndex = that.generator.range(thisPopulation.length);
+                let secondCandidateIndex = that.generator.range(thisPopulation.length);
                 while (firstCandidateIndex === secondCandidateIndex && that.populationSize > 1) {
-                    secondCandidateIndex = that.generator.range(that.populationSize);;
+                    secondCandidateIndex = that.generator.range(thisPopulation.length);
                 }
     
-                let newCandidate = that.candidateFactory.cross(that.population[h][firstCandidateIndex], that.population[h][secondCandidateIndex]);
+                let newCandidate = that.candidateFactory.cross(thisPopulation[firstCandidateIndex], thisPopulation[secondCandidateIndex]);
                 if (that.generator.random() < that.mutationRate) {
                     newCandidate = that.candidateFactory.mutate(newCandidate);
                 }
-                newCandidate.fitness = that.candidateFactory.evaluate(newCandidate);
+                newCandidate.fitness = that.candidateFactory.evaluate(newCandidate, thatPopulation[that.generator.range(thatPopulation.length)]);
                 newPopulation.push(newCandidate);
             }
-    
-            that.population[h] = that.select(that.population[h].concat(newPopulation));
-            that.uiHandler({x: that.counter, y: that.population[h][0].fitness, playerNumber: h});
-            that.msgHandler(that.counter, 'status', `Best Candidate: ${JSON.stringify(that.population[h][0])}`);
-            that.addToHistory(that.population[h][0], h);
         }
+
+        that.uiHandler({ x: 0, y: 0, playerNumber: -1 });        
+        for (let i = 0; i < that.candidateFactory.playerCount; i++) {
+            const partOfPopulation = that.select(that.population.concat(newPopulation).filter(candidate => candidate.playerNumber === i));
+            that.msgHandler(that.counter, 'status', `Best Candidate: ${JSON.stringify(partOfPopulation[0])}`);
+
+            for (let j = 0; j < 10; j++) {
+                if (partOfPopulation.length > j) {
+                    that.uiHandler({x: partOfPopulation[j].x, y: partOfPopulation[j].y, playerNumber: partOfPopulation[j].playerNumber+1});
+                }
+            }
+            tmpPopulation = tmpPopulation.concat(partOfPopulation);
+        }
+        that.population = tmpPopulation;
         that.counter += 1;        
         
         
-        if (that.noChangesInHistory() || that.counter >= that.generationCount) {
+        if (that.counter >= that.generationCount) {
             that.stop();
-            that.candidateFactory.fitnessType = that.candidateFactory.fitnessType === 'NE' ? 'MAX' : 'NE';
             that.msgHandler(0, 'fin', 'Finished!');
         }
-    }
-
-    // override
-    addToHistory(candidate, count) {
-        if (this.history[count].length === this.historyLength) {
-            this.history[count].shift();
-        }
-        this.history[count].push(candidate);
-    }
-
-    // override
-    noChangesInHistory() {
-        for (let h = 0; h < this.candidateFactory.playerCount; h++) {
-            if (this.history[h].length < this.historyLength) {
-                return false;
-            }
-            for(var i = 0; i < this.history[h].length - 1; i++) {
-                if(this.history[h][i].properties !== this.history[h][i+1].properties) {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 }
 
