@@ -32,7 +32,7 @@ class CandidateFactory extends BaseCandidateFactory {
         const round = this.generator.range(this.gameRounds);
 
         let newStrategy = c.strategy.substring(0, round) + strategy;
-        newStrategy += (round+1) === this.roundCount ? '' : c.strategy.substring(round+1);
+        newStrategy += (round+1) === this.gameRounds ? '' : c.strategy.substring(round+1);
 
         newCandidate.strategy = newStrategy;
 
@@ -54,14 +54,19 @@ class CandidateFactory extends BaseCandidateFactory {
         let trusted = true;
 
         for (let i = 0; i < c1.strategy.length; i++) {
-            const stategy1Idx = this.strategyPool.indexOf(c1.stategy.charAt(i));
-            let stategy2 = 'C';
+            const strategy1 = c1.strategy.charAt(i);
+            const stategy1Idx = this.strategyPool.indexOf(strategy1);
+            let strategy2 = 'C';
             if (trusted) {
-                stategy2 = c2.stategy.charAt(i);
+                strategy2 = c2.strategy.charAt(i);
             }
-            const stategy2Idx = this.strategyPool.indexOf(stategy2);
+            const strategy2Idx = this.strategyPool.indexOf(strategy2);
 
-            count += this.playerTable[stategy1Idx * this.strategyCount + stategy2Idx];
+            count += this.playerTable[stategy1Idx * this.strategyCount + strategy2Idx];
+
+            if (strategy1 === 'C') {
+                trusted = false;
+            }
         }
         
         return count;
@@ -70,7 +75,7 @@ class CandidateFactory extends BaseCandidateFactory {
     // ---
     generateStrategy() {
         let strategy = '';
-        for(let i = 0; i < this.roundCount; i++) {
+        for(let i = 0; i < this.gameRounds; i++) {
             strategy += this.strategyPool.charAt(this.generator.range(this.strategyCount));
         }
 

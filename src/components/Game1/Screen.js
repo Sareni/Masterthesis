@@ -29,7 +29,7 @@ class Screen extends React.Component {
             result.push(
                 <LineMarkSeries key={'Line'+i}
                 style={{
-                strokeWidth: '1px',
+                strokeWidth: 'px',
                 }}
                 size='3'
                 lineStyle={{stroke: 'black'}}

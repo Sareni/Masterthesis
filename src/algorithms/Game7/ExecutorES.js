@@ -5,6 +5,7 @@ class ExecutorES extends BaseExecutor {
     constructor(generationCount, seedValue, populationSize, timeout, mutationRate, CandidateFactory, uiHandler, msgHandler) {
         super(populationSize, timeout, generationCount, seedValue, mutationRate, CandidateFactory, uiHandler, msgHandler);
         this.population = this.generateBasePopulation();
+        this.evaluateBasePopulation();
     }
 
     generateBasePopulation() {
@@ -13,6 +14,13 @@ class ExecutorES extends BaseExecutor {
             population.push(this.candidateFactory.generate());
         }
         return population;
+    }
+
+    evaluateBasePopulation() {
+        for(let i = 0; i < this.population.length; i++) {
+            this.population[i].fitness = this.candidateFactory.evaluate(this.population[i],
+                this.population[this.generator.range(this.population.length)]);
+        }
     }
 
     runCycle(that) {
@@ -25,7 +33,7 @@ class ExecutorES extends BaseExecutor {
             if (that.generator.random() < that.mutationRate) {
                 newCandidate = that.candidateFactory.mutate(newCandidate);
             }
-            newCandidate.fitness = that.candidateFactory.evaluate(newCandidate);
+            newCandidate.fitness = that.candidateFactory.evaluate(newCandidate, that.population[that.generator.range(that.populationSize)]);
             newPopulation.push(newCandidate);
         }
 
@@ -36,10 +44,9 @@ class ExecutorES extends BaseExecutor {
 
         that.addToHistory(that.population[0]);
         
-        if (that.noChangesInHistory() || that.counter >= that.generationCount) {
+        if (that.counter >= that.generationCount) {
             that.stop();
-            that.candidateFactory.fitnessType = that.candidateFactory.fitnessType === 'NE' ? 'MAX' : 'NE';
-            that.msgHandler(0, 'fin', `Best Candidate alternative fitness (${that.candidateFactory.fitnessType}): ${that.candidateFactory.evaluate(that.population[0])}`);
+            that.msgHandler(0, 'fin', 'Finished');
         }
     }
 }

@@ -13,8 +13,8 @@ class Menu extends React.Component {
             timeout: 1,
             mutationRate: 0.2,
             gameType: 'GA',
-            xMax: 0,
-            yMax: 0,
+            xMax: 50,
+            yMax: 50,
         }
 
         this.startOrReset = this.startOrReset.bind(this);

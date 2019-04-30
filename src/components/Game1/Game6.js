@@ -1,8 +1,8 @@
 import React from 'react';
 import Console from '../Console'
 import './Game1.css';
-import Menu from './Menu2';
-import Screen from './Screen2';
+import Menu from './Menu6';
+import Screen from './Screen6';
 import ExecutorGA6 from '../../algorithms/Game6/ExecutorGA';
 import ExecutorES6 from '../../algorithms/Game6/ExecutorES';
 import ExecutorBF6 from '../../algorithms/Game6/ExecutorBF';
