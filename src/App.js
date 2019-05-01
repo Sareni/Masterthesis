@@ -11,6 +11,7 @@ import Game2 from './components/Game1/Game2';
 import Game3 from './components/Game1/Game3';
 import Game6 from './components/Game1/Game6';
 import Game7 from './components/Game1/Game7';
+import Game8 from './components/Game1/Game8';
 import Info from './components/Info';
 
 class App extends Component {
@@ -44,8 +45,8 @@ class App extends Component {
       <Route path="/game5" component={Game3}/>,
       <Route path="/game6" component={Game6}/>,
       <Route path="/game7" component={Game7}/>,
-      <Route path="/game8" component={Game1}/>,
-    <Route path="/game9" component={Game1}/> ]
+      <Route path="/game8" component={Game8}/>,
+      <Route path="/game9" component={Game1}/> ]
     );
   }
 }

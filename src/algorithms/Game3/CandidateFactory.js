@@ -67,7 +67,6 @@ class CandidateFactory extends BaseCandidateFactory {
 
         let counter = newProperties.length;
         let diff = sum - 1;
-        const originalDiff = diff;
 
         while (diff > Math.abs(0.00001)) {
             const diffPart = diff / counter;
@@ -82,8 +81,6 @@ class CandidateFactory extends BaseCandidateFactory {
           
                 } else if (newVal < 0) {
                     if (newProperties[i] !== 0) {
-                        const test = newProperties[i];
-                        const test2 = diff;
                         counter -= 1;
                         diff -= newProperties[i];
                         newProperties[i] = 0;  
