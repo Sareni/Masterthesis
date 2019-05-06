@@ -1,7 +1,7 @@
 import BaseCandidateFactory from '../BaseCandidateFactory';
 
 class CandidateFactory extends BaseCandidateFactory {
-    constructor(playerCount, strategyCount, seedValue, fitnessType) {
+    constructor(playerCount, strategyCount, seedValue) {
         super(seedValue);
 
         if(strategyCount > 25) {
@@ -29,7 +29,7 @@ class CandidateFactory extends BaseCandidateFactory {
         this.populationCounter = 0;
 
         this.playerTables = this.generatePlayerTables();
-        this.playerTables = this.generateMarketTable();
+        this.marketTable = this.generateMarketTable();
     }
     
     cross(c1, c2) {
@@ -82,20 +82,19 @@ class CandidateFactory extends BaseCandidateFactory {
 
         for (let i = 0; i < this.gameRounds; i++) {
             const marketPrices = new Array(this.strategyCount-1).fill(0); // -1: remove '0' option cause its not a product
-            for (let j = 0; j < marketPrices.length; j++) { 
+            for (let j = 0; j < marketPrices.length; j++) {
                 let producedAmount = 0;
                 for (let k = 0; k < candidates.length; k++) {
                     if (candidates[k].strategy.charAt(i) === this.strategyPool.charAt(j+1)) {
-                        producedAmount += this.playerTables[candidates[k].playerNumber][1][j];
+                        producedAmount += this.playerTables[candidates[k].playerNumber][1][j];                 
                     }
                 }
-                marketPrices[j] = this.marketTable[j][0] - (this.marketTable[j][0] * producedAmount);
+                marketPrices[j] = this.marketTable[j][0] - (this.marketTable[j][1] * producedAmount);
             }
-
             // TODO: add umruestungs kosten
             for (let j = 0; j < candidates.length; j++) {
-                const idx = this.strategyPool.indexOf(candidates[j].strategy.charAt(i));
-                if (idx > 0) {
+                const idx = this.strategyPool.indexOf(candidates[j].strategy.charAt(i))-1;
+                if (idx >= 0) {
                     const amount = this.playerTables[candidates[j].playerNumber][1][idx];
                     counts[j] += marketPrices[idx] * amount;
                     counts[j] -= this.playerTables[candidates[j].playerNumber][0][idx] * amount;

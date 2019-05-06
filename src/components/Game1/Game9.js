@@ -44,20 +44,20 @@ class Game1 extends React.Component {
 
     newGameState(data) {
       const gameState = this.state.gameState;
-      gameState.push({ data, gameCounter: this.gameCounter });
+      gameState.push({ data: { x: data.x, y: data.y } , gameCounter: data.playerNumber+1 });
       this.setState({ gameState });
     }
 
     triggerStart(data) {
-      if (this.state.gameCounter < 4) {
-        const factory = new CandidateFactory9(data.playerCount,data.strategyCount, data.seedValue, data.fitnessType);
+      if (this.state.gameCounter < data.playerCount) {
+        const factory = new CandidateFactory9(data.playerCount, data.strategyCount, data.seedValue);
         let executor;
         switch (data.gameType) {
           case 'GA': executor = new ExecutorGA9(data.generationCount,data.seedValue,data.populationSize,data.timeout, data.mutationRate, factory,this.newGameState,this.newMessage); break;
           case 'ES': executor = new ExecutorES9(data.generationCount,data.seedValue,data.populationSize,data.timeout, data.mutationRate, factory,this.newGameState,this.newMessage); break;
           default: executor = new ExecutorBF9(data.generationCount,data.seedValue,data.populationSize,data.timeout, data.mutationRate, factory,this.newGameState,this.newMessage);
         }
-        this.gameCounter += 1;
+        this.gameCounter += data.playerCount; // !!
         this.setState({ executor, running: true, gameCounter: this.gameCounter, fitnessType: data.fitnessType, generationCount: data.generationCount });
         executor.start();
       }
@@ -75,6 +75,7 @@ class Game1 extends React.Component {
       this.setState({ running: !this.state.runnig });
     }
   
+    // TODO: add readonly
     render() {
       return (
         <div className="game1-body">

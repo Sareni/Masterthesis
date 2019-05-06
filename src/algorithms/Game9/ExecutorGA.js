@@ -6,6 +6,7 @@ class ExecutorGA extends BaseExecutor {
         super(populationSize, timeout, generationCount, seedValue, mutationRate, CandidateFactory, uiHandler, msgHandler);
         this.population = this.generateBasePopulation();
         this.evaluateBasePopulation();
+
     }
 
     generateBasePopulation() {
@@ -34,44 +35,59 @@ class ExecutorGA extends BaseExecutor {
             }
 
             const results = this.candidateFactory.evaluate(candidateArray);
+            console.log(results);
             for (let j = 0; j < this.candidateFactory.playerCount; j++) {
                 candidateArray[j].fitness = results[j];
                 evaluatedPopulation.push(candidateArray[j]);
             }
         }
-
-        this.population = evaluatedPopulation;
     }
 
     runCycle(that) {
         const newPopulation = [];
-
-        for (let j = 0; j < that.populationSize; j++) {
-            const firstCandidateIndex = that.generator.range(that.populationSize);
-            let secondCandidateIndex = that.generator.range(that.populationSize);
-            while (firstCandidateIndex === secondCandidateIndex && that.populationSize > 1) {
-                secondCandidateIndex = that.generator.range(that.populationSize);;
-            }
-
-            let newCandidate = that.candidateFactory.cross(that.population[firstCandidateIndex], that.population[secondCandidateIndex]);
-            if (that.generator.random() < that.mutationRate) {
-                newCandidate = that.candidateFactory.mutate(newCandidate);
-            }
-            newCandidate.fitness = that.candidateFactory.evaluate(newCandidate);
-            newPopulation.push(newCandidate);
+        let tmpPopulation = [];
+        const populationGroups = [];
+        for (let i = 0; i < that.candidateFactory.playerCount; i++) {
+            const group = that.population.filter(candidate => candidate.playerNumber === i);
+            populationGroups.push(group);
         }
 
-        that.population = that.select(that.population.concat(newPopulation));
-        that.uiHandler({x: that.counter, y: that.population[0].fitness});
-        that.msgHandler(that.counter, 'status', `Best Candidate: ${JSON.stringify(that.population[0])}`);
-        that.counter += 1;
+        for (let j = 0; j < that.populationSize; j++) {
+            const candidateArray = [];
+            for (let k = 0; k < that.candidateFactory.playerCount; k++) {
+                const firstCandidateIndex = that.generator.range(that.populationSize);
+                let secondCandidateIndex = that.generator.range(that.populationSize);
+                while (firstCandidateIndex === secondCandidateIndex && that.populationSize > 1) {
+                    secondCandidateIndex = that.generator.range(that.populationSize);;
+                }
+                let newCandidate = that.candidateFactory.cross(populationGroups[k][firstCandidateIndex], populationGroups[k][secondCandidateIndex]);
+                if (that.generator.random() < that.mutationRate) {
+                    newCandidate = that.candidateFactory.mutate(newCandidate);
+                }
 
-        that.addToHistory(that.population[0]);
-        
-        if (that.noChangesInHistory() || that.counter >= that.generationCount) {
+                candidateArray.push(newCandidate);
+            }
+
+            const results = that.candidateFactory.evaluate(candidateArray);
+            for (let k = 0; k < that.candidateFactory.playerCount; k++) {
+                candidateArray[k].fitness = results[k];
+                newPopulation.push(candidateArray[k]);
+            }
+        }
+
+        for (let i = 0; i < populationGroups.length; i++) {
+            const partOfPopulation = that.select(that.population.concat(newPopulation).filter(candidate => candidate.playerNumber === i));
+            that.uiHandler({x: that.counter, y: partOfPopulation[0].fitness, playerNumber: i});
+            that.msgHandler(that.counter, 'status', `Best Candidate: ${JSON.stringify(partOfPopulation[0])}`);
+            tmpPopulation = tmpPopulation.concat(partOfPopulation);
+        }
+
+        that.population = tmpPopulation;
+        that.counter += 1;   
+
+        if (that.counter >= that.generationCount) {
             that.stop();
-            that.candidateFactory.fitnessType = that.candidateFactory.fitnessType === 'NE' ? 'MAX' : 'NE';
-            that.msgHandler(0, 'fin', `Best Candidate alternative fitness (${that.candidateFactory.fitnessType}): ${that.candidateFactory.evaluate(that.population[0])}`);
+            that.msgHandler(0, 'fin', 'Finished');
         }
     }
 }
