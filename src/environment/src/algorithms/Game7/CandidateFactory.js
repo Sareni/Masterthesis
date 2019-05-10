@@ -9,6 +9,7 @@ class CandidateFactory extends BaseCandidateFactory {
         this.max = 10;
         this.min = 2;
         this.playerTable = this.generatePlayerTable();
+        this.discountFactor = 0.98;
     }
     
     cross(c1, c2) {
@@ -62,7 +63,7 @@ class CandidateFactory extends BaseCandidateFactory {
             }
             const strategy2Idx = this.strategyPool.indexOf(strategy2);
 
-            count += this.playerTable[stategy1Idx * this.strategyCount + strategy2Idx];
+            count += this.playerTable[stategy1Idx * this.strategyCount + strategy2Idx] * Math.pow(this.discountFactor, c1.strategy.length - (i+1));
 
             if (strategy1 === 'C') {
                 trusted = false;

@@ -6,10 +6,10 @@ class CandidateFactory extends BaseCandidateFactory {
 
         this.playerCount = playerCount;
         this.strategyCount = strategyCount;
-        this.max = 10;
-        this.min = -5;
-        this.maxDelta = 0.5;
-        this.minDelta = -0.5;
+        this.max = 16;
+        this.min = 1;
+        this.maxDelta = 0.2;
+        this.minDelta = -0.2;
         this.playerNumber = 0;
         this.playerTables = this.generatePlayerTables();
     }
@@ -29,14 +29,14 @@ class CandidateFactory extends BaseCandidateFactory {
         return newCandidate;
     }
 
-    mutate(c) {
+    mutate(c, sigma = 1) {
         const newCandidate = {
             fitness: 0,
             properties: [],
             playerNumber: c.playerNumber,
         }
 
-        const delta = (this.generator.random() * (this.maxDelta - this.minDelta)) + this.minDelta;
+        const delta = ((this.generator.random() * (this.maxDelta - this.minDelta)) + this.minDelta) * sigma;
         const deltaPart = delta / (this.strategyCount - 1);
 
         newCandidate.properties = c.properties.map(p => p - deltaPart);
@@ -124,7 +124,7 @@ class CandidateFactory extends BaseCandidateFactory {
         let index = -1;
 
         if (c.properties.find((p, idx, arr) => {
-            if (p === 1) {
+            if (p > 0.8) {
                 index = idx;
                 return true;
             };
@@ -177,7 +177,7 @@ class CandidateFactory extends BaseCandidateFactory {
                 const mean = sum / results.length;
     
                 for(let j = 0; j < results.length; j++) {
-                    count -= Math.abs(mean - results[j])
+                    count -= Math.abs(mean - results[j]);
                 }
             }
         }

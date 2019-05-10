@@ -13,7 +13,6 @@ class ExecutorBF extends BaseExecutor {
             fitness: 0,
         }
         this.bestCandidate.fitness = candidateFactory.evaluate(this.bestCandidate);
-        console.log('max counter', this.maxCounter);
     }
 
 
@@ -44,6 +43,7 @@ class ExecutorBF extends BaseExecutor {
 
         if (that.counter >= that.maxCounter) {
             that.stop();
+            that.uiHandler({x: that.counter, y: that.bestCandidate.fitness});
             that.msgHandler(0, 'fin', `Best Candidate: ${JSON.stringify(that.bestCandidate)}.`);
         }
     }

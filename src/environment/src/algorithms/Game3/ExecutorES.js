@@ -7,6 +7,11 @@ class ExecutorES extends BaseExecutor {
         this.population = new Array(parseInt(this.candidateFactory.playerCount));
         this.history = new Array(parseInt(this.candidateFactory.playerCount));
 
+        this.maxSigma = 4;
+        this.minSigma = 0.001;
+        this.sigma = new Array(this.candidateFactory.playerCount).fill(2);
+        this.sigmaDelta = 1.2;
+
         for(let i = 0; i < this.population.length; i++) {
             this.history[i] = [];
             this.candidateFactory.setPlayerNumber(i);
@@ -31,13 +36,26 @@ class ExecutorES extends BaseExecutor {
 
                 let newCandidate = JSON.parse(JSON.stringify(that.population[h][candidateIndex]));
                 if (that.generator.random() < that.mutationRate) {
-                    newCandidate = that.candidateFactory.mutate(newCandidate);
+                    newCandidate = that.candidateFactory.mutate(newCandidate, that.sigma[h]);
                 }
                 newCandidate.fitness = that.candidateFactory.evaluate(newCandidate);
                 newPopulation.push(newCandidate);
             }
 
-            that.population[h] = that.select(that.population[h].concat(newPopulation));
+            const selectedPopulation = that.select(that.population[h].concat(newPopulation));
+            let successCounter = 0;
+            for (let j = 0; j < that.population[h].length; j++) {
+                if (!selectedPopulation.find(candidate => candidate === that.population[h][j])) {
+                    successCounter += 1;
+                }
+            }
+            if (successCounter < (that.populationSize / 5)) {
+                this.sigma[h] /= this.sigmaDelta;
+            } else if  (successCounter > (that.populationSize / 5)) {
+                this.sigma[h] *= this.sigmaDelta;
+            }
+
+            that.population[h] = selectedPopulation;
             that.uiHandler({x: that.counter, y: that.population[h][0].fitness, playerNumber: h});
             that.msgHandler(that.counter, 'status', `Best Candidate: ${JSON.stringify(that.population[h][0])}`);
             that.addToHistory(that.population[h][0], h);            

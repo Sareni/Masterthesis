@@ -35,7 +35,6 @@ class ExecutorGA extends BaseExecutor {
             }
 
             const results = this.candidateFactory.evaluate(candidateArray);
-            console.log(results);
             for (let j = 0; j < this.candidateFactory.playerCount; j++) {
                 candidateArray[j].fitness = results[j];
                 evaluatedPopulation.push(candidateArray[j]);

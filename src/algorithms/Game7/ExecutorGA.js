@@ -6,7 +6,6 @@ class ExecutorGA extends BaseExecutor {
         super(populationSize, timeout, generationCount, seedValue, mutationRate, CandidateFactory, uiHandler, msgHandler);
         this.population = this.generateBasePopulation();
         this.evaluateBasePopulation();
-        console.log(this.population);
     }
 
     generateBasePopulation() {

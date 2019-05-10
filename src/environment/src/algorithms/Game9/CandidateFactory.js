@@ -85,7 +85,8 @@ class CandidateFactory extends BaseCandidateFactory {
             for (let j = 0; j < marketPrices.length; j++) {
                 let producedAmount = 0;
                 for (let k = 0; k < candidates.length; k++) {
-                    if (candidates[k].strategy.charAt(i) === this.strategyPool.charAt(j+1)) {
+                    if (candidates[k].strategy.charAt(i) === this.strategyPool.charAt(j+1) &&
+                        (i === 0 || candidates[k].strategy.charAt(i-1) === candidates[k].strategy.charAt(i))) {
                         producedAmount += this.playerTables[candidates[k].playerNumber][1][j];                 
                     }
                 }
@@ -94,7 +95,7 @@ class CandidateFactory extends BaseCandidateFactory {
             // TODO: add umruestungs kosten
             for (let j = 0; j < candidates.length; j++) {
                 const idx = this.strategyPool.indexOf(candidates[j].strategy.charAt(i))-1;
-                if (idx >= 0) {
+                if (idx >= 0 && (i === 0 || candidates[j].strategy.charAt(i-1) === candidates[j].strategy.charAt(i))) {
                     const amount = this.playerTables[candidates[j].playerNumber][1][idx];
                     counts[j] += marketPrices[idx] * amount;
                     counts[j] -= this.playerTables[candidates[j].playerNumber][0][idx] * amount;

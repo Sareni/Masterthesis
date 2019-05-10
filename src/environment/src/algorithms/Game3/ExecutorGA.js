@@ -15,8 +15,6 @@ class ExecutorGA extends BaseExecutor {
         this.population = new Array(parseInt(this.candidateFactory.playerCount));
         this.history = new Array(parseInt(this.candidateFactory.playerCount));
 
-        console.log(this.population.length);
-
         for(let i = 0; i < this.population.length; i++) {
             this.history[i] = [];
             this.candidateFactory.setPlayerNumber(i);
@@ -36,6 +34,7 @@ class ExecutorGA extends BaseExecutor {
 
         for(let h = 0; h < that.candidateFactory.playerCount; h++) {
             const newPopulation = [];
+            const offspringBuffer = [];
 
             for (let j = 0; j < that.populationSize; j++) {
                 const firstCandidateIndex = that.generator.range(that.populationSize);
@@ -49,10 +48,18 @@ class ExecutorGA extends BaseExecutor {
                     newCandidate = that.candidateFactory.mutate(newCandidate);
                 }
                 newCandidate.fitness = that.candidateFactory.evaluate(newCandidate);
+
+                if (newCandidate.fitness > that.population[h][firstCandidateIndex] && newCandidate.fitness >that.population[h][secondCandidateIndex]) {
+                    offspringBuffer.push(newCandidate);
+                } else {
+                    newPopulation.push(newCandidate);
+                }
+
                 newPopulation.push(newCandidate);
             }
     
-            that.population[h] = that.select(that.population[h].concat(newPopulation));
+            that.population[h] = offspringBuffer;
+            that.population[h] = that.population[h].concat(that.select(that.population[h].concat(newPopulation)).slice(0, that.populationSize - that.population[h].length));
             that.uiHandler({x: that.counter, y: that.population[h][0].fitness, playerNumber: h});
             that.msgHandler(that.counter, 'status', `Best Candidate: ${JSON.stringify(that.population[h][0])}`);
             that.addToHistory(that.population[h][0], h);

@@ -12,8 +12,8 @@ class CandidateFactory extends BaseCandidateFactory {
         }
         this.playerCount = playerCount;         
         this.strategyPool = 'ABCDEFGHIJKLMNOPQRSTUVWXY'; // limited to 25 different strategies per player
-        this.max = 10;
-        this.min = -5;
+        this.max = 16;
+        this.min = 1;
         this.fitnessType = fitnessType;
         this.playerTables = this.generatePlayerTables();
     }
