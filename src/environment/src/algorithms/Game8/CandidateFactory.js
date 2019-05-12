@@ -55,6 +55,26 @@ class CandidateFactory extends BaseCandidateFactory {
         return newCandidate;
     }
 
+    imitate(c1, c2) {
+        const newCandidate = {
+            fitness: 0,
+            properties: [],
+            playerNumber: c1.playerNumber,
+        }
+
+        if (c2.fitness <= c1.fitness) {
+            newCandidate.properties = c1.properties;
+        } else {
+            newCandidate.properties = new Array(c1.properties.length);
+            for (let i = 0; i < c1.properties.length; i++) {
+                const delta = c2.properties[i] - c1.properties[i];
+                newCandidate.properties[i] = c1.properties[i] + (delta * ((this.generator.random() * 0.6) + 0.2));
+            }
+        }      
+
+        return newCandidate;
+    }
+
     generate() {
         const candidate = {
             fitness: 0,

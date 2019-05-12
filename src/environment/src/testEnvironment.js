@@ -8,6 +8,7 @@ import testGame2Execution from './testGame2';
 import testGame3Execution from './testGame3';
 import testGame6Execution from './testGame6';
 import testGame7Execution from './testGame7';
+import testGame8Execution from './testGame8';
 import testGame9Execution from './testGame9';
 
 
@@ -41,6 +42,10 @@ function testGame7() {
     testGame7Execution();
 }
 
+function testGame8() {
+    testGame8Execution();
+}
+
 function testGame9() {
     testGame9Execution();
 }
@@ -54,6 +59,7 @@ function startTest(gameNumber) {
         case '3': testGame3(); break;
         case '6': testGame6(); break;
         case '7': testGame7(); break;
+        case '8': testGame8(); break;
         case '9': testGame9(); break;
         default: console.log('Error: False Input!');
     }

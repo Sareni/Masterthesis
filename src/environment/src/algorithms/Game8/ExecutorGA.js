@@ -7,6 +7,8 @@ class ExecutorGA extends BaseExecutor {
         this.population = this.generateBasePopulation();
         this.evaluateBasePopulation();
 
+        this.imitationRate = 0.6;
+
     }
 
     generateBasePopulation() {
@@ -61,7 +63,22 @@ class ExecutorGA extends BaseExecutor {
                     secondCandidateIndex = that.generator.range(splittedPop[i].length);
                 }
     
-                let newCandidate = that.candidateFactory.cross(splittedPop[i][firstCandidateIndex], splittedPop[i][secondCandidateIndex]);
+                let newCandidate;
+
+                if (splittedPop[i][firstCandidateIndex].playerNumber > 0) {
+                    if (this.generator.random() < this.imitationRate) {
+                        let idx = that.generator.range(splittedPop[1].length + splittedPop[2].length);
+                        while ((((i-1) * splittedPop[1].length) + firstCandidateIndex) === idx && splittedPop[i] > 1) {
+                            idx = that.generator.range(splittedPop[1].length + splittedPop[2].length);
+                        }
+                        const thirdCandidate = idx >= splittedPop[1].length ? splittedPop[2][idx-splittedPop[1].length] : splittedPop[1][idx];
+                        newCandidate = this.candidateFactory.imitate(splittedPop[i][firstCandidateIndex], thirdCandidate);
+                    } else {
+                        newCandidate = that.candidateFactory.cross(splittedPop[i][firstCandidateIndex], splittedPop[i][secondCandidateIndex]);
+                    }
+                } else {
+                    newCandidate = that.candidateFactory.cross(splittedPop[i][firstCandidateIndex], splittedPop[i][secondCandidateIndex]);
+                }
                 if (that.generator.random() < that.mutationRate) {
                     newCandidate = that.candidateFactory.mutate(newCandidate);
                 }
