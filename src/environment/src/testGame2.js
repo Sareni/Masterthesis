@@ -30,7 +30,6 @@ function newGameState(data) {
 
 
 function testGame2Execution(type='NE') {
-
     let executor;
     let startDate;
     let factory;
@@ -38,10 +37,10 @@ function testGame2Execution(type='NE') {
 
     const playerCount = 5;
     const strategyCount = 10;
-    const seedValue = Math.random() * 10000;
+    const seedValue = 9790.04; // Math.random() * 10000;
 
     const generationCount = 100;
-    const populationSize = 100;
+    const populationSize = 1000;
     const timeout = '0';
 
     const mutationRate = 0.2;

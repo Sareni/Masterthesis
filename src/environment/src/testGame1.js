@@ -38,10 +38,10 @@ function testGame1Execution(type='NE') {
 
     const playerCount = 5;
     const strategyCount = 10;
-    const seedValue = Math.random() * 10000;
+    const seedValue = 6664.58; //Math.random() * 10000;
     
     const generationCount = 100;
-    const populationSize = 100;
+    const populationSize = 1000;
     const timeout = '0';
 
     const mutationRate = 0.2;
@@ -105,7 +105,7 @@ function testGame1Execution(type='NE') {
         console.log('--------------');
     }
 
-    console.log('\n-------------- BF ----------------');
+    /* console.log('\n-------------- BF ----------------');
     generator = Generator.create(seedValue);
     resultArray[2] = new Array(maxTestScaling);
 
@@ -157,12 +157,12 @@ function testGame1Execution(type='NE') {
                 esEq += 1;
             }
         }
-    }
+    } 
 
     console.log('Diff - GA: ', gaDiff, ', ES: ', esDiff);
     console.log('--------------\n');
     console.log('Eq - GA: ', gaEq, ', ES: ', esEq);
-    console.log('--------------\n');
+    console.log('--------------\n'); */
 }
 
 export default testGame1Execution;

@@ -34,7 +34,12 @@ class ExecutorES extends BaseExecutor {
             for (let j = 0; j < that.populationSize; j++) {
                 const candidateIndex = that.generator.range(that.populationSize);
 
-                let newCandidate = JSON.parse(JSON.stringify(that.population[h][candidateIndex]));
+                let newCandidate = {
+                    fitness: that.population[h][candidateIndex].fitness,
+                    properties: that.population[h][candidateIndex].properties,
+                    playerNumber: that.population[h][candidateIndex].playerNumber,
+                }
+                //let newCandidate = JSON.parse(JSON.stringify(that.population[h][candidateIndex]));
                 if (that.generator.random() < that.mutationRate) {
                     newCandidate = that.candidateFactory.mutate(newCandidate, that.sigma[h]);
                 }

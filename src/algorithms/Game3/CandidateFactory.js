@@ -124,7 +124,7 @@ class CandidateFactory extends BaseCandidateFactory {
         let index = -1;
 
         if (c.properties.find((p, idx, arr) => {
-            if (p === 1) {
+            if (p < 0.1) {
                 index = idx;
                 return true;
             };

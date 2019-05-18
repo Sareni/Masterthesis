@@ -54,8 +54,6 @@ class ExecutorGA extends BaseExecutor {
                 } else {
                     newPopulation.push(newCandidate);
                 }
-
-                newPopulation.push(newCandidate);
             }
     
             that.population[h] = offspringBuffer;

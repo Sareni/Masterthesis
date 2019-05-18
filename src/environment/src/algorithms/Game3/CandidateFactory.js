@@ -123,8 +123,8 @@ class CandidateFactory extends BaseCandidateFactory {
         let count = 0;
         let index = -1;
 
-        if (c.properties.find((p, idx, arr) => {
-            if (p > 0.8) {
+        /* if (c.properties.find((p, idx, arr) => {
+            if (p < 0.1) {
                 index = idx;
                 return true;
             };
@@ -156,7 +156,7 @@ class CandidateFactory extends BaseCandidateFactory {
                 } 
             }
 
-        } else {
+        } else { */
             for (let i = 0; i < this.playerCount; i++) {
 
                 let results;
@@ -180,7 +180,7 @@ class CandidateFactory extends BaseCandidateFactory {
                     count -= Math.abs(mean - results[j]);
                 }
             }
-        }
+        // }
         return count;
     }
 

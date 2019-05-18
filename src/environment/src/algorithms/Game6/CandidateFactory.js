@@ -8,8 +8,8 @@ class CandidateFactory extends BaseCandidateFactory {
         this.xMax = xMax;
         this.yMax = yMax;
 
-        this.deltaX = 10;
-        this.deltaY = 10;
+        this.deltaX = 2;
+        this.deltaY = 2;
 
         this.maxDist = 1000;
 

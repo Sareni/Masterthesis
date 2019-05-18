@@ -35,7 +35,7 @@ function testGame3Execution(type='NE') {
     let factory;
     let generator;
 
-    const playerCount = 2;
+    const playerCount = 5;
     const strategyCount = 10;
     const seedValue = 6640.288679778999; // Math.random() * 10000
 
@@ -76,7 +76,6 @@ function testGame3Execution(type='NE') {
         console.log('Result: ', result);
         console.log('Runtime: ', Date.now() - startDate);
         console.log('--------------');
-
     }
 
     console.log('\n-------------- ES ----------------');

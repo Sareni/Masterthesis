@@ -65,12 +65,12 @@ class CandidateFactory extends BaseCandidateFactory {
 
         for(let i = 0; i < this.treeDepth; i++) {
             const index = this.strategyPool.indexOf(c.strategy.charAt(i));
-            valuePlayer1 *= this.outputTablePlayer1[i][index];
-            valuePlayer2 *= this.outputTablePlayer2[i][index];
 
             if (i % 2 === 0) {
+                valuePlayer1 *= this.outputTablePlayer1[i][index];
                 count += valuePlayer1;
             } else {
+                valuePlayer2 *= this.outputTablePlayer2[i][index];
                 count += valuePlayer2;
             }
         }

@@ -4,6 +4,8 @@ class ExecutorGA extends BaseExecutor {
 
     constructor(generationCount, seedValue, populationSize, timeout, mutationRate, candidateFactory, uiHandler, msgHandler) {
         super(populationSize, timeout, generationCount, seedValue, mutationRate, candidateFactory, uiHandler, msgHandler);
+        
+        this.pressure = 2.0;        
         this.population = this.generateBasePopulation();
         this.evaluateBasePopulation();
     }
@@ -42,7 +44,7 @@ class ExecutorGA extends BaseExecutor {
             const thisPopulation = that.population.filter(candidate => candidate.playerNumber === i);
             const thatPopulation = that.population.filter(candidate => candidate.playerNumber !== i);
             
-            for (let j = 0; j < thisPopulation.length; j++) {
+            for (let j = 0; j < (thisPopulation.length * that.pressure); j++) {
                 const firstCandidateIndex = that.generator.range(thisPopulation.length);
                 let secondCandidateIndex = that.generator.range(thisPopulation.length);
                 while (firstCandidateIndex === secondCandidateIndex && that.populationSize > 1) {

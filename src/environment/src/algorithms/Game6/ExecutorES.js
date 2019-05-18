@@ -4,6 +4,8 @@ class ExecutorES extends BaseExecutor {
 
     constructor(generationCount, seedValue, populationSize, timeout, mutationRate, candidateFactory, uiHandler, msgHandler) {
         super(populationSize, timeout, generationCount, seedValue, mutationRate, candidateFactory, uiHandler, msgHandler);
+        
+        this.pressure = 1.5;
         this.population = this.generateBasePopulation();
         this.evaluateBasePopulation();
     }
@@ -42,10 +44,16 @@ class ExecutorES extends BaseExecutor {
             const thisPopulation = that.population.filter(candidate => candidate.playerNumber === i);
             const thatPopulation = that.population.filter(candidate => candidate.playerNumber !== i);
             
-            for (let j = 0; j < thisPopulation.length; j++) {
+            for (let j = 0; j < (thisPopulation.length * that.pressure); j++) {
                 const firstCandidateIndex = that.generator.range(thisPopulation.length);
     
-                let newCandidate = JSON.parse(JSON.stringify(that.population[firstCandidateIndex]));
+                let newCandidate = {
+                    fitness: that.population[firstCandidateIndex].fitness,
+                    x: that.population[firstCandidateIndex].x,
+                    y: that.population[firstCandidateIndex].y,
+                    playerNumber: that.population[firstCandidateIndex].playerNumber,
+                }
+                //let newCandidate = JSON.parse(JSON.stringify(that.population[firstCandidateIndex]));
                 if (that.generator.random() < that.mutationRate) {
                     newCandidate = that.candidateFactory.mutate(newCandidate);
                 }
@@ -56,7 +64,7 @@ class ExecutorES extends BaseExecutor {
 
         that.uiHandler({ x: 0, y: 0, playerNumber: -1 });        
         for (let i = 0; i < that.candidateFactory.playerCount; i++) {
-            const partOfPopulation = that.select(that.population.concat(newPopulation).filter(candidate => candidate.playerNumber === i));
+            const partOfPopulation = that.select(newPopulation).filter(candidate => candidate.playerNumber === i);
             that.msgHandler(that.counter, 'status', `Best Candidate: ${JSON.stringify(partOfPopulation[0])}`);
 
             for (let j = 0; j < 10; j++) {
