@@ -9,6 +9,8 @@ class CandidateFactory extends BaseCandidateFactory {
         this.max = 10;
         this.min = 2;
         this.playerTable = this.generatePlayerTable();
+        console.log(this.playerTable);
+
     }
     
     cross(c1, c2) {
@@ -64,7 +66,7 @@ class CandidateFactory extends BaseCandidateFactory {
 
             count += this.playerTable[stategy1Idx * this.strategyCount + strategy2Idx];
 
-            if (strategy1 === 'C') {
+            if (strategy1 === 'B') {
                 trusted = false;
             }
         }
@@ -91,8 +93,8 @@ class CandidateFactory extends BaseCandidateFactory {
         const fourth = 2 * second;
         const fifth = Math.round((first + second) / 2);
 
-        playerTable = [first, fourth, fourth,
-                       third, second, fourth,
+        playerTable = [first, third, fourth,
+                       fifth, second, fourth,
                        fourth, fourth, fifth];
 
         return playerTable;

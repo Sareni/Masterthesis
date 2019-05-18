@@ -35,7 +35,7 @@ function testGame7Execution(type='NE') {
     let generator;
 
     const gameRounds = 10;
-    const seedValue = Math.random() * 10000;
+    const seedValue = Math.random() * 10000; // good seed: 91769
     
     const generationCount = 100;
     const populationSize = 100;
