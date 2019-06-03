@@ -9,7 +9,6 @@ class CandidateFactory extends BaseCandidateFactory {
         this.max = 10;
         this.min = 2;
         this.playerTable = this.generatePlayerTable();
-        console.log(this.playerTable);
 
     }
     
@@ -51,26 +50,31 @@ class CandidateFactory extends BaseCandidateFactory {
         return candidate;
     }
 
-    evaluate(c1, c2) {
+    evaluate(c1) { // c2
         let count = 0;
         let trusted = true;
 
+        const c2 = {
+            strategy: 'A'.repeat(this.gameRounds-1) + 'C',
+        }
+
+
         for (let i = 0; i < c1.strategy.length; i++) {
             const strategy1 = c1.strategy.charAt(i);
-            const stategy1Idx = this.strategyPool.indexOf(strategy1);
-            let strategy2 = 'C';
+            const strategy1Idx = this.strategyPool.indexOf(strategy1);
+            let strategy2 = 'B';
             if (trusted) {
                 strategy2 = c2.strategy.charAt(i);
             }
             const strategy2Idx = this.strategyPool.indexOf(strategy2);
 
-            count += this.playerTable[stategy1Idx * this.strategyCount + strategy2Idx];
+            count += this.playerTable[strategy2Idx * this.strategyCount + strategy1Idx];
 
             if (strategy1 === 'B') {
                 trusted = false;
             }
         }
-        
+
         return count;
     }
 
@@ -92,10 +96,11 @@ class CandidateFactory extends BaseCandidateFactory {
         const third = first * 0.5;
         const fourth = 2 * second;
         const fifth = Math.round((first + second) / 2);
+        const sixth = fourth + 2;
 
-        playerTable = [first, third, fourth,
-                       fifth, second, fourth,
-                       fourth, fourth, fifth];
+        playerTable = [first, third, sixth,
+                       fourth, second, sixth,
+                       sixth, sixth, fifth];
 
         return playerTable;
     }

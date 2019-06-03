@@ -50,12 +50,42 @@ class Game1 extends React.Component {
 
     triggerStart(data) {
       if (this.state.gameCounter < 4) {
-        const factory = new CandidateFactory1(data.playerCount,data.strategyCount, data.seedValue, data.fitnessType);
+        const factory = new CandidateFactory1(
+          parseInt(data.playerCount),
+          parseInt(data.strategyCount),
+          data.seedValue,
+          data.fitnessType);
         let executor;
         switch (data.gameType) {
-          case 'GA': executor = new ExecutorGA1(data.generationCount,data.seedValue,data.populationSize,data.timeout, data.mutationRate, factory,this.newGameState,this.newMessage); break;
-          case 'ES': executor = new ExecutorES1(data.generationCount,data.seedValue,data.populationSize,data.timeout, data.mutationRate, factory,this.newGameState,this.newMessage); break;
-          default: executor = new ExecutorBF1(data.generationCount,data.seedValue,data.populationSize,data.timeout, data.mutationRate, factory,this.newGameState,this.newMessage);
+          case 'GA': executor = new ExecutorGA1(
+            parseInt(data.generationCount),
+            data.seedValue,
+            parseInt(data.populationSize),
+            parseInt(data.timeout),
+            data.mutationRate,
+            factory,
+            this.newGameState,
+            this.newMessage);
+            break;
+          case 'ES': executor = new ExecutorES1(
+            parseInt(data.generationCount),
+            data.seedValue,
+            parseInt(data.populationSize),
+            parseInt(data.timeout),
+            data.mutationRate,
+            factory,
+            this.newGameState,
+            this.newMessage);
+            break;
+          default: executor = new ExecutorBF1(
+            parseInt(data.generationCount),
+            data.seedValue,
+            parseInt(data.populationSize),
+            parseInt(data.timeout),
+            data.mutationRate,
+            factory,
+            this.newGameState,
+            this.newMessage);
         }
         this.gameCounter += 1;
         this.setState({ executor, running: true, gameCounter: this.gameCounter, fitnessType: data.fitnessType, generationCount: data.generationCount });

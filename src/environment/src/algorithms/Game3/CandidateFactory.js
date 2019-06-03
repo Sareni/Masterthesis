@@ -68,7 +68,7 @@ class CandidateFactory extends BaseCandidateFactory {
         let counter = newProperties.length;
         let diff = sum - 1;
 
-        while (diff > Math.abs(0.00001)) {
+        while (Math.abs(diff) > 0.00001) {
             const diffPart = diff / counter;
             for (let i = 0; i < newProperties.length; i++) {
                 const newVal = newProperties[i] - diffPart;
@@ -97,7 +97,7 @@ class CandidateFactory extends BaseCandidateFactory {
         for (let i = 0; i < newProperties.length; i++) {
             const newVal = newProperties[i] - diff;
             if (newVal <= 1 || newVal >= 0) {
-                newProperties[i] += newVal;
+                newProperties[i] -= diff;
                 break;
             }
         }
@@ -123,7 +123,7 @@ class CandidateFactory extends BaseCandidateFactory {
         let count = 0;
         let index = -1;
 
-        /* if (c.properties.find((p, idx, arr) => {
+        if (c.properties.find((p, idx, arr) => {
             if (p < 0.1) {
                 index = idx;
                 return true;
@@ -156,17 +156,10 @@ class CandidateFactory extends BaseCandidateFactory {
                 } 
             }
 
-        } else { */
+        } else {
             for (let i = 0; i < this.playerCount; i++) {
 
-                let results;
-
-                if (typeof this.strategyCount === 'string') {
-                    results = new Array(parseInt(this.strategyCount));
-                } else {
-                    results = new Array(this.strategyCount);
-                }
-    
+                let results = new Array(this.strategyCount);
                 for (let j = 0; j < this.strategyCount; j++) {
                     results[j] = 0;
                     for (let k = 0; k < this.strategyCount; k++) {
@@ -180,7 +173,7 @@ class CandidateFactory extends BaseCandidateFactory {
                     count -= Math.abs(mean - results[j]);
                 }
             }
-        // }
+        }
         return count;
     }
 

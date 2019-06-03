@@ -35,7 +35,7 @@ function testGame7Execution(type='NE') {
     let generator;
 
     const gameRounds = 10;
-    const seedValue = Math.random() * 10000; // good seed: 91769
+    const seedValue = 91769; // Math.random() * 10000; // good seed: 91769
     
     const generationCount = 100;
     const populationSize = 100;
@@ -102,7 +102,32 @@ function testGame7Execution(type='NE') {
         console.log('--------------');
     }
 
-    /*let gaDiff = 0;
+    console.log('\n-------------- Test Results ----------------');
+    generator = Generator.create(seedValue);
+    resultArray[2] = new Array(maxTestScaling);
+
+    for (let i = 0; i < maxTestScaling; i++) {
+        const rounds = roundArray[i];
+        console.log('---------- ', rounds);
+        result = 0;
+        mode = 2;
+        scaleCounter = i;
+        roundCounter = 0;
+        resultArray[2][scaleCounter] = new Array(rounds).fill(0);
+        for (let j = 0; j < rounds; j++) {
+            const dynSeedValue = generator.range(10000);
+            factory = new CandidateFactory7(gameRounds, dynSeedValue);
+            const maxValue = factory.getMaxValue();
+            resultArray[mode][scaleCounter][j] = maxValue;
+            result += maxValue;
+        }
+        console.log('Result: ', result);
+
+    }
+
+    console.log('--------------------------------------');
+
+    let gaDiff = 0;
     let esDiff = 0;
 
     let gaEq = 0;
@@ -112,8 +137,7 @@ function testGame7Execution(type='NE') {
         for (let j = 0; j < resultArray[0][i].length; j++) {
             if (resultArray[2][i][j] - resultArray[0][i][j] !== 0) {
                 gaDiff += 1;
-            }
-            if (resultArray[0][i][j] === 0) {
+            } else {
                 gaEq += 1;
             }
         }
@@ -123,8 +147,7 @@ function testGame7Execution(type='NE') {
         for (let j = 0; j < resultArray[1][i].length; j++) {
             if (resultArray[2][i][j] - resultArray[1][i][j] !== 0) {
                 esDiff += 1;
-            }
-            if (resultArray[1][i][j] === 0) {
+            } else {
                 esEq += 1;
             }
         }
@@ -133,7 +156,7 @@ function testGame7Execution(type='NE') {
     console.log('Diff - GA: ', gaDiff, ', ES: ', esDiff);
     console.log('--------------\n');
     console.log('Eq - GA: ', gaEq, ', ES: ', esEq);
-    console.log('--------------\n'); */
+    console.log('--------------\n');
 }
 
 export default testGame7Execution;

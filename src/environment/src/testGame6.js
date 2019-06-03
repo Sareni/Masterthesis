@@ -11,6 +11,8 @@ let resultX = 0;
 let resultY = 0;
 let lastResultsX;
 let lastResultsY;
+let lastResultsFitness;
+
 
 let resultArray;
 let mode = 0;
@@ -20,9 +22,10 @@ let roundCounter = 0;
 const playerCount = 2;
 lastResultsX = new Array(playerCount);
 lastResultsY = new Array(playerCount);
+lastResultsFitness = new Array(playerCount);
 
-const xMax = 400;
-const yMax = 400;
+const xMax = 200;
+const yMax = 200;
 
 let gaEq = 0;
 let esEq = 0;
@@ -38,9 +41,28 @@ function newMessage(gen, type, msg) {
     }
   }
 
+function newMessage2(gen, type, msg) {
+    if (type === 'fin') {
+        let avg = 0;
+
+        for (let i = 0; i < playerCount; i++) {
+            if (i === 0) {
+                for (let j = 0; j < playerCount; j++) {
+                    avg += lastResultsFitness[j];
+                    // console.log(lastResultsFitness[j]);
+                }
+                avg = avg / playerCount;
+            }
+            resultX += Math.abs(lastResultsFitness[i] - avg);
+            lastResultsFitness[i] = 0;
+        }
+    }
+  }
+
 function newGameState(data) {
     lastResultsX[data.playerNumber-1] = data.x;
     lastResultsY[data.playerNumber-1] = data.y;
+    lastResultsFitness[data.playerNumber-1] = data.fitness;
 }
 
 
@@ -54,11 +76,11 @@ function testGame3Execution(type='NE') {
     const seedValue = Math.random() * 10000;
 
 
-    const generationCount = 500;
-    const populationSize = 10;
+    const generationCount = 200;
+    const populationSize = 30;
     const timeout = '0';
 
-    const mutationRate = 0.2;
+    const mutationRate = 0.5;
 
     const maxTestScaling = 4;
 
@@ -86,7 +108,7 @@ function testGame3Execution(type='NE') {
             roundCounter = j;
             const dynSeedValue = generator.range(10000);
             factory = new CandidateFactory6(playerCount,xMax, yMax, dynSeedValue);
-            executor = new ExecutorGA6(generationCount, dynSeedValue, populationSize, timeout, mutationRate, factory, newGameState, newMessage);
+            executor = new ExecutorGA6(generationCount, dynSeedValue, populationSize, timeout, mutationRate, factory, newGameState, newMessage2);
             executor.start();
         }
         console.log('Results: ', resultX, ', ', resultY);
@@ -113,7 +135,7 @@ function testGame3Execution(type='NE') {
             roundCounter = j;
             const dynSeedValue = generator.range(10000);
             factory = new CandidateFactory6(playerCount, xMax, yMax, dynSeedValue);
-            executor = new ExecutorES6(generationCount, dynSeedValue, populationSize, timeout, mutationRate, factory, newGameState, newMessage);
+            executor = new ExecutorES6(generationCount, dynSeedValue, populationSize, timeout, mutationRate*2, factory, newGameState, newMessage2);
             executor.start();
         }
         console.log('Results: ', resultX, ', ', resultY);

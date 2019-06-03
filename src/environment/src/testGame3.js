@@ -35,9 +35,10 @@ function testGame3Execution(type='NE') {
     let factory;
     let generator;
 
-    const playerCount = 5;
-    const strategyCount = 10;
-    const seedValue = 6640.288679778999; // Math.random() * 10000
+    const playerCount = 2;
+    const strategyCount = 5;
+    const seedValue = 6664.58; //6640.288679778999; // Math.random() * 10000
+    
 
     const generationCount = 100;
     const populationSize = 100;
@@ -95,7 +96,7 @@ function testGame3Execution(type='NE') {
             roundCounter = j;
             const dynSeedValue = generator.range(10000);
             factory = new CandidateFactory3(playerCount,strategyCount, dynSeedValue, type);
-            executor = new ExecutorES3(generationCount, dynSeedValue, populationSize, timeout, mutationRate, factory, newGameState, newMessage);
+            executor = new ExecutorES3(generationCount, dynSeedValue, populationSize, timeout, mutationRate*2.5, factory, newGameState, newMessage);
             executor.start();
         }
         console.log('Result: ', result);

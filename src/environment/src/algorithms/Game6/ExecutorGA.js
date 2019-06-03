@@ -5,7 +5,7 @@ class ExecutorGA extends BaseExecutor {
     constructor(generationCount, seedValue, populationSize, timeout, mutationRate, candidateFactory, uiHandler, msgHandler) {
         super(populationSize, timeout, generationCount, seedValue, mutationRate, candidateFactory, uiHandler, msgHandler);
         
-        this.pressure = 2.0;
+        this.pressure = 2.0;        
         this.population = this.generateBasePopulation();
         this.evaluateBasePopulation();
     }
@@ -62,12 +62,12 @@ class ExecutorGA extends BaseExecutor {
 
         that.uiHandler({ x: 0, y: 0, playerNumber: -1 });        
         for (let i = 0; i < that.candidateFactory.playerCount; i++) {
-            const partOfPopulation = that.select(newPopulation).filter(candidate => candidate.playerNumber === i); //that.population.concat()
+            const partOfPopulation = that.select(newPopulation.filter(candidate => candidate.playerNumber === i)); 
             that.msgHandler(that.counter, 'status', `Best Candidate: ${JSON.stringify(partOfPopulation[0])}`);
 
             for (let j = 0; j < 10; j++) {
                 if (partOfPopulation.length > j) {
-                    that.uiHandler({x: partOfPopulation[j].x, y: partOfPopulation[j].y, playerNumber: partOfPopulation[j].playerNumber+1});
+                    that.uiHandler({x: partOfPopulation[j].x, y: partOfPopulation[j].y, playerNumber: partOfPopulation[j].playerNumber+1, fitness: partOfPopulation[j].fitness});
                 }
             }
             tmpPopulation = tmpPopulation.concat(partOfPopulation);

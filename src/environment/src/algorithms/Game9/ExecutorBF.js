@@ -3,46 +3,44 @@ import BaseExecutor from '../BaseExecutor';
 const charCode = 'A'.charCodeAt(0);
 
 class ExecutorBF extends BaseExecutor {
-
-    constructor(generationCount, seedValue, populationSize, timeout, mutationRate, candidateFactory, uiHandler, msgHandler) {
-        super(populationSize, timeout, generationCount, seedValue, mutationRate, candidateFactory, uiHandler, msgHandler, true);
-        this.strategy = 'A'.repeat(candidateFactory.playerCount);
-        this.maxCounter = Math.pow(candidateFactory.strategyCount, candidateFactory.playerCount);
-        this.bestCandidate = {
-            strategy: this.strategy,
-            fitness: 0,
-        }
-        this.bestCandidate.fitness = candidateFactory.evaluate(this.bestCandidate);
+    constructor(generationCount, seedValue, populationSize, timeout, mutationRate, CandidateFactory, uiHandler, msgHandler) {
+        super(populationSize, timeout, generationCount, seedValue, mutationRate, CandidateFactory, uiHandler, msgHandler);
+        this.population = this.generateBasePopulation();
+        this.population = this.evaluateBasePopulation();    
     }
 
+    generateBasePopulation() {
+        const population = [];
+
+        for(let i = 0; i < this.candidateFactory.playerCount; i++) {
+            population.push(this.candidateFactory.generate(true));
+        }
+        return population;
+    }
+
+    evaluateBasePopulation() {
+        const results = this.candidateFactory.evaluate(this.population);
+        for (let j = 0; j < this.candidateFactory.playerCount; j++) {
+            this.population[j].fitness = results[j];
+        }
+        return this.population;
+    }
 
     runCycle(that) {
-        //const index = Math.floor(that.counter / that.candidateFactory.strategyCount);
-        //const newStrategy = that.strategy.substring(0, index) + String.fromCharCode(that.strategy.charCodeAt(index)+1);
+        for (let i = 0; i < that.candidateFactory.playerCount; i++) {
+            const curPlayer = that.population.filter(p => p.playerNumber === i)[0];
+            const curStrategy = curPlayer.strategy;
+            const curFitness = curPlayer.fitness;
 
-        const newCandidate = {
-            strategy: '',
-            fitness: 0,
+            that.uiHandler({x: that.counter, y: curFitness, playerNumber: i, strategy: curStrategy});
+            that.msgHandler(that.counter, 'status', `Best Candidate: ${JSON.stringify(curPlayer)}`);
         }
 
-        for(let i = 0; i < that.candidateFactory.playerCount; i++) {
-            newCandidate.strategy =  String.fromCharCode(charCode + Math.floor(that.counter / Math.pow(that.candidateFactory.strategyCount,i)) % that.candidateFactory.strategyCount)
-                                     + newCandidate.strategy;
-        }
+        that.counter += 1;   
 
-        newCandidate.fitness = that.candidateFactory.evaluate(newCandidate);
-        if(newCandidate.fitness > that.bestCandidate.fitness) {
-            that.bestCandidate = newCandidate;
-        }
-
-        //that.uiHandler({x: that.counter, y: that.population[0].fitness});
-        //that.msgHandler(that.counter, 'status', `Best Candidate: ${JSON.stringify(that.population[0])}`);
-        that.counter += 1;
-
-        if (that.counter >= that.maxCounter) {
+        if (that.counter >= that.generationCount) {
             that.stop();
-            that.candidateFactory.fitnessType = that.candidateFactory.fitnessType === 'NE' ? 'MAX' : 'NE';
-            that.msgHandler(0, 'fin', `Best Candidate: ${JSON.stringify(that.bestCandidate)}. Best Candidate alternative fitness (${that.candidateFactory.fitnessType}): ${that.candidateFactory.evaluate(that.bestCandidate)}`);
+            that.msgHandler(0, 'fin', 'Finished');
         }
     }
 }

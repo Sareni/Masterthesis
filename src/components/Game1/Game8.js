@@ -53,9 +53,33 @@ class Game1 extends React.Component {
         const factory = new CandidateFactory8(data.seedValue);
         let executor;
         switch (data.gameType) {
-          case 'GA': executor = new ExecutorGA8(data.generationCount,data.seedValue,data.populationSize,data.timeout, data.mutationRate, factory,this.newGameState,this.newMessage); break;
-          case 'ES': executor = new ExecutorES8(data.generationCount,data.seedValue,data.populationSize,data.timeout, data.mutationRate, factory,this.newGameState,this.newMessage); break;
-          default: executor = new ExecutorBF8(data.generationCount,data.seedValue,data.populationSize,data.timeout, data.mutationRate, factory,this.newGameState,this.newMessage);
+          case 'GA': executor = new ExecutorGA8(
+            parseInt(data.generationCount),
+            data.seedValue,
+            parseInt(data.populationSize),
+            parseInt(data.timeout),
+            data.mutationRate,
+            factory,
+            this.newGameState,
+            this.newMessage); break;
+          case 'ES': executor = new ExecutorES8(
+            parseInt(data.generationCount),
+            data.seedValue,
+            parseInt(data.populationSize),
+            parseInt(data.timeout),
+            data.mutationRate,
+            factory,
+            this.newGameState,
+            this.newMessage); break;
+          default: executor = new ExecutorBF8(
+            parseInt(data.generationCount),
+            data.seedValue,
+            parseInt(data.populationSize),
+            parseInt(data.timeout),
+            data.mutationRate,
+            factory,
+            this.newGameState,
+            this.newMessage);
         }
         this.gameCounter += 3; // !!
         this.setState({ executor, running: true, gameCounter: this.gameCounter, fitnessType: data.fitnessType, generationCount: data.generationCount });

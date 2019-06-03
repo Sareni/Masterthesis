@@ -50,6 +50,7 @@ class CandidateFactory extends BaseCandidateFactory {
         });
 
         newCandidate.properties[pos] = + realDelta + realDeltaParts;
+
         newCandidate.properties = this.fixProperties(newCandidate.properties);
 
         return newCandidate;
@@ -70,8 +71,9 @@ class CandidateFactory extends BaseCandidateFactory {
                 const delta = c2.properties[i] - c1.properties[i];
                 newCandidate.properties[i] = c1.properties[i] + (delta * ((this.generator.random() * 0.6) + 0.2));
             }
-        }      
+        }
 
+        newCandidate.properties = this.fixProperties(newCandidate.properties);
         return newCandidate;
     }
 
@@ -129,7 +131,7 @@ class CandidateFactory extends BaseCandidateFactory {
         let counter = newProperties.length;
         let diff = sum - 1;
 
-        while (diff > Math.abs(0.00001)) {
+        while (Math.abs(diff) > 0.00001) {
             const diffPart = diff / counter;
             for (let i = 0; i < newProperties.length; i++) {
                 const newVal = newProperties[i] - diffPart;
@@ -157,7 +159,7 @@ class CandidateFactory extends BaseCandidateFactory {
         for (let i = 0; i < newProperties.length; i++) {
             const newVal = newProperties[i] - diff;
             if (newVal <= 1 || newVal >= 0) {
-                newProperties[i] += newVal;
+                newProperties[i] -= diff;
                 break;
             }
         }

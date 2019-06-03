@@ -5,7 +5,7 @@ class ExecutorES extends BaseExecutor {
     constructor(generationCount, seedValue, populationSize, timeout, mutationRate, CandidateFactory, uiHandler, msgHandler) {
         super(populationSize, timeout, generationCount, seedValue, mutationRate, CandidateFactory, uiHandler, msgHandler);
         this.population = this.generateBasePopulation();
-        this.evaluateBasePopulation();
+        this.population = this.evaluateBasePopulation();        
     }
 
     generateBasePopulation() {
@@ -39,6 +39,7 @@ class ExecutorES extends BaseExecutor {
                 evaluatedPopulation.push(candidateArray[j]);
             }
         }
+        return evaluatedPopulation;
     }
 
     runCycle(that) {
@@ -60,7 +61,6 @@ class ExecutorES extends BaseExecutor {
                     strategy: that.population[candidateIndex].strategy,
                     playerNumber: that.population[candidateIndex].playerNumber,
                 }
-                // let newCandidate = JSON.parse(JSON.stringify(that.population[candidateIndex]));
                 if (that.generator.random() < that.mutationRate) {
                     newCandidate = that.candidateFactory.mutate(newCandidate);
                 }

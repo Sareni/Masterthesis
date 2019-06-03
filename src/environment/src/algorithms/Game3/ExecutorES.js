@@ -4,8 +4,8 @@ class ExecutorES extends BaseExecutor {
 
     constructor(generationCount, seedValue, populationSize, timeout, mutationRate, candidateFactory, uiHandler, msgHandler) {
         super(populationSize, timeout, generationCount, seedValue, mutationRate, candidateFactory, uiHandler, msgHandler);
-        this.population = new Array(parseInt(this.candidateFactory.playerCount));
-        this.history = new Array(parseInt(this.candidateFactory.playerCount));
+        this.population = new Array(this.candidateFactory.playerCount);
+        this.history = new Array(this.candidateFactory.playerCount);
 
         this.maxSigma = 4;
         this.minSigma = 0.001;
@@ -55,9 +55,15 @@ class ExecutorES extends BaseExecutor {
                 }
             }
             if (successCounter < (that.populationSize / 5)) {
-                this.sigma[h] /= this.sigmaDelta;
+                that.sigma[h] /= that.sigmaDelta;
             } else if  (successCounter > (that.populationSize / 5)) {
-                this.sigma[h] *= this.sigmaDelta;
+                that.sigma[h] *= that.sigmaDelta;
+            }
+
+            if (that.sigma[h] < that.minSigma) {
+                that.sigma[h] = that.minSigma;
+            } else if (that.sigma[h] > that.maxSigma) {
+                that.sigma[h] = that.maxSigma;
             }
 
             that.population[h] = selectedPopulation;

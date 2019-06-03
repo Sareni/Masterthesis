@@ -41,7 +41,7 @@ function testGame1Execution(type='NE') {
     const seedValue = 6664.58; //Math.random() * 10000;
     
     const generationCount = 100;
-    const populationSize = 1000;
+    const populationSize = 100;
     const timeout = '0';
 
     const mutationRate = 0.2;
@@ -97,7 +97,7 @@ function testGame1Execution(type='NE') {
             roundCounter = j;
             const dynSeedValue = generator.range(10000);
             factory = new CandidateFactory1(playerCount,strategyCount, dynSeedValue, type);
-            executor = new ExecutorES1(generationCount, dynSeedValue, populationSize, timeout, mutationRate, factory, newGameState, newMessage);
+            executor = new ExecutorES1(generationCount, dynSeedValue, populationSize, timeout, mutationRate*2, factory, newGameState, newMessage);
             executor.start();
         }
         console.log('Result: ', result);
@@ -105,7 +105,7 @@ function testGame1Execution(type='NE') {
         console.log('--------------');
     }
 
-    /* console.log('\n-------------- BF ----------------');
+    console.log('\n-------------- BF ----------------');
     generator = Generator.create(seedValue);
     resultArray[2] = new Array(maxTestScaling);
 
@@ -162,7 +162,7 @@ function testGame1Execution(type='NE') {
     console.log('Diff - GA: ', gaDiff, ', ES: ', esDiff);
     console.log('--------------\n');
     console.log('Eq - GA: ', gaEq, ', ES: ', esEq);
-    console.log('--------------\n'); */
+    console.log('--------------\n');
 }
 
 export default testGame1Execution;

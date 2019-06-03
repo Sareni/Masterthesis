@@ -11,6 +11,8 @@ class CandidateFactory extends BaseCandidateFactory {
         this.deltaX = 2;
         this.deltaY = 2;
 
+        this.maxDist = 1000;
+
         this.populationCounter = 0;
     }
     
@@ -66,10 +68,12 @@ class CandidateFactory extends BaseCandidateFactory {
             for (let j = 0; j <= this.yMax; j++) {
                 const dist1 = Math.sqrt(Math.pow(c1.x - i, 2) + Math.pow(c1.y - j, 2));
                 const dist2 = Math.sqrt(Math.pow(c2.x - i, 2) + Math.pow(c2.y - j, 2));
-                if (dist1 < dist2) {
-                    count += 1;
-                } else if (dist1 === dist2) {
-                    count += 0.5;
+                if (dist1 < this.maxDist) {
+                    if (dist1 < dist2) {
+                        count += 1;
+                    } else if (dist1 === dist2) {
+                        count += 0.5;
+                    }
                 }
             }
         }

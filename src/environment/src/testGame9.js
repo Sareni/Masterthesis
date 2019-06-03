@@ -2,6 +2,7 @@
 import Generator from 'random-seed';
 import ExecutorES9 from './algorithms/Game9/ExecutorES';
 import ExecutorGA9 from './algorithms/Game9/ExecutorGA';
+import ExecutorBF9 from './algorithms/Game9/ExecutorBF';
 import CandidateFactory9 from './algorithms/Game9/CandidateFactory';
 
 
@@ -101,6 +102,31 @@ function testGame9Execution(type='NE') {
             const dynSeedValue = generator.range(10000);
             factory = new CandidateFactory9(playerCount, strategyCount, dynSeedValue);
             executor = new ExecutorES9(generationCount, dynSeedValue, populationSize, timeout, mutationRate, factory, newGameState, newMessage);
+            executor.start();
+        }
+        console.log('Result: ', result);
+        console.log('Runtime: ', Date.now() - startDate);
+        console.log('--------------');
+    }
+
+    console.log('\n-------------- BF ----------------');
+    generator = Generator.create(seedValue);
+    resultArray[2] = new Array(maxTestScaling);
+
+    for (let i = 0; i < maxTestScaling; i++) {
+        const rounds = roundArray[i];
+        console.log('---------- ', rounds);
+        result = 0;
+        mode = 2;
+        scaleCounter = i;
+        roundCounter = 0;
+        resultArray[2][scaleCounter] = new Array(rounds).fill(0);
+        startDate = Date.now();
+        for (let j = 0; j < rounds; j++) {
+            roundCounter = j;
+            const dynSeedValue = generator.range(10000);
+            factory = new CandidateFactory9(playerCount, strategyCount, dynSeedValue);
+            executor = new ExecutorBF9(generationCount, dynSeedValue, populationSize, timeout, mutationRate, factory, newGameState, newMessage);
             executor.start();
         }
         console.log('Result: ', result);

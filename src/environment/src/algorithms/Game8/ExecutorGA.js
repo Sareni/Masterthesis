@@ -66,13 +66,13 @@ class ExecutorGA extends BaseExecutor {
                 let newCandidate;
 
                 if (splittedPop[i][firstCandidateIndex].playerNumber > 0) {
-                    if (this.generator.random() < this.imitationRate) {
+                    if (that.generator.random() < that.imitationRate) {
                         let idx = that.generator.range(splittedPop[1].length + splittedPop[2].length);
                         while ((((i-1) * splittedPop[1].length) + firstCandidateIndex) === idx && splittedPop[i] > 1) {
                             idx = that.generator.range(splittedPop[1].length + splittedPop[2].length);
                         }
                         const thirdCandidate = idx >= splittedPop[1].length ? splittedPop[2][idx-splittedPop[1].length] : splittedPop[1][idx];
-                        newCandidate = this.candidateFactory.imitate(splittedPop[i][firstCandidateIndex], thirdCandidate);
+                        newCandidate = that.candidateFactory.cross(splittedPop[i][firstCandidateIndex], thirdCandidate);
                     } else {
                         newCandidate = that.candidateFactory.cross(splittedPop[i][firstCandidateIndex], splittedPop[i][secondCandidateIndex]);
                     }
@@ -97,7 +97,7 @@ class ExecutorGA extends BaseExecutor {
 
         for (let i = 0; i < splittedPop.length; i++) {
             const partOfPopulation = that.select(that.population.concat(newPopulation).filter(candidate => candidate.playerNumber === i));
-            that.uiHandler({x: that.counter, y: partOfPopulation[0].fitness, playerNumber: i});
+            that.uiHandler({x: that.counter, y: partOfPopulation[0].fitness, playerNumber: i, properties: partOfPopulation[0].properties});
             that.msgHandler(that.counter, 'status', `Best Candidate: ${JSON.stringify(partOfPopulation[0])}`);
             tmpPopulation = tmpPopulation.concat(partOfPopulation);
         }

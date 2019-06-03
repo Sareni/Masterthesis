@@ -5,8 +5,7 @@ class ExecutorGA extends BaseExecutor {
     constructor(generationCount, seedValue, populationSize, timeout, mutationRate, CandidateFactory, uiHandler, msgHandler) {
         super(populationSize, timeout, generationCount, seedValue, mutationRate, CandidateFactory, uiHandler, msgHandler);
         this.population = this.generateBasePopulation();
-        this.evaluateBasePopulation();
-
+        this.population = this.evaluateBasePopulation();        
     }
 
     generateBasePopulation() {
@@ -40,6 +39,7 @@ class ExecutorGA extends BaseExecutor {
                 evaluatedPopulation.push(candidateArray[j]);
             }
         }
+        return evaluatedPopulation;
     }
 
     runCycle(that) {

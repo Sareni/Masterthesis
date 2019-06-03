@@ -12,8 +12,8 @@ class ExecutorGA extends BaseExecutor {
 
     constructor(generationCount, seedValue, populationSize, timeout, mutationRate, candidateFactory, uiHandler, msgHandler) {
         super(populationSize, timeout, generationCount, seedValue, mutationRate, candidateFactory, uiHandler, msgHandler);
-        this.population = new Array(parseInt(this.candidateFactory.playerCount));
-        this.history = new Array(parseInt(this.candidateFactory.playerCount));
+        this.population = new Array(this.candidateFactory.playerCount);
+        this.history = new Array(this.candidateFactory.playerCount);
 
         for(let i = 0; i < this.population.length; i++) {
             this.history[i] = [];
@@ -54,6 +54,7 @@ class ExecutorGA extends BaseExecutor {
                 } else {
                     newPopulation.push(newCandidate);
                 }
+                
             }
     
             that.population[h] = offspringBuffer;

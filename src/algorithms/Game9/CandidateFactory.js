@@ -109,7 +109,8 @@ class CandidateFactory extends BaseCandidateFactory {
     generateStrategy() {
         let strategy = '';
         for(let i = 0; i < this.gameRounds; i++) {
-            strategy += this.strategyPool.charAt(this.generator.range(this.strategyCount));
+            const idx = this.generator.range(this.strategyCount);
+            strategy += this.strategyPool.charAt(idx);
         }
 
         return strategy;

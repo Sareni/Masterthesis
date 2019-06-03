@@ -62,7 +62,7 @@ class ExecutorGA extends BaseExecutor {
 
         that.uiHandler({ x: 0, y: 0, playerNumber: -1 });        
         for (let i = 0; i < that.candidateFactory.playerCount; i++) {
-            const partOfPopulation = that.select(that.population.concat(newPopulation).filter(candidate => candidate.playerNumber === i));
+            const partOfPopulation = that.select(newPopulation.filter(candidate => candidate.playerNumber === i)); 
             that.msgHandler(that.counter, 'status', `Best Candidate: ${JSON.stringify(partOfPopulation[0])}`);
 
             for (let j = 0; j < 10; j++) {

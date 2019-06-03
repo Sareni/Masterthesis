@@ -44,7 +44,7 @@ class Screen extends React.Component {
     render() {
         return (
             <div className="game1-screen">
-                <XYPlot width={960} height={600} xDomain={[0,this.props.generationCount-1]} >
+                <XYPlot width={960} height={600} xDomain={[0,this.props.generationCount-1]} margin={{left: 60}} >
                     <VerticalGridLines />
                     <HorizontalGridLines />
                     <XAxis />

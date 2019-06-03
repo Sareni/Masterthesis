@@ -80,7 +80,7 @@ class ExecutorES extends BaseExecutor {
 
         for (let i = 0; i < splittedPop.length; i++) {
             const partOfPopulation = that.select(that.population.concat(newPopulation).filter(candidate => candidate.playerNumber === i));
-            that.uiHandler({x: that.counter, y: partOfPopulation[0].fitness, playerNumber: i});
+            that.uiHandler({x: that.counter, y: partOfPopulation[0].fitness, playerNumber: i, properties: partOfPopulation[0].properties});
             that.msgHandler(that.counter, 'status', `Best Candidate: ${JSON.stringify(partOfPopulation[0])}`);
             tmpPopulation = tmpPopulation.concat(partOfPopulation);
         }
