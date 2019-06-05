@@ -1,5 +1,3 @@
-import Generator from 'random-seed';
-
 
 function randomSelection(population, count, generator) {
     const result = [];
@@ -56,30 +54,40 @@ function tournamentSelection(population, count, generator) {
         
     }
 
-
+    return result;
 }
 
-function proportionalSelection(population, count, generator, allowNegativeFitness = false) {
+function proportionalSelection(population, count, generator) {
     const result = [];
     const indexHistory = [];
 
-    let sum = population.map(p => p.fitness).reduce((acc, cur) => {
-        return acc + (cur > 0 ? cur : 0);
+
+    let populationFitness = population.map(p => p.fitness);
+
+    let min = populationFitness[0];
+    populationFitness.forEach((f) => {
+        if (f < min) {
+            min = f;
+        }
     });
 
-    if (allowNegativeFitness) sum = Math.abs(sum);
+    let shift = 0;
+    if (min <= 0) {
+        shift = Math.abs(min) + 1;
+    }
+
+
+    let sum = populationFitness.reduce((acc, cur) => {
+        return acc + (cur + shift);
+    });
+
 
     while (result.length < count) {
         const threshold = generator.range(sum) + 1;
 
-        let index = 0;
         let curSum = 0;
-        for(; index < population.length; index++) {
-            if (allowNegativeFitness) {
-                curSum += Math.abs(population[index].fitness);
-            } else {
-                curSum += population[index].fitness > 0 ? population[index].fitness : 0;
-            }
+        for(let index = 0; index < population.length; index++) {
+            curSum += population[index].fitness + shift;
     
             if (curSum > threshold) {
                 if (!indexHistory.includes(index)) {
@@ -113,7 +121,7 @@ function elitismReplacement(oldPop, newPop) {
 function randomReplacement(oldPop, newPop, generator) {
     const rate = 0.5;
     const indices = [];
-    const indexHistory = [];
+    let indexHistory = [];
     const result = [];
 
     const threshold = oldPop.length * rate;
@@ -134,11 +142,15 @@ function randomReplacement(oldPop, newPop, generator) {
             }
             indexHistory.push(index);
             result.push(newPop[index]);
+            if (indexHistory.length === newPop.length) {
+                indexHistory = [];
+            }
         } else {
             result.push(oldPop[i]);
         }
     }
 
+    return result;
 }
 
 function completeReplacement(oldPop, newPop, generator) {

@@ -49,7 +49,7 @@ class ExecutorES extends BaseExecutor {
 
             const selectedPopulation = that.select(that.population[h].concat(newPopulation));
             let successCounter = 0;
-            for (let j = 0; j < that.population[h].length; j++) {
+            for (let j = 0; j < that.population[h].length; j++) { // TODO !!!
                 if (!selectedPopulation.find(candidate => candidate === that.population[h][j])) {
                     successCounter += 1;
                 }

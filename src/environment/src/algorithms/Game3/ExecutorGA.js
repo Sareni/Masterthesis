@@ -49,7 +49,7 @@ class ExecutorGA extends BaseExecutor {
                 }
                 newCandidate.fitness = that.candidateFactory.evaluate(newCandidate);
 
-                if (newCandidate.fitness > that.population[h][firstCandidateIndex] && newCandidate.fitness >that.population[h][secondCandidateIndex]) {
+                if (newCandidate.fitness > that.population[h][firstCandidateIndex] && newCandidate.fitness >that.population[h][secondCandidateIndex]) { // TODO .fitness
                     offspringBuffer.push(newCandidate);
                 } else {
                     newPopulation.push(newCandidate);

@@ -14,6 +14,8 @@ class CandidateFactory extends BaseCandidateFactory {
         this.strategyPool = 'ABCDEFGHIJKLMNOPQRSTUVWXY'; // limited to 25 different strategies per player
         this.max = 16;
         this.min = 1;
+        this.maxDelta = 0.2;
+        this.minDelta = -0.2;
         this.fitnessType = fitnessType;
         this.playerTables = this.generatePlayerTables();
     }
@@ -31,19 +33,22 @@ class CandidateFactory extends BaseCandidateFactory {
         return newCandidate;
     }
 
-    mutate(c) {
+    mutate(c, sigma) {
         const newCandidate = {
-            fitness: 0,
-            strategy: '',
+            fitness: c.fitness,
+            strategy: c.strategy,
         }
-        const strategy = this.strategyPool.charAt(this.generator.range(this.strategyCount));
-        const player = this.generator.range(this.playerCount);
 
-        let newStrategy = c.strategy.substring(0, player) + strategy;
-        newStrategy += (player+1) === this.playerCount ? '' : c.strategy.substring(player+1);
-
-        newCandidate.strategy = newStrategy;
-
+        for (let i = 0; i < sigma; i++) {
+            const strategy = this.strategyPool.charAt(this.generator.range(this.strategyCount));
+            const player = this.generator.range(this.playerCount);
+    
+            let newStrategy = newCandidate.strategy.substring(0, player) + strategy;
+            newStrategy += (player+1) === this.playerCount ? '' : newCandidate.strategy.substring(player+1);
+    
+            newCandidate.strategy = newStrategy;
+        }
+        
         return newCandidate;
     }
 

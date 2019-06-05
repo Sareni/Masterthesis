@@ -23,7 +23,7 @@ const rl = readline.createInterface({
 
 function testGame1() {
     testGame1Execution('NE');
-    testGame1Execution('MAX');
+    //testGame1Execution('MAX');
 }
 
 function testGame2() {

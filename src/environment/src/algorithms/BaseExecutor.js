@@ -1,7 +1,7 @@
 import Generator from 'random-seed';
 
 class BaseExecutor {
-    constructor(populationSize, timeout, generationCount, seedValue, mutationRate, candidateFactory, uiHandler, msgHandler, isBF) {
+    constructor(populationSize, timeout, generationCount, seedValue, mutationRate, candidateFactory, uiHandler, msgHandler, selectionFunction, replacementFunction, useOptimization, isBF) {
         this.interval = null;
         this.counter = 0;
         this.timeout = timeout;
@@ -14,6 +14,9 @@ class BaseExecutor {
         this.generator = Generator.create(seedValue);
         this.history = [];
         this.historyLength = 30;
+        this.selectionFunction = selectionFunction;
+        this.replacementFunction = replacementFunction;
+        this.useOptimization = useOptimization;
         this.isBF = !!isBF;
     }
     generatePopulation() {
@@ -50,8 +53,8 @@ class BaseExecutor {
         this.counter = 0;   
     }
 
-    select(pop) {
-        const filteredPopulation = pop.sort((a,b) => {
+    sortByFitness(pop) {
+        return pop.sort((a,b) => {
             if (a.fitness < b.fitness) {
                 return 1;
             } else if (a.fitness > b.fitness) {
@@ -60,7 +63,10 @@ class BaseExecutor {
                 return 0;
             }
         });
+    }
 
+    select(pop) {
+        const filteredPopulation = this.sortByFitness(pop);
         return filteredPopulation.slice(0, this.populationSize);
     }
 
