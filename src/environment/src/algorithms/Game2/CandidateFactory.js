@@ -31,18 +31,21 @@ class CandidateFactory extends BaseCandidateFactory {
         return newCandidate;
     }
 
-    mutate(c) {
+    mutate(c, sigma = 1) {
         const newCandidate = {
             fitness: 0,
             strategy: '',
         }
-        const strategy = this.strategyPool.charAt(this.generator.range(this.strategyCount));
-        const layer = this.generator.range(this.treeDepth);
 
-        let newStrategy = c.strategy.substring(0, layer) + strategy;
-        newStrategy += (layer+1) === this.treeDepth ? '' : c.strategy.substring(layer+1);
+        for (let i = 0; i < sigma; i++) {        
+            const strategy = this.strategyPool.charAt(this.generator.range(this.strategyCount));
+            const layer = this.generator.range(this.treeDepth);
 
-        newCandidate.strategy = newStrategy;
+            let newStrategy = c.strategy.substring(0, layer) + strategy;
+            newStrategy += (layer+1) === this.treeDepth ? '' : c.strategy.substring(layer+1);
+
+            newCandidate.strategy = newStrategy;
+        }
 
         return newCandidate;
     }

@@ -1,13 +1,5 @@
 import BaseExecutor from '../BaseExecutor';
 
-
-/*
-    TODOs: rewrite ES
-           document changes
-
-
-*/
-
 class ExecutorGA extends BaseExecutor {
 
     constructor(generationCount, seedValue, populationSize, timeout, mutationRate, candidateFactory, uiHandler, msgHandler) {

@@ -58,6 +58,8 @@ class ExecutorES extends BaseExecutor {
         }
 
         that.population = that.replacementFunction(that.population, newPopulation, that.generator);
+        that.population = that.sortByFitness(that.population);
+        
         that.uiHandler({x: that.counter, y: that.population[0].fitness});
         that.msgHandler(that.counter, 'status', `Best Candidate: ${JSON.stringify(that.population[0])}`);
         that.counter += 1;

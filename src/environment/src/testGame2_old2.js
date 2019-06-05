@@ -1,13 +1,15 @@
 
 import Generator from 'random-seed';
+import ExecutorBF2 from './algorithms/Game2/ExecutorBF';
+import ExecutorES2 from './algorithms/Game2/ExecutorES';
+import ExecutorGA2 from './algorithms/Game2/ExecutorGA';
+import CandidateFactory2 from './algorithms/Game2/CandidateFactory';
 import { proportionalSelection, randomSelection, tournamentSelection, completeReplacement, randomReplacement, elitismReplacement } from './algorithms/util';
-
 
 
 const populationSizeArray = [30, 60];
 const generationCountArray = [50, 100];
 const mutationRateArray = [0.1, 0.3];
-
 
 const playerCount = 5;
 const strategyCount = 10;
@@ -58,7 +60,7 @@ function newGameState(data) {
 
 let bestSetting = new Array(4);
 
-function testLoop(Factory, Executor, seedValue, type, useOptimization, mi) {
+function testLoop(Executor, seedValue, type, useOptimization, mi) {
     modeIndex = mi;
     resultArray[modeIndex] = new Array(populationSizeArray.length);
     const timeout = '0';
@@ -98,7 +100,7 @@ function testLoop(Factory, Executor, seedValue, type, useOptimization, mi) {
                         for (let n = 0; n < maxRounds; n++) {
                             roundIndex = n
                             const dynSeedValue = generator.range(10000);
-                            const factory = new Factory(playerCount,strategyCount, dynSeedValue, type);
+                            const factory = new CandidateFactory2(playerCount,strategyCount, dynSeedValue, type);
                             const executor = new Executor(generationCountArray[generationCountIndex], dynSeedValue, populationSizeArray[populationIndex], timeout, mutationRateArray[mutationIndex], factory, newGameState, newMessage, selectionFunctionArray[selectionFunctionIndex], replacementFunctionArray[replacementFunctionIndex], useOptimization);
                             executor.start();
                         }
@@ -130,7 +132,7 @@ function testLoop(Factory, Executor, seedValue, type, useOptimization, mi) {
 }
 
 
-function testGame1Execution(type='NE', candidateFactory, executorGA, executorES, executorBF) {
+function testGame1Execution(type='NE') {
 
     let executor;
     let factory;
@@ -144,7 +146,7 @@ function testGame1Execution(type='NE', candidateFactory, executorGA, executorES,
 
     console.log('-------------- GA ----------------');
     
-    testLoop(candidateFactory, executorGA, seedValue, type, false, 0);
+    testLoop(ExecutorGA2, seedValue, type, false, 0);
 
     console.log('0:', zeroCount);
     zeroCount = 0;
@@ -153,7 +155,7 @@ function testGame1Execution(type='NE', candidateFactory, executorGA, executorES,
 
     console.log('-------------- optimiert');
     
-    testLoop(candidateFactory, executorGA, seedValue, type, true, 1);
+    testLoop(ExecutorGA2, seedValue, type, true, 1);
 
     console.log('0:', zeroCount);
     zeroCount = 0;
@@ -165,7 +167,7 @@ function testGame1Execution(type='NE', candidateFactory, executorGA, executorES,
 
     console.log('-------------- ES ----------------');
     
-    testLoop(candidateFactory, executorES, seedValue, type, false, 2);
+    testLoop(ExecutorES2, seedValue, type, false, 2);
 
     console.log('0:', zeroCount);
     zeroCount = 0;
@@ -174,7 +176,7 @@ function testGame1Execution(type='NE', candidateFactory, executorGA, executorES,
 
     console.log('-------------- optimiert');
     
-    testLoop(candidateFactory, executorES, seedValue, type, true, 3);
+    testLoop(ExecutorES2, seedValue, type, true, 3);
 
     console.log('0:', zeroCount);
     zeroCount = 0;
@@ -183,29 +185,29 @@ function testGame1Execution(type='NE', candidateFactory, executorGA, executorES,
 
     console.log('--------------');
 
+
+
+
+    console.log('-------------- BF ----------------');
+
+    const generator = Generator.create(seedValue);
     modeIndex = 4;
     resultArray[modeIndex] = new Array(maxRounds).fill(0);
+    const startDate = Date.now();
+    result = 0;
 
-    if (executorBF) {
-        console.log('-------------- BF ----------------');
+    for (let i = 0; i < maxRounds; i++) {
+        roundIndex = i;
+        const dynSeedValue = generator.range(10000);
+        factory = new CandidateFactory2(playerCount,strategyCount, dynSeedValue, type);
+        executor = new ExecutorBF2(0, dynSeedValue, 0, '0', 0, factory, newGameState, newMessage);
+        executor.start();
+    }
 
-        const generator = Generator.create(seedValue);
-        const startDate = Date.now();
-        result = 0;
-    
-        for (let i = 0; i < maxRounds; i++) {
-            roundIndex = i;
-            const dynSeedValue = generator.range(10000);
-            factory = new candidateFactory(playerCount,strategyCount, dynSeedValue, type);
-            executor = new executorBF(0, dynSeedValue, 0, '0', 0, factory, newGameState, newMessage);
-            executor.start();
-        }
-    
-        console.log('Result: ', result);
-        console.log('Runtime: ', Date.now() - startDate);
-    
-        console.log('--------------');
-    }    
+    console.log('Result: ', result);
+    console.log('Runtime: ', Date.now() - startDate);
+
+    console.log('--------------');
 
     let gaDiff = 0;
     let esDiff = 0;
@@ -254,6 +256,7 @@ function testGame1Execution(type='NE', candidateFactory, executorGA, executorES,
     for (let i = 0; i < bestSetting.length; i++) {
         const bs = bestSetting[i];
         for (let j = 0; j < maxRounds; j++) {
+            console.log(resultArray[i][bs.populationIndex][bs.generationCountIndex][bs.mutationIndex][bs.selectionFunctionIndex][bs.replacementFunctionIndex][j], '|', resultArray[4][j]);
             if (resultArray[i][bs.populationIndex][bs.generationCountIndex][bs.mutationIndex][bs.selectionFunctionIndex][bs.replacementFunctionIndex][j] === resultArray[4][j]) {
                 diffs[i] += 1;
             }

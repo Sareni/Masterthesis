@@ -5,7 +5,7 @@ const charCode = 'A'.charCodeAt(0);
 class ExecutorBF extends BaseExecutor {
 
     constructor(generationCount, seedValue, populationSize, timeout, mutationRate, candidateFactory, uiHandler, msgHandler) {
-        super(populationSize, timeout, generationCount, seedValue, mutationRate, candidateFactory, uiHandler, msgHandler, true);
+        super(populationSize, timeout, generationCount, seedValue, mutationRate, candidateFactory, uiHandler, msgHandler, null, null, false, true);
         this.strategy = 'A'.repeat(candidateFactory.treeDepth);
         this.maxCounter = Math.pow(candidateFactory.strategyCount, candidateFactory.treeDepth);
         this.bestCandidate = {

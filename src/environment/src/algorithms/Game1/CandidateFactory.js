@@ -14,8 +14,6 @@ class CandidateFactory extends BaseCandidateFactory {
         this.strategyPool = 'ABCDEFGHIJKLMNOPQRSTUVWXY'; // limited to 25 different strategies per player
         this.max = 16;
         this.min = 1;
-        this.maxDelta = 0.2;
-        this.minDelta = -0.2;
         this.fitnessType = fitnessType;
         this.playerTables = this.generatePlayerTables();
     }
@@ -33,7 +31,7 @@ class CandidateFactory extends BaseCandidateFactory {
         return newCandidate;
     }
 
-    mutate(c, sigma) {
+    mutate(c, sigma = 1) {
         const newCandidate = {
             fitness: c.fitness,
             strategy: c.strategy,
