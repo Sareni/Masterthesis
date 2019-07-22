@@ -1,5 +1,6 @@
 
 import Generator from 'random-seed';
+import fs from 'fs';
 import ExecutorES9 from './algorithms/Game9/ExecutorES';
 import ExecutorGA9 from './algorithms/Game9/ExecutorGA';
 import ExecutorBF9 from './algorithms/Game9/ExecutorBF';
@@ -18,6 +19,16 @@ let resultArray;
 let mode = 0;
 let scaleCounter = 0;
 let roundCounter = 0;
+
+let output = '';
+
+function log() {
+    console.log(...arguments);
+    [].forEach.call(arguments, function (arg) {
+        output += arg;
+    });
+    output += '\n';
+}
 
 function newMessage(gen, type, msg) {
     if (type === 'fin') {
@@ -54,17 +65,20 @@ function testGame9Execution(type='NE') {
 
     resultArray = new Array(3);
 
-    console.log('+--------------------------------+');
-    console.log(`|              ${type}                |`);
-    console.log('+--------------------------------+');
 
-    console.log('-------------- GA ----------------');
+    log('+--------------------------------+');
+    log(`|              GAME9             |`);
+    log('+--------------------------------+');
+    log(`|              ${type}                |`);
+    log('+--------------------------------+');
+
+    log('-------------- GA ----------------');
     generator = Generator.create(seedValue);
     resultArray[0] = new Array(maxTestScaling);
 
     for (let i = 0; i < maxTestScaling; i++) {
         const rounds = roundArray[i];
-        console.log('---------- ', rounds);
+        log('---------- ', rounds);
         result = 0;
         mode = 0;
         scaleCounter = i;
@@ -78,19 +92,19 @@ function testGame9Execution(type='NE') {
             executor = new ExecutorGA9(generationCount, dynSeedValue, populationSize, timeout, mutationRate, factory, newGameState, newMessage);
             executor.start();
         }
-        console.log('Result: ', result);
-        console.log('Runtime: ', Date.now() - startDate);
-        console.log('--------------');
+        log('Result: ', result);
+        log('Runtime: ', Date.now() - startDate);
+        log('--------------');
 
     }
 
-    console.log('\n-------------- ES ----------------');
+    log('\n-------------- ES ----------------');
     generator = Generator.create(seedValue);
     resultArray[1] = new Array(maxTestScaling);
 
     for (let i = 0; i < maxTestScaling; i++) {
         const rounds = roundArray[i];
-        console.log('---------- ', rounds);
+        log('---------- ', rounds);
         result = 0;
         mode = 1;
         scaleCounter = i;
@@ -104,18 +118,18 @@ function testGame9Execution(type='NE') {
             executor = new ExecutorES9(generationCount, dynSeedValue, populationSize, timeout, mutationRate, factory, newGameState, newMessage);
             executor.start();
         }
-        console.log('Result: ', result);
-        console.log('Runtime: ', Date.now() - startDate);
-        console.log('--------------');
+        log('Result: ', result);
+        log('Runtime: ', Date.now() - startDate);
+        log('--------------');
     }
 
-    console.log('\n-------------- BF ----------------');
+    log('\n-------------- BF ----------------');
     generator = Generator.create(seedValue);
     resultArray[2] = new Array(maxTestScaling);
 
     for (let i = 0; i < maxTestScaling; i++) {
         const rounds = roundArray[i];
-        console.log('---------- ', rounds);
+        log('---------- ', rounds);
         result = 0;
         mode = 2;
         scaleCounter = i;
@@ -129,9 +143,9 @@ function testGame9Execution(type='NE') {
             executor = new ExecutorBF9(generationCount, dynSeedValue, populationSize, timeout, mutationRate, factory, newGameState, newMessage);
             executor.start();
         }
-        console.log('Result: ', result);
-        console.log('Runtime: ', Date.now() - startDate);
-        console.log('--------------');
+        log('Result: ', result);
+        log('Runtime: ', Date.now() - startDate);
+        log('--------------');
     }
 
     /*let gaDiff = 0;
@@ -162,10 +176,17 @@ function testGame9Execution(type='NE') {
         }
     }
 
-    console.log('Diff - GA: ', gaDiff, ', ES: ', esDiff);
-    console.log('--------------\n');
-    console.log('Eq - GA: ', gaEq, ', ES: ', esEq);
-    console.log('--------------\n'); */
+    log('Diff - GA: ', gaDiff, ', ES: ', esDiff);
+    log('--------------\n');
+    log('Eq - GA: ', gaEq, ', ES: ', esEq);
+    log('--------------\n'); */
+
+
+    fs.writeFile("results/game9.txt", output, function(err) {
+        if(err) {
+            return log(err);
+        }
+    }); 
 }
 
 export default testGame9Execution;

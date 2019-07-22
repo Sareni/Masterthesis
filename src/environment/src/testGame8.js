@@ -1,5 +1,6 @@
 
 import Generator from 'random-seed';
+import fs from 'fs';
 import ExecutorES8 from './algorithms/Game8/ExecutorES';
 import ExecutorGA8 from './algorithms/Game8/ExecutorGA';
 import CandidateFactory8 from './algorithms/Game8/CandidateFactory';
@@ -16,6 +17,16 @@ let resultArray;
 let mode = 0;
 let scaleCounter = 0;
 let roundCounter = 0;
+
+let output = '';
+
+function log() {
+    console.log(...arguments);
+    [].forEach.call(arguments, function (arg) {
+        output += arg;
+    });
+    output += '\n';
+}
 
 function newMessage(gen, type, msg) {
     if (type === 'fin') {
@@ -52,17 +63,20 @@ function testGame8Execution(type='NE') {
 
     resultArray = new Array(2);
 
-    console.log('+--------------------------------+');
-    console.log(`|              ${type}                |`);
-    console.log('+--------------------------------+');
 
-    console.log('-------------- GA ----------------');
+    log('+--------------------------------+');
+    log(`|              GAME8             |`);
+    log('+--------------------------------+');
+    log(`|              ${type}                |`);
+    log('+--------------------------------+');
+
+    log('-------------- GA ----------------');
     generator = Generator.create(seedValue);
     resultArray[0] = new Array(maxTestScaling);
 
     for (let i = 0; i < maxTestScaling; i++) {
         const rounds = roundArray[i];
-        console.log('---------- ', rounds);
+        log('---------- ', rounds);
         result = 0;
         mode = 0;
         scaleCounter = i;
@@ -77,19 +91,19 @@ function testGame8Execution(type='NE') {
             executor = new ExecutorGA8(generationCount, dynSeedValue, populationSize, timeout, mutationRate, factory, newGameState, newMessage);
             executor.start();
         }
-        console.log('Result: ', result);
-        console.log('Runtime: ', Date.now() - startDate);
-        console.log('--------------');
+        log('Result: ', result);
+        log('Runtime: ', Date.now() - startDate);
+        log('--------------');
 
     }
 
-    console.log('\n-------------- ES ----------------');
+    log('\n-------------- ES ----------------');
     generator = Generator.create(seedValue);
     resultArray[1] = new Array(maxTestScaling);
 
     for (let i = 0; i < maxTestScaling; i++) {
         const rounds = roundArray[i];
-        console.log('---------- ', rounds);
+        log('---------- ', rounds);
         result = 0;
         mode = 1;
         scaleCounter = i;
@@ -104,16 +118,16 @@ function testGame8Execution(type='NE') {
             executor = new ExecutorES8(generationCount, dynSeedValue, populationSize, timeout, mutationRate, factory, newGameState, newMessage);
             executor.start();
         }
-        console.log('Result: ', result);
-        console.log('Runtime: ', Date.now() - startDate);
-        console.log('--------------');
+        log('Result: ', result);
+        log('Runtime: ', Date.now() - startDate);
+        log('--------------');
     }
 
-    console.log('\n-------------- Statistics ----------------');
+    log('\n-------------- Statistics ----------------');
     for (let i = 0; i < 2; i++) {
-        console.log('\n-------------- ', i, ' ----------------');
+        log('\n-------------- ', i, ' ----------------');
         for (let j = 0; j < 3; j++) {
-            console.log('\n----- Player ,', j, ' -----');
+            log('\n----- Player ,', j, ' -----');
             const results = new Array(4).fill(0);
             for (let k = 0; k < 4; k++) {
                 for (let l = 0; l < roundArray[k]; l++) {
@@ -122,16 +136,21 @@ function testGame8Execution(type='NE') {
                     }
                 }
             }
-            console.log('1: ', (results[0] / 1305));
-            console.log('2: ', (results[1] / 1305));
-            console.log('3: ', (results[2] / 1305));
-            console.log('4: ', (results[3] / 1305));
-            console.log('\n---------------------------');
+            log('1: ', (results[0] / 1305));
+            log('2: ', (results[1] / 1305));
+            log('3: ', (results[2] / 1305));
+            log('4: ', (results[3] / 1305));
+            log('\n---------------------------');
         }
-        console.log('\n------------------------------------------');
+        log('\n------------------------------------------');
     }
-    console.log('\n------------------------------------------');
+    log('\n------------------------------------------');
 
+    fs.writeFile("results/game8.txt", output, function(err) {
+        if(err) {
+            return log(err);
+        }
+    }); 
 }
 
 export default testGame8Execution;

@@ -61,19 +61,39 @@ function testGame9() {
     testGame9Execution();
 }
 
-function startTest(gameNumber) {
-    rl.close();
-
+function startGame(gameNumber) {
     switch (gameNumber) {
-        case '1': testGame1(); break;
-        case '2': testGame2(); break;
-        case '3': testGame3(); break;
-        case '6': testGame6(); break;
-        case '7': testGame7(); break;
-        case '8': testGame8(); break;
-        case '9': testGame9(); break;
+        case 1: testGame1(); break;
+        case 2: testGame2(); break;
+        case 3: testGame3(); break;
+        case 4:
+        case 5:
+        case 6: testGame6(); break;
+        case 7: testGame7(); break;
+        case 8: testGame8(); break;
+        case 9: testGame9(); break;
         default: console.log('Error: False Input!');
     }
 }
 
-rl.question('Select Game (1-9): ', startTest);
+function startTest(gameNumberString) {
+    rl.close();
+    const gameNumber = parseInt(gameNumberString);
+    startGame(gameNumber);
+}
+
+function start() {
+    let inputPreString = '';
+    if (process.argv.length > 2 && process.argv[2]) {
+        const gameNumber = parseInt(process.argv[2]);
+        if (gameNumber >= 1 || gameNumber <= 9) {
+            startGame(gameNumber);
+            return;
+        } else {
+            inputPreString = 'Input is false. ';
+        }
+    }
+    rl.question(inputPreString + 'Select Game (1-9): ', startTest);
+}
+
+start();

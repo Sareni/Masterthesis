@@ -1,5 +1,6 @@
 
 import Generator from 'random-seed';
+import fs from 'fs';
 import ExecutorES6 from './algorithms/Game6/ExecutorES';
 import ExecutorGA6 from './algorithms/Game6/ExecutorGA';
 import CandidateFactory6 from './algorithms/Game6/CandidateFactory';
@@ -30,6 +31,16 @@ const yMax = 200;
 let gaEq = 0;
 let esEq = 0;
 
+let output = '';
+
+function log() {
+    console.log(...arguments);
+    [].forEach.call(arguments, function (arg) {
+        output += arg;
+    });
+    output += '\n';
+}
+
 function newMessage(gen, type, msg) {
     if (type === 'fin') {
         for (let i = 0; i < playerCount; i++) {
@@ -49,7 +60,7 @@ function newMessage2(gen, type, msg) {
             if (i === 0) {
                 for (let j = 0; j < playerCount; j++) {
                     avg += lastResultsFitness[j];
-                    // console.log(lastResultsFitness[j]);
+                    // log(lastResultsFitness[j]);
                 }
                 avg = avg / playerCount;
             }
@@ -86,17 +97,20 @@ function testGame3Execution(type='NE') {
 
     resultArray = new Array(3);
 
-    console.log('+--------------------------------+');
-    console.log(`|              ${type}                |`);
-    console.log('+--------------------------------+');
 
-    console.log('-------------- GA ----------------');
+    log('+--------------------------------+');
+    log(`|              GAME6             |`);
+    log('+--------------------------------+');
+    log(`|              ${type}                |`);
+    log('+--------------------------------+');
+
+    log('-------------- GA ----------------');
     generator = Generator.create(seedValue);
     resultArray[0] = new Array(maxTestScaling);
 
     for (let i = 0; i < maxTestScaling; i++) {
         const rounds = roundArray[i];
-        console.log('---------- ', rounds);
+        log('---------- ', rounds);
         resultX = 0;
         resultY = 0;
         mode = 0;
@@ -111,19 +125,19 @@ function testGame3Execution(type='NE') {
             executor = new ExecutorGA6(generationCount, dynSeedValue, populationSize, timeout, mutationRate, factory, newGameState, newMessage2);
             executor.start();
         }
-        console.log('Results: ', resultX, ', ', resultY);
-        console.log('Runtime: ', Date.now() - startDate);
-        console.log('--------------');
+        log('Results: ', resultX, ', ', resultY);
+        log('Runtime: ', Date.now() - startDate);
+        log('--------------');
 
     }
 
-    console.log('\n-------------- ES ----------------');
+    log('\n-------------- ES ----------------');
     generator = Generator.create(seedValue);
     resultArray[1] = new Array(maxTestScaling);
 
     for (let i = 0; i < maxTestScaling; i++) {
         const rounds = roundArray[i];
-        console.log('---------- ', rounds);
+        log('---------- ', rounds);
         resultX = 0;
         resultY = 0;
         mode = 1;
@@ -138,10 +152,16 @@ function testGame3Execution(type='NE') {
             executor = new ExecutorES6(generationCount, dynSeedValue, populationSize, timeout, mutationRate*2, factory, newGameState, newMessage2);
             executor.start();
         }
-        console.log('Results: ', resultX, ', ', resultY);
-        console.log('Runtime: ', Date.now() - startDate);
-        console.log('--------------');
+        log('Results: ', resultX, ', ', resultY);
+        log('Runtime: ', Date.now() - startDate);
+        log('--------------');
     }
+
+    fs.writeFile("results/game6.txt", output, function(err) {
+        if(err) {
+            return log(err);
+        }
+    }); 
 }
 
 export default testGame3Execution;
