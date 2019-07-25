@@ -51,7 +51,7 @@ function newMessage(gen, type, msg) {
         if (modeIndex !== 4) {
             resultArray[modeIndex][populationIndex][generationCountIndex][mutationIndex][selectionFunctionIndex][replacementFunctionIndex][selectionPressureIndex][roundIndex] = lastResult;
             
-        } else {          
+        } else {
             resultArray[modeIndex][roundIndex] = lastResult;
         }
         if (lastResult === 0) {
@@ -230,8 +230,8 @@ function testGame1Execution(type='NE', candidateFactory, executorGA, executorES,
         for (let k = 0; k < parameters.maxRounds; k++) {
             roundIndex = k;
             const dynSeedValue = generator.range(10000);
-            factory = new candidateFactory(parameters.playerCount,parameters.strategyCount, dynSeedValue, type);
-            executor = new executorBF(0, dynSeedValue, 0, '0', 0, factory, newGameState, newMessage);
+            factory = new candidateFactory(parameters.playerCount, parameters.strategyCount, dynSeedValue, type);
+            executor = new executorBF(0, dynSeedValue, 0, '0', 0, 0, factory, newGameState, newMessage);
             executor.start();
         }
 
@@ -266,16 +266,6 @@ function testGame1Execution(type='NE', candidateFactory, executorGA, executorES,
                         for (let n = 0; n < parameters.selectionPressureArray.length; n++) {
                             for (let p = 0; p < parameters.maxRounds; p++) {
                                 for (let q = 0; q < 4; q++) {
-                                    /* console.log('q',resultArray[q].length);
-                                    console.log('i',resultArray[q][i].length);
-                                    console.log('j',resultArray[q][i][j].length);
-                                    console.log('k',resultArray[q][i][j][k].length);
-                                    console.log('l',resultArray[q][i][j][k][l].length);
-                                    console.log('m',resultArray[q][i][j][k][l][m].length);
-                                    console.log('n',resultArray[q][i][j][k][l][m][n].length);
-                                    console.log('o index', o);
-                                    console.log('o',resultArray[q][i][j][k][l][m][n][o].length);
-                                    console.log('p',resultArray[q][i][j][k][l][m][n][o][p]); */
                                     if (resultArray[q][i][j][k][l][m][n][p] === 0) {
                                         if (q === 0) {
                                             gaEq += 1;
@@ -332,7 +322,7 @@ function testGame1Execution(type='NE', candidateFactory, executorGA, executorES,
         if(err) {
             return log(err);
         }
-    }); 
+    });
 }
 
 export default testGame1Execution;
