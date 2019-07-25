@@ -4,35 +4,33 @@ import fs from 'fs';
 import { proportionalSelection, randomSelection, tournamentSelection, completeReplacement, randomReplacement, elitismReplacement } from './algorithms/util';
 
 
-
-const populationSizeArray = [30, 60];
-const generationCountArray = [50, 100];
-const mutationRateArray = [0.1, 0.3];
-
-
-const playerCountArray = [2, 5];
-const strategyCountArray = [2, 10];
+let parameters = {};
 
 const selectionFunctionArray = [proportionalSelection, randomSelection, tournamentSelection]; 
-const replacementFunctionArray = [completeReplacement, randomReplacement, elitismReplacement]; 
+const replacementFunctionArray = [completeReplacement, randomReplacement, elitismReplacement];
+
+/*
+    const maxRounds = 10;
+    const selectionFunctionArray = [proportionalSelection, randomSelection, tournamentSelection]; 
+    const replacementFunctionArray = [completeReplacement, randomReplacement, elitismReplacement]; 
+    const populationSizeArray = [30, 60];
+    const generationCountArray = [50, 100];
+    const mutationRateArray = [0.1, 0.3]; */
 
 
-
-let result = 0;
-let lastResult = 0;
-
-let resultArray;
-
-const maxRounds = 10;
 let modeIndex = 0;
 let populationIndex = 0;
 let generationCountIndex = 0;
 let mutationIndex = 0;
 let selectionFunctionIndex = 0;
 let replacementFunctionIndex = 0;
-let playerCountIndex = 0;
-let strategyCountIndex = 0;
+let selectionPressureIndex = 0;
 let roundIndex = 0;
+
+let result = 0;
+let lastResult = 0;
+
+let resultArray;
 
 let zeroCount = 0;
 let noneZeroCount = 0;
@@ -51,10 +49,10 @@ function newMessage(gen, type, msg) {
     if (type === 'fin') {
 
         if (modeIndex !== 4) {
-            resultArray[modeIndex][populationIndex][generationCountIndex][mutationIndex][selectionFunctionIndex][replacementFunctionIndex][playerCountIndex][strategyCountIndex][roundIndex] = lastResult;
+            resultArray[modeIndex][populationIndex][generationCountIndex][mutationIndex][selectionFunctionIndex][replacementFunctionIndex][selectionPressureIndex][roundIndex] = lastResult;
             
         } else {          
-            resultArray[modeIndex][playerCountIndex][strategyCountIndex][roundIndex] = lastResult;
+            resultArray[modeIndex][roundIndex] = lastResult;
         }
         if (lastResult === 0) {
             zeroCount += 1;
@@ -75,20 +73,20 @@ let bestSetting = new Array(4);
 
 function testLoop(Factory, Executor, seedValue, type, useOptimization, mi, algoType) {
     modeIndex = mi;
-    resultArray[modeIndex] = new Array(populationSizeArray.length);
+    resultArray[modeIndex] = new Array(parameters.populationSizeArray.length);
     const timeout = '0';
 
-    for (let i = 0; i < populationSizeArray.length; i++) {
+    for (let i = 0; i < parameters.populationSizeArray.length; i++) {
         populationIndex = i;
-        resultArray[modeIndex][populationIndex] = new Array(generationCountArray.length);
+        resultArray[modeIndex][populationIndex] = new Array(parameters.generationCountArray.length);
         // log('Population: ', populationSizeArray[populationIndex]);
         
-        for (let j = 0; j < generationCountArray.length; j++) {
+        for (let j = 0; j < parameters.generationCountArray.length; j++) {
             generationCountIndex = j;
-            resultArray[modeIndex][populationIndex][generationCountIndex] = new Array(mutationRateArray.length);
+            resultArray[modeIndex][populationIndex][generationCountIndex] = new Array(parameters.mutationRateArray.length);
             // log('GenerationCount: ', generationCountArray[generationCountIndex]);
 
-            for (let k = 0; k < mutationRateArray.length; k++) {
+            for (let k = 0; k < parameters.mutationRateArray.length; k++) {
                 mutationIndex = k;
                 resultArray[modeIndex][populationIndex][generationCountIndex][mutationIndex] = new Array(selectionFunctionArray.length);
                 // log('Mutation: ', mutationRateArray[mutationIndex]);
@@ -100,51 +98,44 @@ function testLoop(Factory, Executor, seedValue, type, useOptimization, mi, algoT
 
                     for (let m = 0; m < replacementFunctionArray.length; m++) {
                         replacementFunctionIndex = m;
-                        resultArray[modeIndex][populationIndex][generationCountIndex][mutationIndex][selectionFunctionIndex][replacementFunctionIndex] = new Array(playerCountArray.length);
+                        resultArray[modeIndex][populationIndex][generationCountIndex][mutationIndex][selectionFunctionIndex][replacementFunctionIndex] = new Array(parameters.playerCountArray.length);
                         // log('ReplacementFunction: ', replacementFunctionArray[replacementFunctionIndex].name);
 
-                        for (let n = 0; n < playerCountArray.length; n++) {
-                            playerCountIndex = n;
-                            resultArray[modeIndex][populationIndex][generationCountIndex][mutationIndex][selectionFunctionIndex][replacementFunctionIndex][playerCountIndex] = new Array(strategyCountArray.length);
+                        for (let n = 0; n < parameters.selectionPressureArray.length; n++) {
+                            selectionPressureIndex = n;
+                            resultArray[modeIndex][populationIndex][generationCountIndex][mutationIndex][selectionFunctionIndex][replacementFunctionIndex][selectionPressureIndex] = new Array(parameters.strategyCountArray.length);
+                            bestSetting[modeIndex] = { populationIndex: -1 };
 
-                            for (let o = 0; o < strategyCountArray.length; o++) {
-                                strategyCountIndex = o;
+                            result = 0;
+                            const startDate = Date.now();
+                            const generator = Generator.create(seedValue);
 
-                                resultArray[modeIndex][populationIndex][generationCountIndex][mutationIndex][selectionFunctionIndex][replacementFunctionIndex][playerCountIndex][strategyCountIndex] = new Array(maxRounds);
-                                bestSetting[modeIndex] = { populationIndex: -1 };
+                            for (let p = 0; p < parameters.maxRounds; p++) {
+                                roundIndex = p;
+                                const dynSeedValue = generator.range(10000);
+                                const factory = new Factory(parameters.playerCount,parameters.strategyCount, dynSeedValue, type);
+                                const executor = new Executor(parameters.generationCountArray[generationCountIndex], dynSeedValue, parameters.populationSizeArray[populationIndex], timeout, parameters.selectionFunctionArray[selectionPressureIndex], parameters.mutationRateArray[mutationIndex], factory, newGameState, newMessage, selectionFunctionArray[selectionFunctionIndex], replacementFunctionArray[replacementFunctionIndex], useOptimization);
+                                executor.start();
+                            }
 
-                                result = 0;
-                                const startDate = Date.now();
-                                const generator = Generator.create(seedValue);
+                            const time = Date.now() - startDate;
 
-                                for (let p = 0; p < maxRounds; p++) {
-                                    roundIndex = p;
-                                    const dynSeedValue = generator.range(10000);
-                                    const factory = new Factory(playerCountArray[playerCountIndex],strategyCountArray[strategyCountIndex], dynSeedValue, type);
-                                    const executor = new Executor(generationCountArray[generationCountIndex], dynSeedValue, populationSizeArray[populationIndex], timeout, mutationRateArray[mutationIndex], factory, newGameState, newMessage, selectionFunctionArray[selectionFunctionIndex], replacementFunctionArray[replacementFunctionIndex], useOptimization);
-                                    executor.start();
+                            const newOutputLine = `${algoType};${type};${parameters.populationSizeArray[populationIndex]};${parameters.generationCountArray[generationCountIndex]};${parameters.playerCount};${parameters.strategyCount};${parameters.selectionPressureArray[selectionPressureIndex]};${parameters.mutationRateArray[mutationIndex]};${selectionFunctionArray[selectionFunctionIndex].name};${replacementFunctionArray[replacementFunctionIndex].name};${time};${result}\n`;
+                            fs.appendFile("results/game1.csv", newOutputLine, function(err) {
+                                if(err) {
+                                    return log(err);
                                 }
+                            }); 
 
-                                const newOutputLine = `${algoType},${type},${populationSizeArray[populationIndex]},${generationCountArray[generationCountIndex]},${playerCountArray[playerCountIndex]},${strategyCountArray[strategyCountIndex]},${mutationRateArray[mutationIndex]},${selectionFunctionArray[selectionFunctionIndex].name},${replacementFunctionArray[replacementFunctionIndex].name},${result}\n`;
-
-                                fs.appendFile("results/game1.csv", newOutputLine, function(err) {
-                                    if(err) {
-                                        return log(err);
-                                    }
-                                }); 
-
-
-                                if (result > bestSetting[modeIndex].result || bestSetting[modeIndex].populationIndex === -1) {
-                                    bestSetting[modeIndex].time = Date.now() - startDate;
-                                    bestSetting[modeIndex].populationIndex = populationIndex;
-                                    bestSetting[modeIndex].generationCountIndex = generationCountIndex;
-                                    bestSetting[modeIndex].mutationIndex = mutationIndex;
-                                    bestSetting[modeIndex].selectionFunctionIndex = selectionFunctionIndex;
-                                    bestSetting[modeIndex].replacementFunctionIndex = replacementFunctionIndex;
-                                    bestSetting[modeIndex].playerCountIndex = playerCountIndex;
-                                    bestSetting[modeIndex].strategyCountIndex = strategyCountIndex;
-                                    bestSetting[modeIndex].result = result;
-                                }
+                            if (result > bestSetting[modeIndex].result || bestSetting[modeIndex].populationIndex === -1) {
+                                bestSetting[modeIndex].time = time;
+                                bestSetting[modeIndex].populationIndex = populationIndex;
+                                bestSetting[modeIndex].generationCountIndex = generationCountIndex;
+                                bestSetting[modeIndex].mutationIndex = mutationIndex;
+                                bestSetting[modeIndex].selectionFunctionIndex = selectionFunctionIndex;
+                                bestSetting[modeIndex].replacementFunctionIndex = replacementFunctionIndex;
+                                bestSetting[modeIndex].selectionPressureIndex = selectionPressureIndex;
+                                bestSetting[modeIndex].result = result;
                             }
                         }
                     }
@@ -152,9 +143,9 @@ function testLoop(Factory, Executor, seedValue, type, useOptimization, mi, algoT
             }
         }
     }
-    log('Population:', populationSizeArray[bestSetting[modeIndex].populationIndex]);
-    log('Generations:', generationCountArray[bestSetting[modeIndex].generationCountIndex]);
-    log('Mutation:', mutationRateArray[bestSetting[modeIndex].mutationIndex]);
+    log('Population:', parameters.populationSizeArray[bestSetting[modeIndex].populationIndex]);
+    log('Generations:', parameters.generationCountArray[bestSetting[modeIndex].generationCountIndex]);
+    log('Mutation:', parameters.mutationRateArray[bestSetting[modeIndex].mutationIndex]);
     log('Selection Function:', selectionFunctionArray[bestSetting[modeIndex].selectionFunctionIndex].name);
     log('Replacement Function:', replacementFunctionArray[bestSetting[modeIndex].replacementFunctionIndex].name);
     log('Result:', bestSetting[modeIndex].result);
@@ -167,10 +158,14 @@ function testGame1Execution(type='NE', candidateFactory, executorGA, executorES,
     let executor;
     let factory;
 
+    const parametersFile = fs.readFileSync('game1.json');
+    parameters = JSON.parse(parametersFile);
+
+
     const seedValue = Math.random() * 10000;
     resultArray = new Array(5);
 
-    const header = 'Algo,Type,Population,Generations,players,strategys,MutationRate,SelectionFunction,ReplacementFunction,Result\n'
+    const header = 'Algo;Type;Population;Generations;Players;Strategys;SelectionPressure;MutationRate;SelectionFunction;ReplacementFunction;Time;Result\n'
     fs.writeFile("results/game1.csv", header, function(err) {
         if(err) {
             return log(err);
@@ -223,7 +218,7 @@ function testGame1Execution(type='NE', candidateFactory, executorGA, executorES,
     log('--------------');
 
     modeIndex = 4;
-    resultArray[modeIndex] = new Array(playerCountArray.length);
+    resultArray[modeIndex] = new Array(parameters.playerCountArray.length);
 
     if (executorBF) {
         log('-------------- BF ----------------');
@@ -232,20 +227,13 @@ function testGame1Execution(type='NE', candidateFactory, executorGA, executorES,
         const startDate = Date.now();
         result = 0;
     
-        for (let i = 0; i < playerCountArray.length; i++) {
-            playerCountIndex = i;
-            resultArray[modeIndex][playerCountIndex] = new Array(strategyCountArray.length);
-            for (let j = 0; j < strategyCountArray.length; j++) {
-                strategyCountIndex = j;
-                resultArray[modeIndex][playerCountIndex][strategyCountIndex] = new Array(maxRounds);
-                for (let k = 0; k < maxRounds; k++) {
-                    roundIndex = k;
-                    const dynSeedValue = generator.range(10000);
-                    factory = new candidateFactory(playerCountArray[i],strategyCountArray[j], dynSeedValue, type);
-                    executor = new executorBF(0, dynSeedValue, 0, '0', 0, factory, newGameState, newMessage);
-                    executor.start();
-                }
-            }
+        resultArray[modeIndex] = new Array(parameters.maxRounds);
+        for (let k = 0; k < parameters.maxRounds; k++) {
+            roundIndex = k;
+            const dynSeedValue = generator.range(10000);
+            factory = new candidateFactory(parameters.playerCount,parameters.strategyCount, dynSeedValue, type);
+            executor = new executorBF(0, dynSeedValue, 0, '0', 0, factory, newGameState, newMessage);
+            executor.start();
         }
 
         log('Result: ', result);
@@ -271,14 +259,14 @@ function testGame1Execution(type='NE', candidateFactory, executorGA, executorES,
     let eqs = new Array(4).fill(0);
 
 
-    for (let i = 0; i < populationSizeArray.length; i++) {
-        for (let j = 0; j < generationCountArray.length; j++) {
-            for (let k = 0; k < mutationRateArray.length; k++) {
+    for (let i = 0; i < parameters.populationSizeArray.length; i++) {
+        for (let j = 0; j < parameters.generationCountArray.length; j++) {
+            for (let k = 0; k < parameters.mutationRateArray.length; k++) {
                 for (let l = 0; l < selectionFunctionArray.length; l++) {
                     for (let m = 0; m < replacementFunctionArray.length; m++) {
-                        for (let n = 0; n < playerCountArray.length; n++) {
-                            for (let o = 0; o < strategyCountArray.length; o++) {
-                                for (let p = 0; p < maxRounds; p++) {
+                        for (let n = 0; n < parameters.playerCountArray.length; n++) {
+                            for (let o = 0; o < parameters.strategyCountArray.length; o++) {
+                                for (let p = 0; p < parameters.maxRounds; p++) {
                                     for (let q = 0; q < 4; q++) {
                                         /* console.log('q',resultArray[q].length);
                                         console.log('i',resultArray[q][i].length);
@@ -314,7 +302,7 @@ function testGame1Execution(type='NE', candidateFactory, executorGA, executorES,
 
     for (let i = 0; i < bestSetting.length; i++) {
         const bs = bestSetting[i];
-        for (let j = 0; j < maxRounds; j++) {
+        for (let j = 0; j < parameters.maxRounds; j++) {
             if (resultArray[i][bs.populationIndex][bs.generationCountIndex][bs.mutationIndex][bs.selectionFunctionIndex][bs.replacementFunctionIndex][bs.playerCountIndex][bs.strategyCountIndex][j] === resultArray[4][j]) {
                 diffs[i] += 1;
             }
@@ -325,16 +313,12 @@ function testGame1Execution(type='NE', candidateFactory, executorGA, executorES,
     }
 
     let bfEq = 0;
-
-    for (let i = 0; i < playerCountArray.length; i++) {
-        for (let j = 0; j < strategyCountArray.length; j++) {
-            for (let k = 0; k < maxRounds; k++) {
-                if (resultArray[4][i][j][k] === 0) {
-                    bfEq += 1;
-                }
-            }
+    for (let k = 0; k < parameters.maxRounds; k++) {
+        if (resultArray[4][k] === 0) {
+            bfEq += 1;
         }
     }
+    
 
     log('Diff - GA: ', diffs[0], ', ES: ', diffs[2]);
     log('--------------\n');

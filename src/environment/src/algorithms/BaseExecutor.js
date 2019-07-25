@@ -1,7 +1,7 @@
 import Generator from 'random-seed';
 
 class BaseExecutor {
-    constructor(populationSize, timeout, generationCount, seedValue, mutationRate, candidateFactory, uiHandler, msgHandler, selectionFunction, replacementFunction, useOptimization, isBF) {
+    constructor(populationSize, timeout, generationCount, seedValue, selectionPressure, mutationRate, candidateFactory, uiHandler, msgHandler, selectionFunction, replacementFunction, useOptimization, isBF) {
         this.interval = null;
         this.counter = 0;
         this.timeout = timeout;
@@ -18,6 +18,7 @@ class BaseExecutor {
         this.replacementFunction = replacementFunction;
         this.useOptimization = useOptimization;
         this.isBF = !!isBF;
+        this.selectionPressure = selectionPressure;
     }
     generatePopulation() {
         throw new Error('generatePopulation: not implemented');
