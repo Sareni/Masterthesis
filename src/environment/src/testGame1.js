@@ -98,12 +98,12 @@ function testLoop(Factory, Executor, seedValue, type, useOptimization, mi, algoT
 
                     for (let m = 0; m < replacementFunctionArray.length; m++) {
                         replacementFunctionIndex = m;
-                        resultArray[modeIndex][populationIndex][generationCountIndex][mutationIndex][selectionFunctionIndex][replacementFunctionIndex] = new Array(parameters.playerCountArray.length);
+                        resultArray[modeIndex][populationIndex][generationCountIndex][mutationIndex][selectionFunctionIndex][replacementFunctionIndex] = new Array(parameters.selectionPressureArray.length);
                         // log('ReplacementFunction: ', replacementFunctionArray[replacementFunctionIndex].name);
 
                         for (let n = 0; n < parameters.selectionPressureArray.length; n++) {
                             selectionPressureIndex = n;
-                            resultArray[modeIndex][populationIndex][generationCountIndex][mutationIndex][selectionFunctionIndex][replacementFunctionIndex][selectionPressureIndex] = new Array(parameters.strategyCountArray.length);
+                            resultArray[modeIndex][populationIndex][generationCountIndex][mutationIndex][selectionFunctionIndex][replacementFunctionIndex][selectionPressureIndex] = new Array(parameters.maxRounds);
                             bestSetting[modeIndex] = { populationIndex: -1 };
 
                             result = 0;
@@ -114,7 +114,7 @@ function testLoop(Factory, Executor, seedValue, type, useOptimization, mi, algoT
                                 roundIndex = p;
                                 const dynSeedValue = generator.range(10000);
                                 const factory = new Factory(parameters.playerCount,parameters.strategyCount, dynSeedValue, type);
-                                const executor = new Executor(parameters.generationCountArray[generationCountIndex], dynSeedValue, parameters.populationSizeArray[populationIndex], timeout, parameters.selectionFunctionArray[selectionPressureIndex], parameters.mutationRateArray[mutationIndex], factory, newGameState, newMessage, selectionFunctionArray[selectionFunctionIndex], replacementFunctionArray[replacementFunctionIndex], useOptimization);
+                                const executor = new Executor(parameters.generationCountArray[generationCountIndex], dynSeedValue, parameters.populationSizeArray[populationIndex], timeout, parameters.selectionPressureArray[selectionPressureIndex], parameters.mutationRateArray[mutationIndex], factory, newGameState, newMessage, selectionFunctionArray[selectionFunctionIndex], replacementFunctionArray[replacementFunctionIndex], useOptimization);
                                 executor.start();
                             }
 
@@ -218,7 +218,7 @@ function testGame1Execution(type='NE', candidateFactory, executorGA, executorES,
     log('--------------');
 
     modeIndex = 4;
-    resultArray[modeIndex] = new Array(parameters.playerCountArray.length);
+    resultArray[modeIndex] = new Array(parameters.maxRounds);
 
     if (executorBF) {
         log('-------------- BF ----------------');
@@ -226,8 +226,7 @@ function testGame1Execution(type='NE', candidateFactory, executorGA, executorES,
         const generator = Generator.create(seedValue);
         const startDate = Date.now();
         result = 0;
-    
-        resultArray[modeIndex] = new Array(parameters.maxRounds);
+
         for (let k = 0; k < parameters.maxRounds; k++) {
             roundIndex = k;
             const dynSeedValue = generator.range(10000);
@@ -264,30 +263,28 @@ function testGame1Execution(type='NE', candidateFactory, executorGA, executorES,
             for (let k = 0; k < parameters.mutationRateArray.length; k++) {
                 for (let l = 0; l < selectionFunctionArray.length; l++) {
                     for (let m = 0; m < replacementFunctionArray.length; m++) {
-                        for (let n = 0; n < parameters.playerCountArray.length; n++) {
-                            for (let o = 0; o < parameters.strategyCountArray.length; o++) {
-                                for (let p = 0; p < parameters.maxRounds; p++) {
-                                    for (let q = 0; q < 4; q++) {
-                                        /* console.log('q',resultArray[q].length);
-                                        console.log('i',resultArray[q][i].length);
-                                        console.log('j',resultArray[q][i][j].length);
-                                        console.log('k',resultArray[q][i][j][k].length);
-                                        console.log('l',resultArray[q][i][j][k][l].length);
-                                        console.log('m',resultArray[q][i][j][k][l][m].length);
-                                        console.log('n',resultArray[q][i][j][k][l][m][n].length);
-                                        console.log('o index', o);
-                                        console.log('o',resultArray[q][i][j][k][l][m][n][o].length);
-                                        console.log('p',resultArray[q][i][j][k][l][m][n][o][p]); */
-                                        if (resultArray[q][i][j][k][l][m][n][o][p] === 0) {
-                                            if (q === 0) {
-                                                gaEq += 1;
-                                            } else if (q === 1) {
-                                                gaOptEq += 1;
-                                            } else if (q === 2) {
-                                                esEq += 1;
-                                            } else if (q === 3) {
-                                                esOptEq += 1;
-                                            }
+                        for (let n = 0; n < parameters.selectionPressureArray.length; n++) {
+                            for (let p = 0; p < parameters.maxRounds; p++) {
+                                for (let q = 0; q < 4; q++) {
+                                    /* console.log('q',resultArray[q].length);
+                                    console.log('i',resultArray[q][i].length);
+                                    console.log('j',resultArray[q][i][j].length);
+                                    console.log('k',resultArray[q][i][j][k].length);
+                                    console.log('l',resultArray[q][i][j][k][l].length);
+                                    console.log('m',resultArray[q][i][j][k][l][m].length);
+                                    console.log('n',resultArray[q][i][j][k][l][m][n].length);
+                                    console.log('o index', o);
+                                    console.log('o',resultArray[q][i][j][k][l][m][n][o].length);
+                                    console.log('p',resultArray[q][i][j][k][l][m][n][o][p]); */
+                                    if (resultArray[q][i][j][k][l][m][n][p] === 0) {
+                                        if (q === 0) {
+                                            gaEq += 1;
+                                        } else if (q === 1) {
+                                            gaOptEq += 1;
+                                        } else if (q === 2) {
+                                            esEq += 1;
+                                        } else if (q === 3) {
+                                            esOptEq += 1;
                                         }
                                     }
                                 }
@@ -303,10 +300,10 @@ function testGame1Execution(type='NE', candidateFactory, executorGA, executorES,
     for (let i = 0; i < bestSetting.length; i++) {
         const bs = bestSetting[i];
         for (let j = 0; j < parameters.maxRounds; j++) {
-            if (resultArray[i][bs.populationIndex][bs.generationCountIndex][bs.mutationIndex][bs.selectionFunctionIndex][bs.replacementFunctionIndex][bs.playerCountIndex][bs.strategyCountIndex][j] === resultArray[4][j]) {
+            if (resultArray[i][bs.populationIndex][bs.generationCountIndex][bs.mutationIndex][bs.selectionFunctionIndex][bs.replacementFunctionIndex][bs.selectionPressureIndex][j] === resultArray[4][j]) {
                 diffs[i] += 1;
             }
-            if (resultArray[i][bs.populationIndex][bs.generationCountIndex][bs.mutationIndex][bs.selectionFunctionIndex][bs.replacementFunctionIndex][bs.playerCountIndex][bs.strategyCountIndex][j] === 0) {
+            if (resultArray[i][bs.populationIndex][bs.generationCountIndex][bs.mutationIndex][bs.selectionFunctionIndex][bs.replacementFunctionIndex][bs.selectionPressureIndex][j] === 0) {
                 eqs[i] += 1;
             }
         }
