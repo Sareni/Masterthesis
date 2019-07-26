@@ -78,53 +78,41 @@ function testLoop(Factory, Executor, seedValue, type, useOptimization, mi, algoT
     resultArray[modeIndex] = new Array(parameters.populationSizeArray.length);
     const timeout = '0';
 
-    console.log('start loop');
-
     for (let i = 0; i < parameters.populationSizeArray.length; i++) {
         populationIndex = i;
         resultArray[modeIndex][populationIndex] = new Array(parameters.generationCountArray.length);
         // log('Population: ', populationSizeArray[populationIndex]);
-        console.log('loop1');
         
         for (let j = 0; j < parameters.generationCountArray.length; j++) {
             generationCountIndex = j;
             resultArray[modeIndex][populationIndex][generationCountIndex] = new Array(parameters.mutationRateArray.length);
             // log('GenerationCount: ', generationCountArray[generationCountIndex]);
-        console.log('loop2');
 
             for (let k = 0; k < parameters.mutationRateArray.length; k++) {
                 mutationIndex = k;
                 resultArray[modeIndex][populationIndex][generationCountIndex][mutationIndex] = new Array(selectionFunctionArray.length);
                 // log('Mutation: ', mutationRateArray[mutationIndex]);
-        console.log('loop3');
 
                 for (let l = 0; l < selectionFunctionArray.length; l++) {
                     selectionFunctionIndex = l;
                     resultArray[modeIndex][populationIndex][generationCountIndex][mutationIndex][selectionFunctionIndex] = new Array(replacementFunctionArray.length);
                     // log('SelectionFunction: ', selectionFunctionArray[selectionFunctionIndex].name);
-        console.log('loop4');
 
                     for (let m = 0; m < replacementFunctionArray.length; m++) {
                         replacementFunctionIndex = m;
                         resultArray[modeIndex][populationIndex][generationCountIndex][mutationIndex][selectionFunctionIndex][replacementFunctionIndex] = new Array(parameters.selectionPressureArray.length);
                         // log('ReplacementFunction: ', replacementFunctionArray[replacementFunctionIndex].name);
 
-        console.log('loop5');
-
                         for (let n = 0; n < parameters.selectionPressureArray.length; n++) {
                             selectionPressureIndex = n;
                             resultArray[modeIndex][populationIndex][generationCountIndex][mutationIndex][selectionFunctionIndex][replacementFunctionIndex][selectionPressureIndex] = new Array(parameters.maxRounds);
                             bestSetting[modeIndex] = { populationIndex: -1 };
-
-        console.log('loop6');
 
                             result = 0;
                             const startDate = Date.now();
                             const generator = Generator.create(seedValue);
 
                             for (let p = 0; p < parameters.maxRounds; p++) {
-
-        console.log('loop7');
                                 roundIndex = p;
                                 const dynSeedValue = generator.range(10000);
                                 const factory = new Factory(parameters.playerCount,parameters.strategyCount, dynSeedValue, type);
@@ -176,9 +164,6 @@ function testGame1Execution(type='NE', candidateFactory, executorGA, executorES,
 
     const parametersFile = fs.readFileSync('game1.json');
     parameters = JSON.parse(parametersFile);
-
-    console.log(parameters);
-
 
     const seedValue = Math.random() * 10000;
     resultArray = new Array(5);

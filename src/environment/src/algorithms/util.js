@@ -5,7 +5,7 @@ function randomSelection(population, count, generator) {
 
     while (result.length < count) {
         let index = generator.range(population.length); // care population.length != populationSize in some cases !!
-        while (indexHistory.includes(index)) {
+        while (indexHistory.includes(index) && population.length >= count) {
             index = generator.range(population.length);
         }
         result.push(population[index]);
@@ -30,7 +30,7 @@ function tournamentSelection(population, count, generator) {
         if ((population.length - tournamentIndexStorage.length) <= size) {
             while (tournamentParticipant.length < size) {
                 let index = generator.range(population.length); // care population.length != populationSize in some cases !!
-                while (tournamentIndexStorage.includes(index)) {
+                while (tournamentIndexStorage.includes(index) && population.length >= count) {
                     index = generator.range(population.length);
                 }
                 tournamentParticipant.push(population[index]);
@@ -38,7 +38,7 @@ function tournamentSelection(population, count, generator) {
             }
         } else {
             for (let i = 0; i < population.length; i++) {
-                if (!tournamentIndexStorage.includes(i)) {
+                if (!tournamentIndexStorage.includes(i) || population.length < count) {
                     tournamentParticipant.push(population[i]);
                 }
             }
@@ -81,16 +81,15 @@ function proportionalSelection(population, count, generator) {
         return acc + (cur + shift);
     });
 
-
     while (result.length < count) {
         const threshold = generator.range(sum) + 1;
 
         let curSum = 0;
         for(let index = 0; index < population.length; index++) {
             curSum += population[index].fitness + shift;
-    
             if (curSum > threshold) {
-                if (!indexHistory.includes(index)) {
+
+                if (!indexHistory.includes(index) || population.length < count) {
                     result.push(population[index]);
                     indexHistory.push(index);
                 }
