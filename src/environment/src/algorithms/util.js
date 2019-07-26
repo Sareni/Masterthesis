@@ -22,17 +22,28 @@ function tournamentSelection(population, count, generator) {
     const size = 3;
 
     while (result.length < count) {
-        if (tournamentIndexStorage.length === population.length) {
+        if (tournamentIndexStorage.length >= population.length) {
             tournamentIndexStorage = [];
         }
 
         const tournamentParticipant = []; 
+
         if ((population.length - tournamentIndexStorage.length) <= size) {
+            const tournamentTempIndexStorage = [];
+
             while (tournamentParticipant.length < size) {
                 let index = generator.range(population.length); // care population.length != populationSize in some cases !!
-                while (tournamentIndexStorage.includes(index) && population.length >= count) {
-                    index = generator.range(population.length);
+                if (tournamentIndexStorage.length < population.length) {
+                    while (tournamentIndexStorage.includes(index)) {
+                        index = generator.range(population.length);
+                    }
+                } else {
+                    while (tournamentTempIndexStorage.includes(index) && population.length >= count) {
+                        index = generator.range(population.length);
+                    }
+                    tournamentTempIndexStorage.push(index);
                 }
+
                 tournamentParticipant.push(population[index]);
                 tournamentIndexStorage.push(index);
             }
@@ -51,7 +62,6 @@ function tournamentSelection(population, count, generator) {
             }
         })
         result.push(winner);
-        
     }
 
     return result;
@@ -76,19 +86,17 @@ function proportionalSelection(population, count, generator) {
         shift = Math.abs(min) + 1;
     }
 
-
-    let sum = populationFitness.reduce((acc, cur) => {
+    const sum = populationFitness.reduce((acc, cur) => {
         return acc + (cur + shift);
-    });
+    }, 0);
 
     while (result.length < count) {
-        const threshold = generator.range(sum) + 1;
+        const threshold = generator.random() * sum;
 
         let curSum = 0;
         for(let index = 0; index < population.length; index++) {
             curSum += population[index].fitness + shift;
             if (curSum > threshold) {
-
                 if (!indexHistory.includes(index) || population.length < count) {
                     result.push(population[index]);
                     indexHistory.push(index);
