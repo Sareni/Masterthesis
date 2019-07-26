@@ -112,6 +112,8 @@ function testLoop(Factory, Executor, seedValue, type, useOptimization, mi, algoT
                             const startDate = Date.now();
                             const generator = Generator.create(seedValue);
 
+                            console.log(`${algoType};${type};${parameters.populationSizeArray[populationIndex]};${parameters.generationCountArray[generationCountIndex]};${parameters.playerCount};${parameters.strategyCount};${parameters.selectionPressureArray[selectionPressureIndex]};${parameters.mutationRateArray[mutationIndex]};${selectionFunctionArray[selectionFunctionIndex].name};${replacementFunctionArray[replacementFunctionIndex].name};${useOptimization};`);
+
                             for (let p = 0; p < parameters.maxRounds; p++) {
                                 roundIndex = p;
                                 const dynSeedValue = generator.range(10000);
