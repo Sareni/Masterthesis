@@ -120,7 +120,7 @@ function testLoop(Factory, Executor, seedValue, type, useOptimization, mi, algoT
 
                             const time = Date.now() - startDate;
 
-                            const newOutputLine = `${algoType};${type};${parameters.populationSizeArray[populationIndex]};${parameters.generationCountArray[generationCountIndex]};${parameters.playerCount};${parameters.strategyCount};${parameters.selectionPressureArray[selectionPressureIndex]};${parameters.mutationRateArray[mutationIndex]};${selectionFunctionArray[selectionFunctionIndex].name};${replacementFunctionArray[replacementFunctionIndex].name};${time};${result}\n`;
+                            const newOutputLine = `${algoType};${type};${parameters.populationSizeArray[populationIndex]};${parameters.generationCountArray[generationCountIndex]};${parameters.playerCount};${parameters.strategyCount};${parameters.selectionPressureArray[selectionPressureIndex]};${parameters.mutationRateArray[mutationIndex]};${selectionFunctionArray[selectionFunctionIndex].name};${replacementFunctionArray[replacementFunctionIndex].name};${useOptimization};${time};${result}\n`;
                             fs.appendFile("results/game1.csv", newOutputLine, function(err) {
                                 if(err) {
                                     return log(err);
@@ -165,7 +165,7 @@ function testGame1Execution(type='NE', candidateFactory, executorGA, executorES,
     const seedValue = Math.random() * 10000;
     resultArray = new Array(5);
 
-    const header = 'Algo;Type;Population;Generations;Players;Strategys;SelectionPressure;MutationRate;SelectionFunction;ReplacementFunction;Time;Result\n'
+    const header = 'Algo;Type;Population;Generations;Players;Strategys;SelectionPressure;MutationRate;SelectionFunction;ReplacementFunction;Optimized;Time;Result\n'
     fs.writeFile("results/game1.csv", header, function(err) {
         if(err) {
             return log(err);
