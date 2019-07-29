@@ -91,7 +91,7 @@ function proportionalSelection(population, count, generator) {
         for(let index = 0; index < indexArray.length; index++) {
             curSum += population[indexArray[index]].fitness + shift;
             if (curSum > threshold) {
-                result.push(population[index]);
+                result.push(population[indexArray[index]);
 
                 indexArray.splice(index, 1);
                 if (indexArray.length === 0) {
