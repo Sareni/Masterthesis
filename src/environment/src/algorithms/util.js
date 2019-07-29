@@ -1,57 +1,51 @@
+function buildIndices(len) {
+    const res = [];
+    for (let i = 0; i < len; i++) {
+        res.push(i);
+    }
+    return res;
+}
+
 
 function randomSelection(population, count, generator) {
     const result = [];
-    const indexHistory = [];
+    let indexArray = buildIndices(population.length);
 
     while (result.length < count) {
-        let index = generator.range(population.length); // care population.length != populationSize in some cases !!
-        while (indexHistory.includes(index) && population.length >= count) {
-            index = generator.range(population.length);
-        }
+        const arrayIndex = generator.range(indexArray.length);
+        const index = indexArray[arrayIndex];
         result.push(population[index]);
-        indexHistory.push(index);
+
+        indexArray.splice(arrayIndex,1);
+        if (indexArray.length === 0) {
+            indexArray = buildIndices(population.length);
+        }
     }
 
     return result;
 }
 
-let tournamentIndexStorage = [];
+let tournamentIndices= [];
 
-function tournamentSelection(population, count, generator) {
+function tournamentSelection(population, count, generator, first) {
     const result = [];
     const size = 3;
 
-    while (result.length < count) {
-        if (tournamentIndexStorage.length >= population.length) {
-            tournamentIndexStorage = [];
-        }
+    if (first) {
+        tournamentIndices = buildIndices(population.length);
+    }
 
+    while (result.length < count) {
         const tournamentParticipant = []; 
 
-        if ((population.length - tournamentIndexStorage.length) <= size) {
-            const tournamentTempIndexStorage = [];
+        while (tournamentParticipant.length < size) {
+            const arrayIndex = generator.range(tournamentIndices.length);
+            const index = tournamentIndices[arrayIndex];
+            tournamentParticipant.push(population[index]);
 
-            while (tournamentParticipant.length < size) {
-                let index = generator.range(population.length); // care population.length != populationSize in some cases !!
-                if (tournamentIndexStorage.length < population.length) {
-                    while (tournamentIndexStorage.includes(index)) {
-                        index = generator.range(population.length);
-                    }
-                } else {
-                    while (tournamentTempIndexStorage.includes(index) && population.length >= count) {
-                        index = generator.range(population.length);
-                    }
-                    tournamentTempIndexStorage.push(index);
-                }
-
-                tournamentParticipant.push(population[index]);
-                tournamentIndexStorage.push(index);
-            }
-        } else {
-            for (let i = 0; i < population.length; i++) {
-                if (!tournamentIndexStorage.includes(i) || population.length < count) {
-                    tournamentParticipant.push(population[i]);
-                }
+            tournamentIndices.splice(arrayIndex,1);
+            if (tournamentIndices.length === 0) {
+                tournamentIndices = buildIndices(population.length);
             }
         }
 
@@ -69,10 +63,9 @@ function tournamentSelection(population, count, generator) {
 
 function proportionalSelection(population, count, generator) {
     const result = [];
-    const indexHistory = [];
-
 
     let populationFitness = population.map(p => p.fitness);
+    let indexArray = buildIndices(population.length);
 
     let min = populationFitness[0];
     populationFitness.forEach((f) => {
@@ -86,20 +79,23 @@ function proportionalSelection(population, count, generator) {
         shift = Math.abs(min) + 1;
     }
 
-    const sum = populationFitness.reduce((acc, cur) => {
-        return acc + (cur + shift);
-    }, 0);
-
     while (result.length < count) {
+        let sum = 0;
+        for (let i = 0; i < indexArray; i++) {
+            sum += populationFitness[i] + shift;
+        }
+    
         const threshold = generator.random() * sum;
 
         let curSum = 0;
-        for(let index = 0; index < population.length; index++) {
-            curSum += population[index].fitness + shift;
+        for(let index = 0; index < indexArray.length; index++) {
+            curSum += population[indexArray[index]].fitness + shift;
             if (curSum > threshold) {
-                if (!indexHistory.includes(index) || population.length < count) {
-                    result.push(population[index]);
-                    indexHistory.push(index);
+                result.push(population[index]);
+
+                indexArray.splice(index, 1);
+                if (indexArray.length === 0) {
+                    indexArray = buildIndices(population.length);
                 }
                 break;
             }
@@ -127,33 +123,30 @@ function elitismReplacement(oldPop, newPop) {
 
 function randomReplacement(oldPop, newPop, generator) {
     const rate = 0.5;
-    const indices = [];
-    let indexHistory = [];
     const result = [];
+    let indexArray = buildIndices(oldPop.length);
 
     const threshold = oldPop.length * rate;
 
     for (let i = 0; i < threshold; i++) {
         let index = generator.range(oldPop.length); // care population.length != populationSize in some cases !!
-        while (indices.includes(index)) {
-            index = generator.range(oldPop.length);
+        result.push(oldPop[indexArray[index]]);
+
+        indexArray.splice(index, 1);
+        if (indexArray.length === 0) {
+            indexArray = buildIndices(oldPop.length);
         }
-        indices.push(index);
     }
 
-    for (let i = 0; i < oldPop.length; i++) {
-        if (indices.includes(i)) {
-            let index = generator.range(newPop.length); // care population.length != populationSize in some cases !!
-            while (indexHistory.includes(index)) {
-                index = generator.range(newPop.length);
-            }
-            indexHistory.push(index);
-            result.push(newPop[index]);
-            if (indexHistory.length === newPop.length) {
-                indexHistory = [];
-            }
-        } else {
-            result.push(oldPop[i]);
+    indexArray = buildIndices(newPop.length);
+    for (let i = threshold; i < oldPop.length; i++) {
+        let index = generator.range(indexArray.length); // care population.length != populationSize in some cases !!
+
+        result.push(newPop[indexArray[index]]);
+
+        indexArray.splice(index, 1);
+        if (indexArray.length === 0) {
+            indexArray = buildIndices(oldPop.length);
         }
     }
 

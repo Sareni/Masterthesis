@@ -21,18 +21,13 @@ class ExecutorGA extends BaseExecutor {
 
         let j = 0;
         while ((j < (that.populationSize*that.selectionPressure) || offspringBuffer.length < offspringCount) && j < that.populationSize * 5) { // Remove?
-            console.log('1');
-            const candidates = that.selectionFunction(that.population, 2, that.generator);
-            console.log('2');
-
+            const candidates = that.selectionFunction(that.population, 2, that.generator, j===0);
 
             let newCandidate = that.candidateFactory.cross(...candidates);
             if (that.generator.random() < that.mutationRate) {
                 newCandidate = that.candidateFactory.mutate(newCandidate);
             }
             newCandidate.fitness = that.candidateFactory.evaluate(newCandidate);
-            console.log('3');
-
 
             if (that.useOptimization && (newCandidate.fitness > candidates[0].fitness && newCandidate.fitness > candidates[1].fitness)) {
                 offspringBuffer.push(newCandidate);
