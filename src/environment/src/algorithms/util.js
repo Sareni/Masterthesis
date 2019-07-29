@@ -91,7 +91,7 @@ function proportionalSelection(population, count, generator) {
         for(let index = 0; index < indexArray.length; index++) {
             curSum += population[indexArray[index]].fitness + shift;
             if (curSum > threshold) {
-                result.push(population[indexArray[index]);
+                result.push(population[indexArray[index]]);
 
                 indexArray.splice(index, 1);
                 if (indexArray.length === 0) {
@@ -125,11 +125,12 @@ function randomReplacement(oldPop, newPop, generator) {
     const rate = 0.5;
     const result = [];
     let indexArray = buildIndices(oldPop.length);
+    console.log('test8', newPop, oldPop);
 
     const threshold = oldPop.length * rate;
 
     for (let i = 0; i < threshold; i++) {
-        let index = generator.range(oldPop.length); // care population.length != populationSize in some cases !!
+        let index = generator.range(indexArray.length); // care population.length != populationSize in some cases !!
         result.push(oldPop[indexArray[index]]);
 
         indexArray.splice(index, 1);
@@ -137,6 +138,7 @@ function randomReplacement(oldPop, newPop, generator) {
             indexArray = buildIndices(oldPop.length);
         }
     }
+    console.log('test7', result);
 
     indexArray = buildIndices(newPop.length);
     for (let i = threshold; i < oldPop.length; i++) {
@@ -149,6 +151,8 @@ function randomReplacement(oldPop, newPop, generator) {
             indexArray = buildIndices(oldPop.length);
         }
     }
+
+    console.log('test6', result);
 
     return result;
 }

@@ -37,14 +37,15 @@ class ExecutorGA extends BaseExecutor {
  
             j++;
         }
-
-	let candidates = [];
-
-	if (offspringBuffer.length >= that.population.length) {
-		candidates = offspringBuffer.slice(0
-        const fillCandidates = that.replacementFunction(that.population, newPopulation, that.generator).slice(0, that.population.length - offspringBuffer.length);
-        that.population = that.sortByFitness(offspringBuffer.concat(fillCandidates));
-
+        
+	    if (offspringBuffer.length >= that.population.length) {
+            that.population = that.sortByFitness(offspringBuffer).slice(0, that.population.length);
+        } else {
+            const fillCandidates = that.replacementFunction(that.population, newPopulation, that.generator).slice(0, that.population.length - offspringBuffer.length);
+            const candidates = offspringBuffer.concat(fillCandidates);
+            that.population = that.sortByFitness(candidates);
+        }
+        
         that.uiHandler({x: that.counter, y: that.population[0].fitness});
         that.msgHandler(that.counter, 'status', `Best Candidate: ${JSON.stringify(that.population[0])}`);
         that.counter += 1;
