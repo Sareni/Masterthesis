@@ -125,7 +125,6 @@ function randomReplacement(oldPop, newPop, generator) {
     const rate = 0.5;
     const result = [];
     let indexArray = buildIndices(oldPop.length);
-    console.log('test8', newPop, oldPop);
 
     const threshold = oldPop.length * rate;
 
@@ -138,7 +137,6 @@ function randomReplacement(oldPop, newPop, generator) {
             indexArray = buildIndices(oldPop.length);
         }
     }
-    console.log('test7', result);
 
     indexArray = buildIndices(newPop.length);
     for (let i = threshold; i < oldPop.length; i++) {
@@ -151,8 +149,6 @@ function randomReplacement(oldPop, newPop, generator) {
             indexArray = buildIndices(oldPop.length);
         }
     }
-
-    console.log('test6', result);
 
     return result;
 }
