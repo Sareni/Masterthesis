@@ -118,7 +118,7 @@ function testLoop(Factory, Executor, seedValue, type, useOptimization, mi, algoT
                             const newOutputLine = `${algoType};${type};${parameters.populationSizeArray[populationIndex]};${parameters.generationCountArray[generationCountIndex]};${parameters.playerCount};${parameters.strategyCount};${parameters.selectionPressureArray[selectionPressureIndex]};${parameters.mutationRateArray[mutationIndex]};${selectionFunctionArray[selectionFunctionIndex].name};${replacementFunctionArray[replacementFunctionIndex].name};${useOptimization};${time};${result}\n`;
                             console.log('Line added', lineCount);
                             lineCount++;
-                            fs.appendFile("results/game1.csv", newOutputLine, function(err) {
+                            fs.appendFile(`results/${name}.csv`, newOutputLine, function(err) {
                                 if(err) {
                                     return log(err);
                                 }
@@ -150,7 +150,7 @@ function testLoop(Factory, Executor, seedValue, type, useOptimization, mi, algoT
 }
 
 
-function testGame1Execution(type='NE', candidateFactory, executorGA, executorES, executorBF, name) {
+function testGame1a2Execution(type='NE', candidateFactory, executorGA, executorES, executorBF, name) {
 
     let executor;
     let factory;
@@ -162,13 +162,13 @@ function testGame1Execution(type='NE', candidateFactory, executorGA, executorES,
     resultArray = new Array(5);
 
     const header = 'Algo;Type;Population;Generations;Players;Strategys;SelectionPressure;MutationRate;SelectionFunction;ReplacementFunction;Optimized;Time;Result\n'
-    fs.writeFile("results/game1.csv", header, function(err) {
+    fs.writeFile(`results/${name}.csv`, header, function(err) {
         if(err) {
             return log(err);
         }
     }); 
     log('+--------------------------------+');
-    log(`|              GAME1             |`);
+    log(`|              ${name.toUpperCase()}             |`);
     log('+--------------------------------+');
     log(`|              ${type}                |`);
     log('+--------------------------------+');
@@ -314,11 +314,11 @@ function testGame1Execution(type='NE', candidateFactory, executorGA, executorES,
     log('Eq - GA (new): ', gaEq, ', BF (new): ', bfEq);
     log('--------------\n');
 
-    fs.writeFile("results/game1.txt", output, function(err) {
+    fs.writeFile(`results/${name}.txt`, output, function(err) {
         if(err) {
             return log(err);
         }
     });
 }
 
-export default testGame1Execution;
+export default testGame1a2Execution;
