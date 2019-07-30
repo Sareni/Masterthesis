@@ -9,15 +9,6 @@ let parameters = {};
 const selectionFunctionArray = [proportionalSelection, randomSelection, tournamentSelection]; 
 const replacementFunctionArray = [completeReplacement, randomReplacement, elitismReplacement];
 
-/*
-    const maxRounds = 10;
-    const selectionFunctionArray = [proportionalSelection, randomSelection, tournamentSelection]; 
-    const replacementFunctionArray = [completeReplacement, randomReplacement, elitismReplacement]; 
-    const populationSizeArray = [30, 60];
-    const generationCountArray = [50, 100];
-    const mutationRateArray = [0.1, 0.3]; */
-
-
 let modeIndex = 0;
 let populationIndex = 0;
 let generationCountIndex = 0;
@@ -117,7 +108,7 @@ function testLoop(Factory, Executor, seedValue, type, useOptimization, mi, algoT
                             for (let p = 0; p < parameters.maxRounds; p++) {
                                 roundIndex = p;
                                 const dynSeedValue = generator.range(10000);
-                                const factory = new Factory(parameters.playerCount,parameters.strategyCount, dynSeedValue, type);
+                                const factory = new Factory(parameters.playerCount || parameters.treeDepth, parameters.strategyCount, dynSeedValue, type);
                                 const executor = new Executor(parameters.generationCountArray[generationCountIndex], dynSeedValue, parameters.populationSizeArray[populationIndex], timeout, parameters.selectionPressureArray[selectionPressureIndex], parameters.mutationRateArray[mutationIndex], factory, newGameState, newMessage, selectionFunctionArray[selectionFunctionIndex], replacementFunctionArray[replacementFunctionIndex], useOptimization);
                                 executor.start();
                             }
@@ -159,12 +150,12 @@ function testLoop(Factory, Executor, seedValue, type, useOptimization, mi, algoT
 }
 
 
-function testGame1Execution(type='NE', candidateFactory, executorGA, executorES, executorBF) {
+function testGame1Execution(type='NE', candidateFactory, executorGA, executorES, executorBF, name) {
 
     let executor;
     let factory;
 
-    const parametersFile = fs.readFileSync('game1.json');
+    const parametersFile = fs.readFileSync(`${name}.json`);
     parameters = JSON.parse(parametersFile);
 
     const seedValue = Math.random() * 10000;

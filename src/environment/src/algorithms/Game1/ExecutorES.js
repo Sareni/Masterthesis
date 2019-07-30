@@ -26,7 +26,7 @@ class ExecutorES extends BaseExecutor {
         let baseFitness = 0;
 
 
-        for (let j = 0; j < that.populationSize; j++) {
+        for (let j = 0; j < that.populationSize * that.selectionPressure; j++) {
             const candidate = that.selectionFunction(that.population, 1, that.generator, j === 0);
 
             let newCandidate = {

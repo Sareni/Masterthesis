@@ -3,8 +3,7 @@ const readline = require('readline');
 require("babel-core").transform("code");
 
 
-import testGame1Execution from './testGame1';
-//import testGame2Execution from './testGame2';
+import testGame1a2Execution from './testGame1a2';
 import testGame3Execution from './testGame3';
 import testGame6Execution from './testGame6';
 import testGame7Execution from './testGame7';
@@ -32,12 +31,12 @@ const rl = readline.createInterface({
 
 
 function testGame1() {
-    testGame1Execution('NE', CandidateFactory1, ExecutorGA1, ExecutorES1, ExecutorBF1);
-    testGame1Execution('MAX', CandidateFactory1, ExecutorGA1, ExecutorES1, ExecutorBF1);
+    testGame1a2Execution('NE', CandidateFactory1, ExecutorGA1, ExecutorES1, ExecutorBF1, 'game1');
+    testGame1a2Execution('MAX', CandidateFactory1, ExecutorGA1, ExecutorES1, ExecutorBF1, 'game1');
 }
 
 function testGame2() {
-    testGame1Execution('', CandidateFactory2, ExecutorGA2, ExecutorES2, ExecutorBF2);
+    testGame1a2Execution('NE', CandidateFactory2, ExecutorGA2, ExecutorES2, ExecutorBF2, 'game2');
 }
 
 function testGame3() {
@@ -65,9 +64,9 @@ function startGame(gameNumber) {
     switch (gameNumber) {
         case 1: testGame1(); break;
         case 2: testGame2(); break;
-        case 3: testGame3(); break;
+        case 3: 
         case 4:
-        case 5:
+        case 5: testGame3(); break;
         case 6: testGame6(); break;
         case 7: testGame7(); break;
         case 8: testGame8(); break;

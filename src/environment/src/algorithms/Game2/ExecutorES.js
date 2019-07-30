@@ -2,8 +2,8 @@ import BaseExecutor from '../BaseExecutor';
 
 class ExecutorES extends BaseExecutor {
 
-    constructor(generationCount, seedValue, populationSize, timeout, mutationRate, CandidateFactory, uiHandler, msgHandler, selectionFunction, replacementFunction, useOptimization) {
-        super(populationSize, timeout, generationCount, seedValue, mutationRate, CandidateFactory, uiHandler, msgHandler, selectionFunction, replacementFunction, useOptimization);
+    constructor(generationCount, seedValue, populationSize, timeout, selectionPressure, mutationRate, CandidateFactory, uiHandler, msgHandler, selectionFunction, replacementFunction, useOptimization) {
+        super(populationSize, timeout, generationCount, seedValue, selectionPressure, mutationRate, CandidateFactory, uiHandler, msgHandler, selectionFunction, replacementFunction, useOptimization);
         this.population = this.generateBasePopulation();
 
         this.maxSigma = 4;
@@ -25,8 +25,8 @@ class ExecutorES extends BaseExecutor {
         let successCounter = 0;
         let baseFitness = 0;
 
-        for (let j = 0; j < that.populationSize; j++) {
-            const candidate = that.selectionFunction(that.population, 1, that.generator);
+        for (let j = 0; j < that.populationSize * that.selectionPressure; j++) {
+            const candidate = that.selectionFunction(that.population, 1, that.generator, j === 0);
 
             let newCandidate = {
                 fitness: candidate[0].fitness,

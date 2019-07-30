@@ -1,0 +1,9 @@
+{
+    "maxRounds": 10,
+    "populationSizeArray": [1, 5, 30, 60, 90],
+    "generationCountArray": [10, 25, 50, 100],
+    "mutationRateArray": [0.01, 0.1, 0.3, 0.5],
+    "selectionPressureArray": [1, 2, 3, 4],
+    "treeDepth": 5,
+    "strategyCount": 10
+}
