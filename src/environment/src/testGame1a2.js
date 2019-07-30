@@ -5,6 +5,7 @@ import { proportionalSelection, randomSelection, tournamentSelection, completeRe
 
 
 let parameters = {};
+let csvStream;
 
 const selectionFunctionArray = [proportionalSelection, randomSelection, tournamentSelection]; 
 const replacementFunctionArray = [completeReplacement, randomReplacement, elitismReplacement];
@@ -118,11 +119,7 @@ function testLoop(Factory, Executor, seedValue, type, useOptimization, mi, algoT
                             const newOutputLine = `${algoType};${type};${parameters.populationSizeArray[populationIndex]};${parameters.generationCountArray[generationCountIndex]};${parameters.playerCount};${parameters.strategyCount};${parameters.selectionPressureArray[selectionPressureIndex]};${parameters.mutationRateArray[mutationIndex]};${selectionFunctionArray[selectionFunctionIndex].name};${replacementFunctionArray[replacementFunctionIndex].name};${useOptimization};${time};${result}\n`;
                             console.log('Line added', lineCount);
                             lineCount++;
-                            fs.appendFile(`results/${name}.csv`, newOutputLine, function(err) {
-                                if(err) {
-                                    return log(err);
-                                }
-                            }); 
+                            csvStream.write(newOutputLine, 'utf-8');
 
                             if (result > bestSetting[modeIndex].result || bestSetting[modeIndex].populationIndex === -1) {
                                 bestSetting[modeIndex].time = time;
@@ -166,7 +163,9 @@ function testGame1a2Execution(type='NE', candidateFactory, executorGA, executorE
         if(err) {
             return log(err);
         }
-    }); 
+    });
+    csvStream = fs.createWriteStream(`results/${name}.csv`, { flags : 'a' });
+
     log('+--------------------------------+');
     log(`|              ${name.toUpperCase()}             |`);
     log('+--------------------------------+');
