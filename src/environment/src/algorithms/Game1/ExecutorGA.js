@@ -41,7 +41,7 @@ class ExecutorGA extends BaseExecutor {
 	    if (offspringBuffer.length >= that.population.length) {
             that.population = that.sortByFitness(offspringBuffer).slice(0, that.population.length);
         } else {
-            const fillCandidates = that.replacementFunction(that.population, newPopulation, that.generator).slice(0, that.population.length - offspringBuffer.length);
+            const fillCandidates = that.sortByFitness(that.replacementFunction(that.population, newPopulation, that.generator)).slice(0, that.population.length - offspringBuffer.length);
             const candidates = offspringBuffer.concat(fillCandidates);
             that.population = that.sortByFitness(candidates);
         }
