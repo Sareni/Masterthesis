@@ -1,5 +1,4 @@
 
-
 import Generator from 'random-seed';
 import fs from 'fs';
 import { proportionalSelection, randomSelection, tournamentSelection, completeReplacement, randomReplacement, elitismReplacement } from './algorithms/util';
@@ -7,12 +6,6 @@ import { proportionalSelection, randomSelection, tournamentSelection, completeRe
 
 let parameters = {};
 let csvStream;
-
-let result = 0;
-let lastResultsX;
-let lastResultsY;
-let lastResultsFitness;
-
 
 const selectionFunctionArray = [proportionalSelection, randomSelection, tournamentSelection]; 
 const replacementFunctionArray = [completeReplacement, randomReplacement, elitismReplacement];
@@ -28,13 +21,13 @@ let roundIndex = 0;
 
 let lineCount = 0;
 
+let result = 0;
+let lastResults;
+
 let resultArray;
 
-
-const playerCount = 2;
-lastResultsX = new Array(playerCount);
-lastResultsY = new Array(playerCount);
-lastResultsFitness = new Array(playerCount);
+let zeroCount = 0;
+let noneZeroCount = 0;
 
 let output = '';
 let bestSetting = new Array(4);
@@ -47,29 +40,25 @@ function log() {
     output += '\n';
 }
 
-
 function newMessage(gen, type, msg) {
     if (type === 'fin') {
-        let avg = 0;
-
-        for (let j = 0; j < playerCount; j++) {
-            avg += lastResultsFitness[j];
-        }
-        avg = avg / playerCount;
-
-        for (let i = 0; i < playerCount; i++) {
-            result += Math.abs(lastResultsFitness[i] - avg);
-            lastResultsFitness[i] = 0;
-        }
-
+        result = lastResults.reduce((acc, cur) => {
+            return acc + cur;
+        });
         resultArray[modeIndex][populationIndex][generationCountIndex][mutationIndex][selectionFunctionIndex][replacementFunctionIndex][selectionPressureIndex][roundIndex] = result;
+
+        if (result === 0) {
+            zeroCount += 1;
+        } else {
+            noneZeroCount += 1;
+        }
+        lastResults = new Array(lastResults.length);
     }
-  }
+
+}
 
 function newGameState(data) {
-    lastResultsX[data.playerNumber-1] = data.x;
-    lastResultsY[data.playerNumber-1] = data.y;
-    lastResultsFitness[data.playerNumber-1] = data.fitness;
+    lastResults[data.playerNumber] = data.y;
 }
 
 
@@ -109,29 +98,27 @@ function testLoop(Factory, Executor, seedValue, type, useOptimization, mi, algoT
                             bestSetting[modeIndex] = { populationIndex: -1 };
 
                             result = 0;
-
                             const startDate = Date.now();
                             const generator = Generator.create(seedValue);
 
-                            console.log(`${algoType};${type};${parameters.populationSizeArray[populationIndex]};${parameters.generationCountArray[generationCountIndex]};${parameters.playerCount};${parameters.xMax};${parameters.yMax};${parameters.selectionPressureArray[selectionPressureIndex]};${parameters.mutationRateArray[mutationIndex]};${selectionFunctionArray[selectionFunctionIndex].name};${replacementFunctionArray[replacementFunctionIndex].name};${useOptimization};`);
+                            console.log(`${algoType};${type};${parameters.populationSizeArray[populationIndex]};${parameters.generationCountArray[generationCountIndex]};${parameters.playerCount};${parameters.strategyCount};${parameters.selectionPressureArray[selectionPressureIndex]};${parameters.mutationRateArray[mutationIndex]};${selectionFunctionArray[selectionFunctionIndex].name};${replacementFunctionArray[replacementFunctionIndex].name};${useOptimization};`);
 
                             for (let p = 0; p < parameters.maxRounds; p++) {
                                 roundIndex = p;
                                 const dynSeedValue = generator.range(10000);
-                                const factory = new Factory(parameters.playerCount, parameters.xMax, parameters.yMax, dynSeedValue);
+                                const factory = new Factory(parameters.playerCount, parameters.strategyCount, dynSeedValue, parameters.findBoth || false);
                                 const executor = new Executor(parameters.generationCountArray[generationCountIndex], dynSeedValue, parameters.populationSizeArray[populationIndex], timeout, parameters.selectionPressureArray[selectionPressureIndex], parameters.mutationRateArray[mutationIndex], factory, newGameState, newMessage, selectionFunctionArray[selectionFunctionIndex], replacementFunctionArray[replacementFunctionIndex], useOptimization);
                                 executor.start();
                             }
 
                             const time = Date.now() - startDate;
 
-                            const newOutputLine = `${algoType};${type};${parameters.populationSizeArray[populationIndex]};${parameters.generationCountArray[generationCountIndex]};${parameters.playerCount};${parameters.xMax};${parameters.yMax};${parameters.selectionPressureArray[selectionPressureIndex]};${parameters.mutationRateArray[mutationIndex]};${selectionFunctionArray[selectionFunctionIndex].name};${replacementFunctionArray[replacementFunctionIndex].name};${useOptimization};${time};${result}\n`;
+                            const newOutputLine = `${algoType};${type};${parameters.populationSizeArray[populationIndex]};${parameters.generationCountArray[generationCountIndex]};${parameters.playerCount};${parameters.strategyCount};${parameters.selectionPressureArray[selectionPressureIndex]};${parameters.mutationRateArray[mutationIndex]};${selectionFunctionArray[selectionFunctionIndex].name};${replacementFunctionArray[replacementFunctionIndex].name};${useOptimization};${time};${result}\n`;
                             console.log('Line added', lineCount);
                             lineCount++;
                             csvStream.write(newOutputLine, 'utf-8');
 
-
-                            if (result < bestSetting[modeIndex].result || bestSetting[modeIndex].populationIndex === -1) {
+                            if (result > bestSetting[modeIndex].result || bestSetting[modeIndex].populationIndex === -1) {
                                 bestSetting[modeIndex].time = time;
                                 bestSetting[modeIndex].populationIndex = populationIndex;
                                 bestSetting[modeIndex].generationCountIndex = generationCountIndex;
@@ -156,25 +143,26 @@ function testLoop(Factory, Executor, seedValue, type, useOptimization, mi, algoT
     log('Time:', bestSetting[modeIndex].time);
 }
 
-function testGame6Execution(type='NE', candidateFactory, executorGA, executorES, executorBF, name) {
+
+function testGame3Execution(type='NE', candidateFactory, executorGA, executorES, executorBF, name) {
     let executor;
     let factory;
 
     const parametersFile = fs.readFileSync(`${name}.json`);
     parameters = JSON.parse(parametersFile);
 
-    const seedValue = Math.random() * 10000;
+    const seedValue = Math.random() * 10000; // = 6664.58;
     resultArray = new Array(4);
 
-    const header = 'Algo;Type;Population;Generations;Players;xMax;yMax;SelectionPressure;MutationRate;SelectionFunction;ReplacementFunction;Optimized;Time;Result\n'
+    lastResults = new Array(parameters.playerCount);
+
+    const header = 'Algo;Type;Population;Generations;Players;Strategies;SelectionPressure;MutationRate;SelectionFunction;ReplacementFunction;Optimized;Time;Result\n'
     fs.writeFile(`results/${name}.csv`, header, function(err) {
         if(err) {
             return log(err);
         }
-    }); 
-
+    });
     csvStream = fs.createWriteStream(`results/${name}.csv`, { flags : 'a' });
-
 
     log('+--------------------------------+');
     log(`|              ${name.toUpperCase()}             |`);
@@ -185,16 +173,38 @@ function testGame6Execution(type='NE', candidateFactory, executorGA, executorES,
     log('-------------- GA ----------------');
     testLoop(candidateFactory, executorGA, seedValue, type, false, 0, 'GA');
 
+    log('0:', zeroCount);
+    zeroCount = 0;
+    log('no 0:', noneZeroCount);
+    noneZeroCount = 0;
+
     log('-------------- optimiert');
     testLoop(candidateFactory, executorGA, seedValue, type, true, 1, 'GA');
 
+    log('0:', zeroCount);
+    zeroCount = 0;
+    log('no 0:', noneZeroCount);
+    noneZeroCount = 0;
+
     log('--------------');
+
 
     log('-------------- ES ----------------');
     testLoop(candidateFactory, executorES, seedValue, type, false, 2, 'ES');
 
+    log('0:', zeroCount);
+    zeroCount = 0;
+    log('no 0:', noneZeroCount);
+    noneZeroCount = 0;
+
     log('-------------- optimiert');
+    
     testLoop(candidateFactory, executorES, seedValue, type, true, 3, 'ES');
+
+    log('0:', zeroCount);
+    zeroCount = 0;
+    log('no 0:', noneZeroCount);
+    noneZeroCount = 0;
 
     log('--------------');
 
@@ -202,7 +212,7 @@ function testGame6Execution(type='NE', candidateFactory, executorGA, executorES,
         if(err) {
             return log(err);
         }
-    }); 
+    });
 }
 
-export default testGame6Execution;
+export default testGame3Execution;

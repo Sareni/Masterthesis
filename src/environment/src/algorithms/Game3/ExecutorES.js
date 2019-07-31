@@ -2,8 +2,8 @@ import BaseExecutor from '../BaseExecutor';
 
 class ExecutorES extends BaseExecutor {
 
-    constructor(generationCount, seedValue, populationSize, timeout, mutationRate, candidateFactory, uiHandler, msgHandler, replacementFunction, useOptimization) {
-        super(populationSize, timeout, generationCount, seedValue, mutationRate, candidateFactory, uiHandler, msgHandler, replacementFunction, useOptimization);
+    constructor(generationCount, seedValue, populationSize, timeout, selectionPressure, mutationRate, CandidateFactory, uiHandler, msgHandler, selectionFunction, replacementFunction, useOptimization) {
+        super(populationSize, timeout, generationCount, seedValue, selectionPressure, mutationRate, CandidateFactory, uiHandler, msgHandler, selectionFunction, replacementFunction, useOptimization);
         this.population = new Array(this.candidateFactory.playerCount);
         this.history = new Array(this.candidateFactory.playerCount);
 
@@ -34,12 +34,12 @@ class ExecutorES extends BaseExecutor {
             let baseFitness = 0;
 
             for (let j = 0; j < that.populationSize; j++) {
-                const candidate = that.selectionFunction(that.population, 1, that.generator);
+                const candidate = that.selectionFunction(that.population[h], 1, that.generator, j===0);
 
                 let newCandidate = {
-                    fitness: candidate.fitness,
-                    properties: candidate.properties,
-                    playerNumber: candidate.playerNumber,
+                    fitness: candidate[0].fitness,
+                    properties: candidate[0].properties,
+                    playerNumber: candidate[0].playerNumber,
                 }
                 baseFitness = newCandidate.fitness;
                 

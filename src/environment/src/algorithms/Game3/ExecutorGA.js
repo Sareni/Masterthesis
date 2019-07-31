@@ -2,8 +2,8 @@ import BaseExecutor from '../BaseExecutor';
 
 class ExecutorGA extends BaseExecutor {
 
-    constructor(generationCount, seedValue, populationSize, timeout, mutationRate, candidateFactory, uiHandler, msgHandler, selectionFunction, replacementFunction, useOptimization) {
-        super(populationSize, timeout, generationCount, seedValue, mutationRate, candidateFactory, uiHandler, msgHandler, selectionFunction, replacementFunction, useOptimization);
+    constructor(generationCount, seedValue, populationSize, timeout, selectionPressure, mutationRate, CandidateFactory, uiHandler, msgHandler, selectionFunction, replacementFunction, useOptimization) {
+        super(populationSize, timeout, generationCount, seedValue, selectionPressure, mutationRate, CandidateFactory, uiHandler, msgHandler, selectionFunction, replacementFunction, useOptimization);
         this.population = new Array(this.candidateFactory.playerCount);
         this.history = new Array(this.candidateFactory.playerCount);
 
@@ -30,8 +30,8 @@ class ExecutorGA extends BaseExecutor {
             const offspringCount = that.useOptimization ? that.populationSize * 0.5 : 0;
 
             let j = 0;
-            while ((j < that.populationSize || offspringBuffer.length < offspringCount) && j < that.populationSize * 5) {
-                const candidates = that.selectionFunction(that.population, 2, that.generator);
+            while (j < that.populationSize || offspringBuffer.length < offspringCount) {
+                const candidates = that.selectionFunction(that.population[h], 2, that.generator, j===0);
     
                 let newCandidate = that.candidateFactory.cross(...candidates);
                 if (that.generator.random() < that.mutationRate) {

@@ -11,7 +11,7 @@ class ExecutorES extends BaseExecutor {
 
         this.maxSigma = 4;
         this.minSigma = 0.001;
-        this.sigma = 2;
+        this.sigma = new Array(this.candidateFactory.playerCount).fill(2);
         this.sigmaDelta = 1.2;
     }
 
@@ -63,7 +63,7 @@ class ExecutorES extends BaseExecutor {
                 baseFitness = newCandidate.fitness;
 
                 if (that.generator.random() < that.mutationRate) {
-                    newCandidate = that.candidateFactory.mutate(newCandidate, that.useOptimization ? that.sigma : 1);
+                    newCandidate = that.candidateFactory.mutate(newCandidate, that.useOptimization ? that.sigma[i] : 1);
                 }
                 newCandidate.fitness = that.candidateFactory.evaluate(newCandidate, thatPopulation[that.generator.range(thatPopulation.length)]);
                 newPopulation.push(newCandidate);
@@ -72,18 +72,18 @@ class ExecutorES extends BaseExecutor {
                     successCounter += 1;
                 }
             }
-        }
 
-        if (successCounter < (that.populationSize / 5)) {
-            that.sigma /= that.sigmaDelta;
-        } else if  (successCounter > (that.populationSize / 5)) {
-            that.sigma *= that.sigmaDelta;
-        }
-
-        if (that.sigma < that.minSigma) {
-            that.sigma = that.minSigma;
-        } else if (that.sigma > that.maxSigma) {
-            that.sigma = that.maxSigma;
+            if (successCounter < (that.populationSize / 5)) {
+                that.sigma[i] /= that.sigmaDelta;
+            } else if  (successCounter > (that.populationSize / 5)) {
+                that.sigma[i] *= that.sigmaDelta;
+            }
+    
+            if (that.sigma[i] < that.minSigma) {
+                that.sigma[i] = that.minSigma;
+            } else if (that.sigma[i] > that.maxSigma) {
+                that.sigma[i] = that.maxSigma;
+            }
         }
 
         that.uiHandler({ x: 0, y: 0, playerNumber: -1 });        

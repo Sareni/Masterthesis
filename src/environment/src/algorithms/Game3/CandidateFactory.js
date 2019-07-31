@@ -1,9 +1,10 @@
 import BaseCandidateFactory from '../BaseCandidateFactory';
 
 class CandidateFactory extends BaseCandidateFactory {
-    constructor(playerCount, strategyCount, seedValue) {
+    constructor(playerCount, strategyCount, seedValue, findBoth) {
         super(seedValue);
 
+        this.findBoth = findBoth;
         this.playerCount = playerCount;
         this.strategyCount = strategyCount;
         this.max = 16;
@@ -123,7 +124,7 @@ class CandidateFactory extends BaseCandidateFactory {
         let count = 0;
         let index = -1;
 
-        if (c.properties.find((p, idx, arr) => {
+        if (this.findBoth && c.properties.find((p, idx, arr) => {
             if (p < 0.1) {
                 index = idx;
                 return true;

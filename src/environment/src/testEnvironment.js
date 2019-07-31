@@ -4,7 +4,7 @@ require("babel-core").transform("code");
 
 
 import testGame1a2Execution from './testGame1a2';
-import testGame3Execution from './testGame3';
+import testGame3a4a5Execution from './testGame3a4a5';
 import testGame6Execution from './testGame6';
 import testGame7Execution from './testGame7';
 import testGame8Execution from './testGame8';
@@ -44,7 +44,15 @@ function testGame2() {
 
 function testGame3() {
     //testGame3Execution();
-    testGame1Execution('', CandidateFactory3, ExecutorGA3, ExecutorES3, null, 'game3');
+    testGame3a4a5Execution('NE', CandidateFactory3, ExecutorGA3, ExecutorES3, null, 'game3');
+}
+
+function testGame4() {
+    testGame3a4a5Execution('NE', CandidateFactory3, ExecutorGA3, ExecutorES3, null, 'game4');
+}
+
+function testGame5() {
+    testGame3a4a5Execution('NE', CandidateFactory3, ExecutorGA3, ExecutorES3, null, 'game5');
 }
 
 function testGame6() {
@@ -67,9 +75,9 @@ function startGame(gameNumber) {
     switch (gameNumber) {
         case 1: testGame1(); break;
         case 2: testGame2(); break;
-        case 3: 
-        case 4:
-        case 5: testGame3(); break;
+        case 3: testGame3(); break;
+        case 4: testGame4(); break;
+        case 5: testGame5(); break;
         case 6: testGame6(); break;
         case 7: testGame7(); break;
         case 8: testGame8(); break;

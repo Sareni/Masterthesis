@@ -58,7 +58,7 @@ function newMessage(gen, type, msg) {
         result = lastResult; // +=
         lastResult = 0;
     }
-  }
+}
 
 function newGameState(data) {
     lastResult = data.y;
@@ -154,7 +154,7 @@ function testGame1a2Execution(type='NE', candidateFactory, executorGA, executorE
     const parametersFile = fs.readFileSync(`${name}.json`);
     parameters = JSON.parse(parametersFile);
 
-    const seedValue = Math.random() * 10000;
+    const seedValue = Math.random() * 10000; // = 6664.58;
     resultArray = new Array(5);
 
     const header = 'Algo;Type;Population;Generations;Players;Strategies;SelectionPressure;MutationRate;SelectionFunction;ReplacementFunction;Optimized;Time;Result\n'
