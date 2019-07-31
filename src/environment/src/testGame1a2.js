@@ -30,6 +30,7 @@ let zeroCount = 0;
 let noneZeroCount = 0;
 
 let output = '';
+let bestSetting = new Array(4);
 
 function log() {
     console.log(...arguments);
@@ -54,7 +55,7 @@ function newMessage(gen, type, msg) {
             noneZeroCount += 1;
         }
 
-        result += lastResult;
+        result = lastResult; // +=
         lastResult = 0;
     }
   }
@@ -62,8 +63,6 @@ function newMessage(gen, type, msg) {
 function newGameState(data) {
     lastResult = data.y;
 }
-
-let bestSetting = new Array(4);
 
 function testLoop(Factory, Executor, seedValue, type, useOptimization, mi, algoType) {
     modeIndex = mi;
@@ -158,7 +157,7 @@ function testGame1a2Execution(type='NE', candidateFactory, executorGA, executorE
     const seedValue = Math.random() * 10000;
     resultArray = new Array(5);
 
-    const header = 'Algo;Type;Population;Generations;Players;Strategys;SelectionPressure;MutationRate;SelectionFunction;ReplacementFunction;Optimized;Time;Result\n'
+    const header = 'Algo;Type;Population;Generations;Players;Strategies;SelectionPressure;MutationRate;SelectionFunction;ReplacementFunction;Optimized;Time;Result\n'
     fs.writeFile(`results/${name}.csv`, header, function(err) {
         if(err) {
             return log(err);

@@ -6,32 +6,38 @@ import { proportionalSelection, randomSelection, tournamentSelection, completeRe
 
 
 let parameters = {};
+let csvStream;
 
-
-let resultX = 0;
-let resultY = 0;
+let result = 0;
 let lastResultsX;
 let lastResultsY;
 let lastResultsFitness;
 
 
+const selectionFunctionArray = [proportionalSelection, randomSelection, tournamentSelection]; 
+const replacementFunctionArray = [completeReplacement, randomReplacement, elitismReplacement];
+
+let modeIndex = 0;
+let populationIndex = 0;
+let generationCountIndex = 0;
+let mutationIndex = 0;
+let selectionFunctionIndex = 0;
+let replacementFunctionIndex = 0;
+let selectionPressureIndex = 0;
+let roundIndex = 0;
+
+let lineCount = 0;
+
 let resultArray;
-let mode = 0;
-let scaleCounter = 0;
-let roundCounter = 0;
+
 
 const playerCount = 2;
 lastResultsX = new Array(playerCount);
 lastResultsY = new Array(playerCount);
 lastResultsFitness = new Array(playerCount);
 
-const xMax = 200;
-const yMax = 200;
-
-let gaEq = 0;
-let esEq = 0;
-
 let output = '';
+let bestSetting = new Array(4);
 
 function log() {
     console.log(...arguments);
@@ -52,9 +58,11 @@ function newMessage(gen, type, msg) {
         avg = avg / playerCount;
 
         for (let i = 0; i < playerCount; i++) {
-            resultX += Math.abs(lastResultsFitness[i] - avg);
+            result += Math.abs(lastResultsFitness[i] - avg);
             lastResultsFitness[i] = 0;
         }
+
+        resultArray[modeIndex][populationIndex][generationCountIndex][mutationIndex][selectionFunctionIndex][replacementFunctionIndex][selectionPressureIndex][roundIndex] = result;
     }
   }
 
@@ -101,31 +109,29 @@ function testLoop(Factory, Executor, seedValue, type, useOptimization, mi, algoT
                             bestSetting[modeIndex] = { populationIndex: -1 };
 
                             result = 0;
+
                             const startDate = Date.now();
                             const generator = Generator.create(seedValue);
 
-                            console.log(`${algoType};${type};${parameters.populationSizeArray[populationIndex]};${parameters.generationCountArray[generationCountIndex]};${parameters.playerCount};${parameters.strategyCount};${parameters.selectionPressureArray[selectionPressureIndex]};${parameters.mutationRateArray[mutationIndex]};${selectionFunctionArray[selectionFunctionIndex].name};${replacementFunctionArray[replacementFunctionIndex].name};${useOptimization};`);
+                            console.log(`${algoType};${type};${parameters.populationSizeArray[populationIndex]};${parameters.generationCountArray[generationCountIndex]};${parameters.playerCount};${parameters.xMax};${parameters.yMax};${parameters.selectionPressureArray[selectionPressureIndex]};${parameters.mutationRateArray[mutationIndex]};${selectionFunctionArray[selectionFunctionIndex].name};${replacementFunctionArray[replacementFunctionIndex].name};${useOptimization};`);
 
                             for (let p = 0; p < parameters.maxRounds; p++) {
                                 roundIndex = p;
                                 const dynSeedValue = generator.range(10000);
-                                const factory = new Factory(parameters.playerCount || parameters.treeDepth, parameters.strategyCount, dynSeedValue, type);
+                                const factory = new Factory(parameters.playerCount, parameters.xMax, parameters.yMax, dynSeedValue);
                                 const executor = new Executor(parameters.generationCountArray[generationCountIndex], dynSeedValue, parameters.populationSizeArray[populationIndex], timeout, parameters.selectionPressureArray[selectionPressureIndex], parameters.mutationRateArray[mutationIndex], factory, newGameState, newMessage, selectionFunctionArray[selectionFunctionIndex], replacementFunctionArray[replacementFunctionIndex], useOptimization);
                                 executor.start();
                             }
 
                             const time = Date.now() - startDate;
 
-                            const newOutputLine = `${algoType};${type};${parameters.populationSizeArray[populationIndex]};${parameters.generationCountArray[generationCountIndex]};${parameters.playerCount};${parameters.strategyCount};${parameters.selectionPressureArray[selectionPressureIndex]};${parameters.mutationRateArray[mutationIndex]};${selectionFunctionArray[selectionFunctionIndex].name};${replacementFunctionArray[replacementFunctionIndex].name};${useOptimization};${time};${result}\n`;
+                            const newOutputLine = `${algoType};${type};${parameters.populationSizeArray[populationIndex]};${parameters.generationCountArray[generationCountIndex]};${parameters.playerCount};${parameters.xMax};${parameters.yMax};${parameters.selectionPressureArray[selectionPressureIndex]};${parameters.mutationRateArray[mutationIndex]};${selectionFunctionArray[selectionFunctionIndex].name};${replacementFunctionArray[replacementFunctionIndex].name};${useOptimization};${time};${result}\n`;
                             console.log('Line added', lineCount);
                             lineCount++;
-                            fs.appendFile("results/game1.csv", newOutputLine, function(err) {
-                                if(err) {
-                                    return log(err);
-                                }
-                            }); 
+                            csvStream.write(newOutputLine, 'utf-8');
 
-                            if (result > bestSetting[modeIndex].result || bestSetting[modeIndex].populationIndex === -1) {
+
+                            if (result < bestSetting[modeIndex].result || bestSetting[modeIndex].populationIndex === -1) {
                                 bestSetting[modeIndex].time = time;
                                 bestSetting[modeIndex].populationIndex = populationIndex;
                                 bestSetting[modeIndex].generationCountIndex = generationCountIndex;
@@ -150,36 +156,24 @@ function testLoop(Factory, Executor, seedValue, type, useOptimization, mi, algoT
     log('Time:', bestSetting[modeIndex].time);
 }
 
-function testGame6Execution(type='NE') {
+function testGame6Execution(type='NE', candidateFactory, executorGA, executorES, executorBF, name) {
     let executor;
     let factory;
 
-    const parametersFile = fs.readFileSync('game6.json');
+    const parametersFile = fs.readFileSync(`${name}.json`);
     parameters = JSON.parse(parametersFile);
 
     const seedValue = Math.random() * 10000;
-    resultArray = new Array(5);
+    resultArray = new Array(4);
 
-    const header = 'Algo;Type;Population;Generations;Players;Strategys;SelectionPressure;MutationRate;SelectionFunction;ReplacementFunction;Optimized;Time;Result\n'
-    fs.writeFile("results/game6.csv", header, function(err) {
+    const header = 'Algo;Type;Population;Generations;Players;xMax;yMax;SelectionPressure;MutationRate;SelectionFunction;ReplacementFunction;Optimized;Time;Result\n'
+    fs.writeFile(`results/${name}.csv`, header, function(err) {
         if(err) {
             return log(err);
         }
     }); 
 
-
-    const seedValue = Math.random() * 10000;
-
-
-    const generationCount = 200;
-    const populationSize = 30;
-    const timeout = '0';
-
-    const mutationRate = 0.5;
-
-    const maxTestScaling = 4;
-
-    resultArray = new Array(3);
+    csvStream = fs.createWriteStream(`results/${name}.csv`, { flags : 'a' });
 
 
     log('+--------------------------------+');
@@ -189,59 +183,22 @@ function testGame6Execution(type='NE') {
     log('+--------------------------------+');
 
     log('-------------- GA ----------------');
-    generator = Generator.create(seedValue);
-    resultArray[0] = new Array(maxTestScaling);
+    testLoop(candidateFactory, executorGA, seedValue, type, false, 0, 'GA');
 
-    for (let i = 0; i < maxTestScaling; i++) {
-        const rounds = roundArray[i];
-        log('---------- ', rounds);
-        resultX = 0;
-        resultY = 0;
-        mode = 0;
-        scaleCounter = i;
-        roundCounter = 0;
-        resultArray[0][scaleCounter] = new Array(rounds).fill(0);
-        startDate = Date.now();
-        for (let j = 0; j < rounds; j++) {
-            roundCounter = j;
-            const dynSeedValue = generator.range(10000);
-            factory = new CandidateFactory6(playerCount,xMax, yMax, dynSeedValue);
-            executor = new ExecutorGA6(generationCount, dynSeedValue, populationSize, timeout, mutationRate, factory, newGameState, newMessage);
-            executor.start();
-        }
-        log('Results: ', resultX, ', ', resultY);
-        log('Runtime: ', Date.now() - startDate);
-        log('--------------');
+    log('-------------- optimiert');
+    testLoop(candidateFactory, executorGA, seedValue, type, true, 1, 'GA');
 
-    }
+    log('--------------');
 
-    log('\n-------------- ES ----------------');
-    generator = Generator.create(seedValue);
-    resultArray[1] = new Array(maxTestScaling);
+    log('-------------- ES ----------------');
+    testLoop(candidateFactory, executorES, seedValue, type, false, 2, 'ES');
 
-    for (let i = 0; i < maxTestScaling; i++) {
-        const rounds = roundArray[i];
-        log('---------- ', rounds);
-        resultX = 0;
-        resultY = 0;
-        mode = 1;
-        scaleCounter = i;
-        roundCounter = 0;
-        resultArray[1][scaleCounter] = new Array(rounds).fill(0);
-        startDate = Date.now();
-        for (let j = 0; j < rounds; j++) {
-            roundCounter = j;
-            const dynSeedValue = generator.range(10000);
-            factory = new CandidateFactory6(playerCount, xMax, yMax, dynSeedValue);
-            executor = new ExecutorES6(generationCount, dynSeedValue, populationSize, timeout, mutationRate*2, factory, newGameState, newMessage);
-            executor.start();
-        }
-        log('Results: ', resultX, ', ', resultY);
-        log('Runtime: ', Date.now() - startDate);
-        log('--------------');
-    }
+    log('-------------- optimiert');
+    testLoop(candidateFactory, executorES, seedValue, type, true, 3, 'ES');
 
-    fs.writeFile("results/game6.txt", output, function(err) {
+    log('--------------');
+
+    fs.writeFile(`results/${name}.txt`, output, function(err) {
         if(err) {
             return log(err);
         }

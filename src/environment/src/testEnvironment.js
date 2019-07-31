@@ -13,14 +13,17 @@ import testGame9Execution from './testGame9';
 import CandidateFactory1 from './algorithms/Game1/CandidateFactory';
 import CandidateFactory2 from './algorithms/Game2/CandidateFactory';
 import CandidateFactory3 from './algorithms/Game3/CandidateFactory';
+import CandidateFactory6 from './algorithms/Game6/CandidateFactory';
 import ExecutorBF1 from './algorithms/Game1/ExecutorBF';
 import ExecutorBF2 from './algorithms/Game2/ExecutorBF';
 import ExecutorES1 from './algorithms/Game1/ExecutorES';
 import ExecutorES2 from './algorithms/Game2/ExecutorES';
 import ExecutorES3 from './algorithms/Game3/ExecutorES';
+import ExecutorES6 from './algorithms/Game6/ExecutorES';
 import ExecutorGA1 from './algorithms/Game1/ExecutorGA';
 import ExecutorGA2 from './algorithms/Game2/ExecutorGA';
 import ExecutorGA3 from './algorithms/Game3/ExecutorGA';
+import ExecutorGA6 from './algorithms/Game6/ExecutorGA';
 
 
 const rl = readline.createInterface({
@@ -41,11 +44,11 @@ function testGame2() {
 
 function testGame3() {
     //testGame3Execution();
-    testGame1Execution('', CandidateFactory3, ExecutorGA3, ExecutorES3, null);
+    testGame1Execution('', CandidateFactory3, ExecutorGA3, ExecutorES3, null, 'game3');
 }
 
 function testGame6() {
-    testGame6Execution();
+    testGame6Execution('NE', CandidateFactory6, ExecutorGA6, ExecutorES6, null, 'game6');
 }
 
 function testGame7() {
