@@ -24,7 +24,7 @@ class CandidateFactory extends BaseCandidateFactory {
         return newCandidate;
     }
 
-    mutate(c) {
+    mutate(c, sigma=1) {
         const newCandidate = {
             fitness: 0,
             strategy: '',
