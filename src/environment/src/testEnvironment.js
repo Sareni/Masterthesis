@@ -15,6 +15,7 @@ import CandidateFactory2 from './algorithms/Game2/CandidateFactory';
 import CandidateFactory3 from './algorithms/Game3/CandidateFactory';
 import CandidateFactory6 from './algorithms/Game6/CandidateFactory';
 import CandidateFactory7 from './algorithms/Game7/CandidateFactory';
+import CandidateFactory8 from './algorithms/Game8/CandidateFactory';
 import ExecutorBF1 from './algorithms/Game1/ExecutorBF';
 import ExecutorBF2 from './algorithms/Game2/ExecutorBF';
 import ExecutorES1 from './algorithms/Game1/ExecutorES';
@@ -22,11 +23,13 @@ import ExecutorES2 from './algorithms/Game2/ExecutorES';
 import ExecutorES3 from './algorithms/Game3/ExecutorES';
 import ExecutorES6 from './algorithms/Game6/ExecutorES';
 import ExecutorES7 from './algorithms/Game7/ExecutorES';
+import ExecutorES8 from './algorithms/Game8/ExecutorES';
 import ExecutorGA1 from './algorithms/Game1/ExecutorGA';
 import ExecutorGA2 from './algorithms/Game2/ExecutorGA';
 import ExecutorGA3 from './algorithms/Game3/ExecutorGA';
 import ExecutorGA6 from './algorithms/Game6/ExecutorGA';
 import ExecutorGA7 from './algorithms/Game7/ExecutorGA';
+import ExecutorGA8 from './algorithms/Game8/ExecutorGA';
 
 
 const rl = readline.createInterface({
@@ -63,11 +66,11 @@ function testGame6() {
 }
 
 function testGame7() {
-    testGame6Execution('NE', CandidateFactory7, ExecutorGA7, ExecutorES7, null, 'game7');
+    testGame7Execution('NE', CandidateFactory7, ExecutorGA7, ExecutorES7, null, 'game7');
 }
 
 function testGame8() {
-    testGame8Execution();
+    testGame8Execution('NE', CandidateFactory8, ExecutorGA8, ExecutorES8, null, 'game8');
 }
 
 function testGame9() {

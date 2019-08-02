@@ -33,6 +33,9 @@ function tournamentSelection(population, count, generator, first) {
 
     if (first) {
         tournamentIndices = buildIndices(population.length);
+    } else {
+        console.log('indices', tournamentIndices);
+        console.log('population', population);
     }
 
     while (result.length < count) {

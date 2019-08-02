@@ -25,7 +25,7 @@ class CandidateFactory extends BaseCandidateFactory {
         return newCandidate;
     }
 
-    mutate(c) {
+    mutate(c, sigma = 1) {
         const newCandidate = {
             fitness: 0,
             properties: [],
@@ -33,7 +33,7 @@ class CandidateFactory extends BaseCandidateFactory {
         }
 
         const pos = this.generator.range(this.optionCount);
-        const delta = (this.generator.random() * (this.maxDelta - this.minDelta)) + this.minDelta;
+        const delta = ((this.generator.random() * (this.maxDelta - this.minDelta)) + this.minDelta) * sigma;
 
         let realDelta = delta;
 

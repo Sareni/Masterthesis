@@ -48,8 +48,6 @@ class ExecutorGA extends BaseExecutor {
             const thisPopulation = that.population.filter(candidate => candidate.playerNumber === i);
             const thatPopulation = that.population.filter(candidate => candidate.playerNumber !== i);
 
-
-            
             let j = 0;
             while (j < (thisPopulation.length*that.selectionPressure) || tempOffspringBuffer.length < offspringCountPerPlayer) {
                 const candidates = that.selectionFunction(thisPopulation, 2, that.generator, j===0);
@@ -63,7 +61,7 @@ class ExecutorGA extends BaseExecutor {
                 newCandidate.fitness = that.candidateFactory.evaluate(newCandidate, thatPopulation[idx]);
 
                 if (that.useOptimization && (newCandidate.fitness > candidates[0].fitness && newCandidate.fitness > candidates[1].fitness)) {
-                    offspringBuffer.push(newCandidate);
+                    tempOffspringBuffer.push(newCandidate);
                 } else {
                     newPopulation.push(newCandidate);
                 }

@@ -157,8 +157,6 @@ function testLoop(Factory, Executor, seedValue, type, useOptimization, mi, algoT
 }
 
 function testGame6Execution(type='NE', candidateFactory, executorGA, executorES, executorBF, name) {
-    let executor;
-    let factory;
 
     const parametersFile = fs.readFileSync(`${name}.json`);
     parameters = JSON.parse(parametersFile);
