@@ -3,8 +3,8 @@ import BaseExecutor from '../BaseExecutor';
 const charCode = 'A'.charCodeAt(0);
 
 class ExecutorBF extends BaseExecutor {
-    constructor(generationCount, seedValue, populationSize, timeout, mutationRate, CandidateFactory, uiHandler, msgHandler) {
-        super(populationSize, timeout, generationCount, seedValue, mutationRate, CandidateFactory, uiHandler, msgHandler);
+    constructor(generationCount, seedValue, populationSize, timeout, selectionPressure, mutationRate, candidateFactory, uiHandler, msgHandler) {
+        super(populationSize, timeout, generationCount, seedValue, selectionPressure, mutationRate, candidateFactory, uiHandler, msgHandler, null, null, false, true);
         this.population = this.generateBasePopulation();
         this.population = this.evaluateBasePopulation();    
     }

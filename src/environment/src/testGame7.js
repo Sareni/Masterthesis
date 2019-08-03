@@ -151,7 +151,7 @@ function testGame7Execution(type='NE', candidateFactory, executorGA, executorES,
     parameters = JSON.parse(parametersFile);
 
     const seedValue = Math.random() * 10000; // = 6664.58;
-    resultArray = new Array(3);
+    resultArray = new Array(5);
 
     const header = 'Algo;Type;Population;Generations;GameRounds;SelectionPressure;MutationRate;SelectionFunction;ReplacementFunction;Optimized;Time;Result\n'
     fs.writeFile(`results/${name}.csv`, header, function(err) {
@@ -209,14 +209,14 @@ function testGame7Execution(type='NE', candidateFactory, executorGA, executorES,
     log('--------------');
 
     log('\n-------------- Test Results ----------------');
-    resultArray[2] = new Array(parameters.gameRounds);
-    modeIndex = 2;
+    modeIndex = 4;
+    resultArray[modeIndex] = new Array(parameters.gameRounds);
 
     for (let i = 0; i < parameters.gameRounds; i++) {
         const rounds = parameters.gameRounds[i];
         result = 0;
         roundCounter = i;
-        resultArray[2][roundCounter] = new Array(parameters.maxRounds).fill(0);
+        resultArray[modeIndex][roundCounter] = new Array(parameters.maxRounds).fill(0);
         for (let j = 0; j < parameters.maxRounds; j++) {
             // const dynSeedValue = generator.range(10000);
             factory = new CandidateFactory7(rounds, seedValue);

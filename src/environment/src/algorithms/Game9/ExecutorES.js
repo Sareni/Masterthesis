@@ -5,7 +5,12 @@ class ExecutorES extends BaseExecutor {
     constructor(generationCount, seedValue, populationSize, timeout, mutationRate, CandidateFactory, uiHandler, msgHandler) {
         super(populationSize, timeout, generationCount, seedValue, mutationRate, CandidateFactory, uiHandler, msgHandler);
         this.population = this.generateBasePopulation();
-        this.population = this.evaluateBasePopulation();        
+        this.population = this.evaluateBasePopulation();
+
+        this.maxSigma = 4;
+        this.minSigma = 0.001;
+        this.sigma = 2;
+        this.sigmaDelta = 1.2;
     }
 
     generateBasePopulation() {
@@ -45,24 +50,26 @@ class ExecutorES extends BaseExecutor {
     runCycle(that) {
         const newPopulation = [];
         let tmpPopulation = [];
+        let successCounter = 0;
+        const baseFitness = new Array(that.candidateFactory.playerCount);
         const populationGroups = [];
         for (let i = 0; i < that.candidateFactory.playerCount; i++) {
             const group = that.population.filter(candidate => candidate.playerNumber === i);
             populationGroups.push(group);
         }
 
-        for (let j = 0; j < that.populationSize; j++) {
+        for (let j = 0; j < that.populationSize * that.selectionPressure; j++) {
             const candidateArray = [];
             for (let k = 0; k < that.candidateFactory.playerCount; k++) {
-                const candidateIndex = that.generator.range(that.populationSize);
-
+                const candidate = that.selectionFunction(that.population, 1, that.generator, j === 0);
+                baseFitness[k] = candidate[0].fitness;
                 let newCandidate = {
-                    fitness: that.population[candidateIndex].fitness,
-                    strategy: that.population[candidateIndex].strategy,
-                    playerNumber: that.population[candidateIndex].playerNumber,
+                    fitness: candidate[0].fitness,
+                    strategy: candidate[0].strategy,
+                    playerNumber: candidate[0].playerNumber,
                 }
                 if (that.generator.random() < that.mutationRate) {
-                    newCandidate = that.candidateFactory.mutate(newCandidate);
+                    newCandidate = that.candidateFactory.mutate(newCandidate, that.useOptimization ? that.sigma : 1);
                 }
 
                 candidateArray.push(newCandidate);
@@ -72,7 +79,23 @@ class ExecutorES extends BaseExecutor {
             for (let k = 0; k < that.candidateFactory.playerCount; k++) {
                 candidateArray[k].fitness = results[k];
                 newPopulation.push(candidateArray[k]);
+
+                if (baseFitness < candidateArray[k].fitness) {
+                    successCounter += 1;
+                }
             }
+        }
+
+        if (successCounter < (that.populationSize / 5)) {
+            that.sigma /= that.sigmaDelta;
+        } else if  (successCounter > (that.populationSize / 5)) {
+            that.sigma *= that.sigmaDelta;
+        }
+
+        if (that.sigma < that.minSigma) {
+            that.sigma = that.minSigma;
+        } else if (that.sigma > that.maxSigma) {
+            that.sigma = that.maxSigma;
         }
 
         for (let i = 0; i < populationGroups.length; i++) {
