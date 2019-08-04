@@ -19,9 +19,10 @@ class ExecutorGA extends BaseExecutor {
         const newPopulation = [];
         const offspringBuffer = [];
         const offspringCount = that.useOptimization ? that.populationSize * 0.5 : 0;
+        const multiplicator = Math.max(that.selectionPressure, 3);
 
         let j = 0;
-        while ((j < (that.populationSize*that.selectionPressure) || offspringBuffer.length < offspringCount) && newPopulation.length < (that.populationSize*that.selectionPressure*Math.max(that.selectionPressure, 3))) {
+        while ((j < (that.populationSize*that.selectionPressure) || offspringBuffer.length < offspringCount) && newPopulation.length < (that.populationSize*multiplicator)) {
             const candidates = that.selectionFunction(that.population, 2, that.generator, j===0);
 
             let newCandidate = that.candidateFactory.cross(...candidates);

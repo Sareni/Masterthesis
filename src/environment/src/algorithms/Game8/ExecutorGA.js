@@ -55,6 +55,7 @@ class ExecutorGA extends BaseExecutor {
         let offspringBuffer = [];
         let tempOffspringBuffer = [];
         const offspringCount = that.useOptimization ? that.populationSize * 0.5 : 0;
+        const multiplicator = Math.max(that.selectionPressure, 3);
 
         const firstPopulation = that.population.filter(candidate => candidate.playerNumber === 0);
         const secondPopulation = that.population.filter(candidate => candidate.playerNumber === 1);
@@ -64,7 +65,7 @@ class ExecutorGA extends BaseExecutor {
 
         for (let i = 0; i < splittedPop.length; i++) {
             let j = 0;
-            while ((j < (splittedPop[i].length*that.selectionPressure) || tempOffspringBuffer.length < offspringCount) && newPopulation.length < (splittedPop[i].length*that.selectionPressure*Math.max(that.selectionPressure, 3)*splittedPop.length)){
+            while ((j < (splittedPop[i].length*that.selectionPressure) || tempOffspringBuffer.length < offspringCount) && newPopulation.length < (splittedPop[i].length*multiplicator*splittedPop.length)){
                 const candidates = that.selectionFunction(splittedPop[i], 2, that.generator, j===0);               
                 let newCandidate;
 

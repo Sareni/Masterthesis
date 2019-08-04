@@ -28,9 +28,10 @@ class ExecutorGA extends BaseExecutor {
             const newPopulation = [];
             const offspringBuffer = [];
             const offspringCount = that.useOptimization ? that.populationSize * 0.5 : 0;
+            const multiplicator = Math.max(that.selectionPressure, 3);
 
             let j = 0;
-            while ((j < (that.populationSize*that.selectionPressure) || offspringBuffer.length < offspringCount) && newPopulation.length < (that.populationSize*that.selectionPressure*Math.max(that.selectionPressure, 3))) {
+            while ((j < (that.populationSize*that.selectionPressure) || offspringBuffer.length < offspringCount) && newPopulation.length < (that.populationSize*multiplicator)) {
                 const candidates = that.selectionFunction(that.population[h], 2, that.generator, j===0);
     
                 let newCandidate = that.candidateFactory.cross(...candidates);
@@ -48,8 +49,13 @@ class ExecutorGA extends BaseExecutor {
                 j++;
             }
 
-            const fillCandidates = that.replacementFunction(that.population[h], newPopulation, that.generator).slice(0, that.population[h].length - offspringBuffer.length);
-            that.population[h] = that.sortByFitness(offspringBuffer.concat(fillCandidates));
+            if (offspringBuffer.length >= that.population.length) {
+                that.population = that.sortByFitness(offspringBuffer).slice(0, that.population.length);
+            } else {
+                const fillCandidates = that.sortByFitness(that.replacementFunction(that.population, newPopulation, that.generator)).slice(0, that.population.length - offspringBuffer.length);
+                const candidates = offspringBuffer.concat(fillCandidates);
+                that.population = that.sortByFitness(candidates);
+            }
     
             that.uiHandler({x: that.counter, y: that.population[h][0].fitness, playerNumber: h});
             that.msgHandler(that.counter, 'status', `Best Candidate: ${JSON.stringify(that.population[h][0])}`);

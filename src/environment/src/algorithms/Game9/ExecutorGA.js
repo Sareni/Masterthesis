@@ -49,6 +49,7 @@ class ExecutorGA extends BaseExecutor {
         const parentOneFitness = new Array(that.candidateFactory.playerCount);
         const parentTwoFitness = new Array(that.candidateFactory.playerCount);
         const offspringCount = that.useOptimization ? that.populationSize * 0.5 : 0;
+        const multiplicator = Math.max(that.selectionPressure, 3);
 
         const populationGroups = [];
         for (let i = 0; i < that.candidateFactory.playerCount; i++) {
@@ -62,7 +63,7 @@ class ExecutorGA extends BaseExecutor {
         let offspringBufferFull = 0;
 
 
-        while ((j < that.populationSize*that.selectionPressure || offspringBufferFull < that.candidateFactory.playerCount) && newPopulation.length < (that.populationSize*that.selectionPressure*Math.max(that.selectionPressure, 3)*that.candidateFactory.playerCount)) {
+        while ((j < that.populationSize*that.selectionPressure || offspringBufferFull < that.candidateFactory.playerCount) && newPopulation.length < (that.populationSize*multiplicator*that.candidateFactory.playerCount)) {
             offspringBufferFull = 0;            
             const candidateArray = [];
             for (let k = 0; k < that.candidateFactory.playerCount; k++) {
