@@ -224,7 +224,7 @@ function testGame1a2Execution(type='NE', candidateFactory, executorGA, executorE
         for (let k = 0; k < parameters.maxRounds; k++) {
             roundIndex = k;
             const dynSeedValue = generator.range(10000);
-            factory = new candidateFactory(parameters.playerCount, parameters.strategyCount, dynSeedValue, type);
+            factory = new candidateFactory(parameters.playerCount || parameters.treeDepth, parameters.strategyCount, dynSeedValue, type);
             executor = new executorBF(0, dynSeedValue, 0, '0', 0, 0, factory, newGameState, newMessage);
             executor.start();
         }
