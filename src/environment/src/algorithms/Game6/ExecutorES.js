@@ -58,7 +58,9 @@ class ExecutorES extends BaseExecutor {
     
                 let newCandidate = {
                     fitness: candidate[0].fitness,
-                    strategy: candidate[0].strategy,
+                    x: candidate[0].x,
+                    y: candidate[0].y,
+                    playerNumber: candidate[0].playerNumber,
                 }
                 baseFitness = newCandidate.fitness;
 
