@@ -63,7 +63,6 @@ class CandidateFactory extends BaseCandidateFactory {
     }
 
     evaluate(c1, c2) {
-        console.log('candidates', c1, c2);
         let count = 0;
         for (let i = 0; i <= this.xMax; i++) {
             for (let j = 0; j <= this.yMax; j++) {

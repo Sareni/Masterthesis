@@ -62,7 +62,7 @@ class ExecutorGA extends BaseExecutor {
         let offspringBufferFull = 0;
 
 
-        while ((j < that.populationSize*that.selectionPressure || offspringBufferFull < that.candidateFactory.playerCount) && newPopulation.length < (that.populationSize.length*that.selectionPressure*Math.max(that.selectionPressure, 3)*that.candidateFactory.playerCount)) {
+        while ((j < that.populationSize*that.selectionPressure || offspringBufferFull < that.candidateFactory.playerCount) && newPopulation.length < (that.populationSize*that.selectionPressure*Math.max(that.selectionPressure, 3)*that.candidateFactory.playerCount)) {
             offspringBufferFull = 0;            
             const candidateArray = [];
             for (let k = 0; k < that.candidateFactory.playerCount; k++) {
@@ -96,7 +96,7 @@ class ExecutorGA extends BaseExecutor {
 
         for (let i = 0; i < populationGroups.length; i++) {
             let partOfPopulation;
-            const filteredOffspringBuffer = offspringBuffer.filter(candidate => candidate.playerNumber === i);
+            const filteredOffspringBuffer = offspringBuffer[i].filter(candidate => candidate.playerNumber === i); // remove
             const filteredPopulation = that.population.filter(candidate => candidate.playerNumber === i);
             if (filteredOffspringBuffer.length >= filteredPopulation.length) {
                 partOfPopulation = that.sortByFitness(filteredOffspringBuffer).slice(0, filteredPopulation.length);
@@ -105,6 +105,7 @@ class ExecutorGA extends BaseExecutor {
                 const fillCandidates = that.sortByFitness(that.replacementFunction(filteredPopulation, newPopulationFiltered, that.generator)).slice(0, filteredPopulation.length - filteredOffspringBuffer.length);
                 const candidates = filteredOffspringBuffer.concat(fillCandidates);
                 partOfPopulation = that.sortByFitness(candidates);
+
             }
             that.msgHandler(that.counter, 'status', `Best Candidate: ${JSON.stringify(partOfPopulation[0])}`);
             that.uiHandler({x: that.counter, y: partOfPopulation[0].fitness, playerNumber: i});

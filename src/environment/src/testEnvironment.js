@@ -44,7 +44,7 @@ const rl = readline.createInterface({
 
 function testGame1() {
     testGame1a2Execution('NE', CandidateFactory1, ExecutorGA1, ExecutorES1, ExecutorBF1, 'game1');
-    testGame1a2Execution('MAX', CandidateFactory1, ExecutorGA1, ExecutorES1, ExecutorBF1, 'game1');
+    //testGame1a2Execution('MAX', CandidateFactory1, ExecutorGA1, ExecutorES1, ExecutorBF1, 'game1');
 }
 
 function testGame2() {

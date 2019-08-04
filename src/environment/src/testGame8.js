@@ -49,7 +49,6 @@ function newMessage(gen, type, msg) {
         for (let i = 0; i < playerCount; i++) {
             tempResult += lastResults[i];
             lastResults[i] = 0;
-            console.log('Props', lastProperties[i]);
             propertyArray[modeIndex][populationIndex][generationCountIndex][mutationIndex][selectionFunctionIndex][replacementFunctionIndex][selectionPressureIndex][roundIndex][i] = lastProperties[i];
             lastProperties[i] = 0;
         }
