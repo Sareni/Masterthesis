@@ -5,5 +5,5 @@
     "mutationRateArray": [0.1, 0.3, 0.5],
     "selectionPressureArray": [1, 2, 3],
     "playerCount": 2,
-    "strategyCount": 10
+    "strategyCount": 5
 }

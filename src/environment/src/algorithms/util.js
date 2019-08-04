@@ -146,7 +146,7 @@ function randomReplacement(oldPop, newPop, generator) {
 
         indexArray.splice(index, 1);
         if (indexArray.length === 0) {
-            indexArray = buildIndices(oldPop.length);
+            indexArray = buildIndices(newPop.length);
         }
     }
 
