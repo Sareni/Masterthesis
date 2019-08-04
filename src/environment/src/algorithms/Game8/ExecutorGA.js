@@ -50,7 +50,6 @@ class ExecutorGA extends BaseExecutor {
     }
 
     runCycle(that) {
-        const newPopulation = [];
         let tmpPopulation = [];
         let offspringBuffer = [];
         let tempOffspringBuffer = [];
@@ -63,9 +62,15 @@ class ExecutorGA extends BaseExecutor {
 
         const splittedPop = [firstPopulation, secondPopulation, thirdPopulation];
 
+        const newPopulation = new Array(splittedPop.length);
+
+        for (let i = 0; i < newPopulation.length; i++) {
+            newPopulation[i] = [];
+        }
+
         for (let i = 0; i < splittedPop.length; i++) {
             let j = 0;
-            while ((j < (splittedPop[i].length*that.selectionPressure) || tempOffspringBuffer.length < offspringCount) && newPopulation.length < (splittedPop[i].length*multiplicator*splittedPop.length)){
+            while ((j < (splittedPop[i].length*that.selectionPressure) || tempOffspringBuffer.length < offspringCount) && newPopulation[i].length < (splittedPop[i].length*multiplicator)){
                 const candidates = that.selectionFunction(splittedPop[i], 2, that.generator, j===0);               
                 let newCandidate;
 
@@ -94,7 +99,7 @@ class ExecutorGA extends BaseExecutor {
                 if (that.useOptimization && (newCandidate.fitness > candidates[0].fitness && newCandidate.fitness > candidates[1].fitness)) {
                     tempOffspringBuffer.push(newCandidate);
                 } else {
-                    newPopulation.push(newCandidate);
+                    newPopulation[i].push(newCandidate);
                 }
 
                 j++;
@@ -111,8 +116,7 @@ class ExecutorGA extends BaseExecutor {
             if (filteredOffspringBuffer.length >= filteredPopulation.length) {
                 partOfPopulation = that.sortByFitness(filteredOffspringBuffer).slice(0, filteredPopulation.length);
             } else {
-                const newPopulationFiltered = newPopulation.filter(candidate => candidate.playerNumber === i);
-                const fillCandidates = that.sortByFitness(that.replacementFunction(filteredPopulation, newPopulationFiltered, that.generator)).slice(0, filteredPopulation.length - filteredOffspringBuffer.length);
+                const fillCandidates = that.sortByFitness(that.replacementFunction(filteredPopulation, newPopulation[i], that.generator)).slice(0, filteredPopulation.length - filteredOffspringBuffer.length);
                 const candidates = filteredOffspringBuffer.concat(fillCandidates);
                 partOfPopulation = that.sortByFitness(candidates);
             }

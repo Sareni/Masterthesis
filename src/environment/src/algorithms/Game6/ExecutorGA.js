@@ -37,7 +37,7 @@ class ExecutorGA extends BaseExecutor {
     }
 
     runCycle(that) {
-        const newPopulation = [];
+        const newPopulation = new Array(that.candidateFactory.playerCount);
         let tmpPopulation = [];
         let offspringBuffer = [];
         let tempOffspringBuffer = [];
@@ -46,11 +46,15 @@ class ExecutorGA extends BaseExecutor {
         const multiplicator = Math.max(that.selectionPressure, 3);
 
         for (let i = 0; i < that.candidateFactory.playerCount; i++) {
+            newPopulation[i] = [];
+        }
+
+        for (let i = 0; i < that.candidateFactory.playerCount; i++) {
             const thisPopulation = that.population.filter(candidate => candidate.playerNumber === i);
             const thatPopulation = that.population.filter(candidate => candidate.playerNumber !== i);
 
             let j = 0;
-            while ((j < (thisPopulation.length*that.selectionPressure) || tempOffspringBuffer.length < offspringCountPerPlayer) && newPopulation.length < (thisPopulation.length*multiplicator*that.candidateFactory.playerCount)) {
+            while ((j < (thisPopulation.length*that.selectionPressure) || tempOffspringBuffer.length < offspringCountPerPlayer) && newPopulation[i].length < (thisPopulation.length*multiplicator)) {
                 const candidates = that.selectionFunction(thisPopulation, 2, that.generator, j===0);
     
                 let newCandidate = that.candidateFactory.cross(...candidates);
@@ -64,7 +68,7 @@ class ExecutorGA extends BaseExecutor {
                 if (that.useOptimization && (newCandidate.fitness > candidates[0].fitness && newCandidate.fitness > candidates[1].fitness)) {
                     tempOffspringBuffer.push(newCandidate);
                 } else {
-                    newPopulation.push(newCandidate);
+                    newPopulation[i].push(newCandidate);
                 }
      
                 j++;
@@ -74,7 +78,7 @@ class ExecutorGA extends BaseExecutor {
             tempOffspringBuffer = [];
         }
 
-        that.uiHandler({ x: 0, y: 0, playerNumber: -1 });        
+        that.uiHandler({ x: 0, y: 0, playerNumber: -1 });
         for (let i = 0; i < that.candidateFactory.playerCount; i++) {
             let partOfPopulation;
             const filteredOffspringBuffer = offspringBuffer.filter(candidate => candidate.playerNumber === i);
@@ -82,8 +86,7 @@ class ExecutorGA extends BaseExecutor {
             if (filteredOffspringBuffer.length >= filteredPopulation.length) {
                 partOfPopulation = that.sortByFitness(filteredOffspringBuffer).slice(0, filteredPopulation.length);
             } else {
-                const newPopulationFiltered = newPopulation.filter(candidate => candidate.playerNumber === i);
-                const fillCandidates = that.sortByFitness(that.replacementFunction(filteredPopulation, newPopulationFiltered, that.generator)).slice(0, filteredPopulation.length - filteredOffspringBuffer.length);
+                const fillCandidates = that.sortByFitness(that.replacementFunction(filteredPopulation, newPopulation[i], that.generator)).slice(0, filteredPopulation.length - filteredOffspringBuffer.length);
                 const candidates = filteredOffspringBuffer.concat(fillCandidates);
                 partOfPopulation = that.sortByFitness(candidates);
             }
