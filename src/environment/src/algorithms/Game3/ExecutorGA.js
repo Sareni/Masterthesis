@@ -7,7 +7,7 @@ class ExecutorGA extends BaseExecutor {
         this.population = new Array(this.candidateFactory.playerCount);
         this.history = new Array(this.candidateFactory.playerCount);
 
-        for(let i = 0; i < this.population.length; i++) {
+        for(let i = 0; i < this.candidateFactory.playerCount; i++) { //this.population.length
             this.history[i] = [];
             this.candidateFactory.setPlayerNumber(i);
             this.population[i] = this.generateBasePopulation();
@@ -30,7 +30,7 @@ class ExecutorGA extends BaseExecutor {
             const offspringCount = that.useOptimization ? that.populationSize * 0.5 : 0;
 
             let j = 0;
-            while (j < that.populationSize || offspringBuffer.length < offspringCount) {
+            while ((j < (that.populationSize*that.selectionPressure) || offspringBuffer.length < offspringCount) && newPopulation.length < (that.populationSize*that.selectionPressure*5)) {
                 const candidates = that.selectionFunction(that.population[h], 2, that.generator, j===0);
     
                 let newCandidate = that.candidateFactory.cross(...candidates);
