@@ -62,7 +62,7 @@ class ExecutorGA extends BaseExecutor {
         let offspringBufferFull = 0;
 
 
-        while ((j < that.populationSize*that.selectionPressure || offspringBufferFull < that.candidateFactory.playerCount) && newPopulation.length < (that.populationSize.length*that.selectionPressure*5*that.candidateFactory.playerCount)) {
+        while ((j < that.populationSize*that.selectionPressure || offspringBufferFull < that.candidateFactory.playerCount) && newPopulation.length < (that.populationSize.length*that.selectionPressure*Math.max(that.selectionPressure, 3)*that.candidateFactory.playerCount)) {
             offspringBufferFull = 0;            
             const candidateArray = [];
             for (let k = 0; k < that.candidateFactory.playerCount; k++) {

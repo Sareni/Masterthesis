@@ -64,7 +64,7 @@ class ExecutorGA extends BaseExecutor {
 
         for (let i = 0; i < splittedPop.length; i++) {
             let j = 0;
-            while ((j < (splittedPop[i].length*that.selectionPressure) || tempOffspringBuffer.length < offspringCount) && newPopulation.length < (splittedPop[i].length*that.selectionPressure*5*splittedPop.length)){
+            while ((j < (splittedPop[i].length*that.selectionPressure) || tempOffspringBuffer.length < offspringCount) && newPopulation.length < (splittedPop[i].length*that.selectionPressure*Math.max(that.selectionPressure, 3)*splittedPop.length)){
                 const candidates = that.selectionFunction(splittedPop[i], 2, that.generator, j===0);               
                 let newCandidate;
 
