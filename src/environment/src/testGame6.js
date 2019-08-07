@@ -51,6 +51,7 @@ function log() {
 function newMessage(gen, type, msg) {
     if (type === 'fin') {
         let avg = 0;
+        let tmpResult = 0;
 
         for (let j = 0; j < playerCount; j++) {
             avg += lastResultsFitness[j];
@@ -58,11 +59,12 @@ function newMessage(gen, type, msg) {
         avg = avg / playerCount;
 
         for (let i = 0; i < playerCount; i++) {
-            result += Math.abs(lastResultsFitness[i] - avg);
+            tmpResult += Math.abs(lastResultsFitness[i] - avg);
             lastResultsFitness[i] = 0;
         }
 
-        resultArray[modeIndex][populationIndex][generationCountIndex][mutationIndex][selectionFunctionIndex][replacementFunctionIndex][selectionPressureIndex][roundIndex] = result;
+        resultArray[modeIndex][populationIndex][generationCountIndex][mutationIndex][selectionFunctionIndex][replacementFunctionIndex][selectionPressureIndex][roundIndex] = tmpResult;
+        result += tmpResult;
     }
   }
 

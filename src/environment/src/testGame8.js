@@ -45,15 +45,15 @@ function log() {
 
 function newMessage(gen, type, msg) {
     if (type === 'fin') {
-        let tempResult = 0;
+        let tmpResult = 0;
         for (let i = 0; i < playerCount; i++) {
-            tempResult += lastResults[i];
+            tmpResult += lastResults[i];
             lastResults[i] = 0;
             propertyArray[modeIndex][populationIndex][generationCountIndex][mutationIndex][selectionFunctionIndex][replacementFunctionIndex][selectionPressureIndex][roundIndex][i] = lastProperties[i];
             lastProperties[i] = 0;
         }
-        resultArray[modeIndex][populationIndex][generationCountIndex][mutationIndex][selectionFunctionIndex][replacementFunctionIndex][selectionPressureIndex][roundIndex] = tempResult;
-        result += tempResult;
+        resultArray[modeIndex][populationIndex][generationCountIndex][mutationIndex][selectionFunctionIndex][replacementFunctionIndex][selectionPressureIndex][roundIndex] = tmpResult;
+        result += tmpResult;
 
     }
 }

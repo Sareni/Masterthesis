@@ -54,7 +54,7 @@ function newMessage(gen, type, msg) {
         noneZeroCount += 1;
     }
 
-    result = lastResult;
+    result += lastResult;
     lastResult = 0;
 }
 

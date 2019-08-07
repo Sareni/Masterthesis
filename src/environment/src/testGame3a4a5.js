@@ -42,10 +42,12 @@ function log() {
 
 function newMessage(gen, type, msg) {
     if (type === 'fin') {
-        result = lastResults.reduce((acc, cur) => {
+        const tmpResult = lastResults.reduce((acc, cur) => {
             return acc + cur;
         });
-        resultArray[modeIndex][populationIndex][generationCountIndex][mutationIndex][selectionFunctionIndex][replacementFunctionIndex][selectionPressureIndex][roundIndex] = result;
+        resultArray[modeIndex][populationIndex][generationCountIndex][mutationIndex][selectionFunctionIndex][replacementFunctionIndex][selectionPressureIndex][roundIndex] = tmpResult;
+
+        result += tmpResult;
 
         if (result === 0) {
             zeroCount += 1;
