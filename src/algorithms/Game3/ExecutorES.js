@@ -2,8 +2,8 @@ import BaseExecutor from '../BaseExecutor';
 
 class ExecutorES extends BaseExecutor {
 
-    constructor(generationCount, seedValue, populationSize, timeout, mutationRate, candidateFactory, uiHandler, msgHandler) {
-        super(populationSize, timeout, generationCount, seedValue, mutationRate, candidateFactory, uiHandler, msgHandler);
+    constructor(generationCount, seedValue, populationSize, timeout, selectionPressure, mutationRate, CandidateFactory, uiHandler, msgHandler, selectionFunction, replacementFunction, useOptimization) {
+        super(populationSize, timeout, generationCount, seedValue, selectionPressure, mutationRate, CandidateFactory, uiHandler, msgHandler, selectionFunction, replacementFunction, useOptimization);
         this.population = new Array(this.candidateFactory.playerCount);
         this.history = new Array(this.candidateFactory.playerCount);
 
@@ -30,30 +30,30 @@ class ExecutorES extends BaseExecutor {
     runCycle(that) {
         for (let h = 0; h < that.candidateFactory.playerCount; h++) {
             const newPopulation = [];
+            let successCounter = 0;
+            let baseFitness = 0;
 
             for (let j = 0; j < that.populationSize; j++) {
-                const candidateIndex = that.generator.range(that.populationSize);
+                const candidate = that.selectionFunction(that.population[h], 1, that.generator, j===0);
 
                 let newCandidate = {
-                    fitness: that.population[h][candidateIndex].fitness,
-                    properties: that.population[h][candidateIndex].properties,
-                    playerNumber: that.population[h][candidateIndex].playerNumber,
+                    fitness: candidate[0].fitness,
+                    properties: candidate[0].properties,
+                    playerNumber: candidate[0].playerNumber,
                 }
-                //let newCandidate = JSON.parse(JSON.stringify(that.population[h][candidateIndex]));
+                baseFitness = newCandidate.fitness;
+                
                 if (that.generator.random() < that.mutationRate) {
-                    newCandidate = that.candidateFactory.mutate(newCandidate, that.sigma[h]);
+                    newCandidate = that.candidateFactory.mutate(newCandidate, that.useOptimization ? that.sigma[h] : 1);
                 }
                 newCandidate.fitness = that.candidateFactory.evaluate(newCandidate);
                 newPopulation.push(newCandidate);
-            }
 
-            const selectedPopulation = that.select(that.population[h].concat(newPopulation));
-            let successCounter = 0;
-            for (let j = 0; j < that.population[h].length; j++) {
-                if (!selectedPopulation.find(candidate => candidate === that.population[h][j])) {
+                if (baseFitness < newCandidate.fitness) {
                     successCounter += 1;
                 }
             }
+
             if (successCounter < (that.populationSize / 5)) {
                 that.sigma[h] /= that.sigmaDelta;
             } else if  (successCounter > (that.populationSize / 5)) {
@@ -66,7 +66,9 @@ class ExecutorES extends BaseExecutor {
                 that.sigma[h] = that.maxSigma;
             }
 
-            that.population[h] = selectedPopulation;
+            that.population[h] = that.replacementFunction(that.population[h], newPopulation, that.generator);
+            that.population[h] = that.sortByFitness(that.population[h]);
+
             that.uiHandler({x: that.counter, y: that.population[h][0].fitness, playerNumber: h});
             that.msgHandler(that.counter, 'status', `Best Candidate: ${JSON.stringify(that.population[h][0])}`);
             that.addToHistory(that.population[h][0], h);            

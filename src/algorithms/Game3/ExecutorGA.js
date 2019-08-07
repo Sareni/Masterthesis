@@ -2,12 +2,12 @@ import BaseExecutor from '../BaseExecutor';
 
 class ExecutorGA extends BaseExecutor {
 
-    constructor(generationCount, seedValue, populationSize, timeout, mutationRate, candidateFactory, uiHandler, msgHandler) {
-        super(populationSize, timeout, generationCount, seedValue, mutationRate, candidateFactory, uiHandler, msgHandler);
+    constructor(generationCount, seedValue, populationSize, timeout, selectionPressure, mutationRate, CandidateFactory, uiHandler, msgHandler, selectionFunction, replacementFunction, useOptimization) {
+        super(populationSize, timeout, generationCount, seedValue, selectionPressure, mutationRate, CandidateFactory, uiHandler, msgHandler, selectionFunction, replacementFunction, useOptimization);
         this.population = new Array(this.candidateFactory.playerCount);
         this.history = new Array(this.candidateFactory.playerCount);
 
-        for(let i = 0; i < this.population.length; i++) {
+        for(let i = 0; i < this.candidateFactory.playerCount; i++) { //this.population.length
             this.history[i] = [];
             this.candidateFactory.setPlayerNumber(i);
             this.population[i] = this.generateBasePopulation();
@@ -26,23 +26,37 @@ class ExecutorGA extends BaseExecutor {
 
         for(let h = 0; h < that.candidateFactory.playerCount; h++) {
             const newPopulation = [];
+            const offspringBuffer = [];
+            const offspringCount = that.useOptimization ? that.populationSize * 0.5 : 0;
+            const multiplicator = Math.max(that.selectionPressure, 3);
 
-            for (let j = 0; j < that.populationSize; j++) {
-                const firstCandidateIndex = that.generator.range(that.populationSize);
-                let secondCandidateIndex = that.generator.range(that.populationSize);
-                while (firstCandidateIndex === secondCandidateIndex && that.populationSize > 1) {
-                    secondCandidateIndex = that.generator.range(that.populationSize);;
-                }
+            let j = 0;
+            while ((j < (that.populationSize*that.selectionPressure) || offspringBuffer.length < offspringCount) && newPopulation.length < (that.populationSize*multiplicator)) {
+                const candidates = that.selectionFunction(that.population[h], 2, that.generator, j===0);
     
-                let newCandidate = that.candidateFactory.cross(that.population[h][firstCandidateIndex], that.population[h][secondCandidateIndex]);
+                let newCandidate = that.candidateFactory.cross(...candidates);
                 if (that.generator.random() < that.mutationRate) {
                     newCandidate = that.candidateFactory.mutate(newCandidate);
                 }
                 newCandidate.fitness = that.candidateFactory.evaluate(newCandidate);
-                newPopulation.push(newCandidate);
+
+                if (that.useOptimization && (newCandidate.fitness > candidates[0].fitness && newCandidate.fitness > candidates[1].fitness)) {
+                    offspringBuffer.push(newCandidate);
+                } else {
+                    newPopulation.push(newCandidate);
+                }
+
+                j++;
+            }
+
+            if (offspringBuffer.length >= that.population.length) {
+                that.population[h] = that.sortByFitness(offspringBuffer).slice(0, that.population.length);
+            } else {
+                const fillCandidates = that.sortByFitness(that.replacementFunction(that.population[h], newPopulation, that.generator)).slice(0, that.population[h].length - offspringBuffer.length);
+                const candidates = offspringBuffer.concat(fillCandidates);
+                that.population[h] = that.sortByFitness(candidates);
             }
     
-            that.population[h] = that.select(that.population[h].concat(newPopulation));
             that.uiHandler({x: that.counter, y: that.population[h][0].fitness, playerNumber: h});
             that.msgHandler(that.counter, 'status', `Best Candidate: ${JSON.stringify(that.population[h][0])}`);
             that.addToHistory(that.population[h][0], h);

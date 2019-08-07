@@ -7,6 +7,7 @@ import ExecutorGA9 from '../../algorithms/Game9/ExecutorGA';
 import ExecutorES9 from '../../algorithms/Game9/ExecutorES';
 import ExecutorBF9 from '../../algorithms/Game9/ExecutorBF';
 import CandidateFactory9 from '../../algorithms/Game9/CandidateFactory';
+import { proportionalSelection, randomSelection, tournamentSelection, completeReplacement, randomReplacement, elitismReplacement } from '../../algorithms/util';
 
 class Game1 extends React.Component {
     constructor(props) {
@@ -61,30 +62,45 @@ class Game1 extends React.Component {
             data.seedValue,
             parseInt(data.populationSize),
             parseInt(data.timeout),
+            1, // selectionPressure
             data.mutationRate, 
             factory,
             this.newGameState,
-            this.newMessage);
+            this.newMessage,
+            proportionalSelection, // sel
+            completeReplacement, // rep
+            false // opt
+            );
             break;
           case 'ES': executor = new ExecutorES9(
             parseInt(data.generationCount),
             data.seedValue,
             parseInt(data.populationSize),
             parseInt(data.timeout),
+            1, // selectionPressure
             data.mutationRate,
             factory,
             this.newGameState,
-            this.newMessage);
+            this.newMessage,
+            proportionalSelection, // sel
+            completeReplacement, // rep
+            false // opt
+            );
             break;
           default: executor = new ExecutorBF9(
             parseInt(data.generationCount),
             data.seedValue,
             parseInt(data.populationSize),
             parseInt(data.timeout),
+            1, // selectionPressure
             data.mutationRate,
             factory,
             this.newGameState,
-            this.newMessage);
+            this.newMessage,
+            proportionalSelection, // sel
+            completeReplacement, // rep
+            false // opt
+            );
         }
         this.gameCounter += data.playerCount; // !!
         this.setState({ executor, running: true, gameCounter: this.gameCounter, fitnessType: data.fitnessType, generationCount: data.generationCount });

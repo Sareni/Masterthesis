@@ -7,6 +7,7 @@ import ExecutorGA2 from '../../algorithms/Game2/ExecutorGA';
 import ExecutorES2 from '../../algorithms/Game2/ExecutorES';
 import ExecutorBF2 from '../../algorithms/Game2/ExecutorBF';
 import CandidateFactory2 from '../../algorithms/Game2/CandidateFactory';
+import { proportionalSelection, randomSelection, tournamentSelection, completeReplacement, randomReplacement, elitismReplacement } from '../../algorithms/util';
 
 class Game1 extends React.Component {
     constructor(props) {
@@ -61,30 +62,45 @@ class Game1 extends React.Component {
             data.seedValue,
             parseInt(data.populationSize),
             parseInt(data.timeout),
+            1, // selectionPressure
             data.mutationRate,
             factory,
             this.newGameState,
-            this.newMessage);
+            this.newMessage,
+            proportionalSelection, // sel
+            completeReplacement, // rep
+            false // opt
+            );
             break;
           case 'ES': executor = new ExecutorES2(
             parseInt(data.generationCount),
             data.seedValue,
             parseInt(data.populationSize),
             parseInt(data.timeout),
+            1, // selectionPressure
             data.mutationRate,
             factory,
             this.newGameState,
-            this.newMessage);
+            this.newMessage,
+            proportionalSelection, // sel
+            completeReplacement, // rep
+            false // opt
+            );
             break;
           default: executor = new ExecutorBF2(
             parseInt(data.generationCount),
             data.seedValue,
             parseInt(data.populationSize),
             parseInt(data.timeout),
+            1, // selectionPressure
             data.mutationRate,
             factory,
             this.newGameState,
-            this.newMessage);
+            this.newMessage,
+            proportionalSelection, // sel
+            completeReplacement, // rep
+            false // opt
+            );
         }
         this.gameCounter += 1;
         this.setState({ executor, running: true, gameCounter: this.gameCounter, fitnessType: data.fitnessType, generationCount: data.generationCount });

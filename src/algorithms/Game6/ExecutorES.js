@@ -2,12 +2,17 @@ import BaseExecutor from '../BaseExecutor';
 
 class ExecutorES extends BaseExecutor {
 
-    constructor(generationCount, seedValue, populationSize, timeout, mutationRate, candidateFactory, uiHandler, msgHandler) {
-        super(populationSize, timeout, generationCount, seedValue, mutationRate, candidateFactory, uiHandler, msgHandler);
-
-        this.pressure = 1.5;
+    constructor(generationCount, seedValue, populationSize, timeout, selectionPressure, mutationRate, CandidateFactory, uiHandler, msgHandler, selectionFunction, replacementFunction, useOptimization) {
+        super(populationSize, timeout, generationCount, seedValue, selectionPressure, mutationRate, CandidateFactory, uiHandler, msgHandler, selectionFunction, replacementFunction, useOptimization);
+        
+        // this.pressure = 1.5; used in every algo now
         this.population = this.generateBasePopulation();
         this.evaluateBasePopulation();
+
+        this.maxSigma = 4;
+        this.minSigma = 0.001;
+        this.sigma = new Array(this.candidateFactory.playerCount).fill(2);
+        this.sigmaDelta = 1.2;
     }
 
     generateBasePopulation() {
@@ -39,6 +44,8 @@ class ExecutorES extends BaseExecutor {
     runCycle(that) {
         const newPopulation = [];
         let tmpPopulation = [];
+        let successCounter = 0;
+        let baseFitness = 0;
 
 
         for (let i = 0; i < that.candidateFactory.playerCount; i++) {
@@ -46,32 +53,49 @@ class ExecutorES extends BaseExecutor {
             const thatPopulation = that.population.filter(candidate => candidate.playerNumber !== i);
 
             
-            for (let j = 0; j < (thisPopulation.length * that.pressure); j++) {
-                const firstCandidateIndex = that.generator.range(thisPopulation.length);
+            for (let j = 0; j < (thisPopulation.length * that.selectionPressure); j++) {
+                const candidate = that.selectionFunction(thisPopulation, 1, that.generator, j === 0);
     
                 let newCandidate = {
-                    fitness: thisPopulation[firstCandidateIndex].fitness,
-                    x: thisPopulation[firstCandidateIndex].x,
-                    y: thisPopulation[firstCandidateIndex].y,
-                    playerNumber: thisPopulation[firstCandidateIndex].playerNumber,
+                    fitness: candidate[0].fitness,
+                    x: candidate[0].x,
+                    y: candidate[0].y,
+                    playerNumber: candidate[0].playerNumber,
                 }
-                //let newCandidate = JSON.parse(JSON.stringify(that.population[firstCandidateIndex]));
+                baseFitness = newCandidate.fitness;
+
                 if (that.generator.random() < that.mutationRate) {
-                    newCandidate = that.candidateFactory.mutate(newCandidate);
+                    newCandidate = that.candidateFactory.mutate(newCandidate, that.useOptimization ? that.sigma[i] : 1);
                 }
                 newCandidate.fitness = that.candidateFactory.evaluate(newCandidate, thatPopulation[that.generator.range(thatPopulation.length)]);
                 newPopulation.push(newCandidate);
+
+                if (baseFitness < newCandidate.fitness) {
+                    successCounter += 1;
+                }
+            }
+
+            if (successCounter < (that.populationSize / 5)) {
+                that.sigma[i] /= that.sigmaDelta;
+            } else if  (successCounter > (that.populationSize / 5)) {
+                that.sigma[i] *= that.sigmaDelta;
+            }
+    
+            if (that.sigma[i] < that.minSigma) {
+                that.sigma[i] = that.minSigma;
+            } else if (that.sigma[i] > that.maxSigma) {
+                that.sigma[i] = that.maxSigma;
             }
         }
 
         that.uiHandler({ x: 0, y: 0, playerNumber: -1 });        
         for (let i = 0; i < that.candidateFactory.playerCount; i++) {
-            const partOfPopulation = that.select(newPopulation.filter(candidate => candidate.playerNumber === i));
+            const partOfPopulation = that.replacementFunction(that.population.filter(candidate => candidate.playerNumber === i), newPopulation.filter(candidate => candidate.playerNumber === i), that.generator);
             that.msgHandler(that.counter, 'status', `Best Candidate: ${JSON.stringify(partOfPopulation[0])}`);
 
             for (let j = 0; j < 10; j++) {
                 if (partOfPopulation.length > j) {
-                    that.uiHandler({x: partOfPopulation[j].x, y: partOfPopulation[j].y, playerNumber: partOfPopulation[j].playerNumber+1});
+                    that.uiHandler({x: partOfPopulation[j].x, y: partOfPopulation[j].y, playerNumber: partOfPopulation[j].playerNumber+1, fitness: partOfPopulation[j].fitness});
                 }
             }
             tmpPopulation = tmpPopulation.concat(partOfPopulation);
