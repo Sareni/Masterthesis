@@ -25,7 +25,7 @@ class CandidateFactory extends BaseCandidateFactory {
         return newCandidate;
     }
 
-    mutate(c) {
+    mutate(c, sigma = 1) {
         const newCandidate = {
             fitness: 0,
             properties: [],
@@ -33,7 +33,7 @@ class CandidateFactory extends BaseCandidateFactory {
         }
 
         const pos = this.generator.range(this.optionCount);
-        const delta = (this.generator.random() * (this.maxDelta - this.minDelta)) + this.minDelta;
+        const delta = ((this.generator.random() * (this.maxDelta - this.minDelta)) + this.minDelta) * sigma;
 
         let realDelta = delta;
 
@@ -50,7 +50,6 @@ class CandidateFactory extends BaseCandidateFactory {
         });
 
         newCandidate.properties[pos] = + realDelta + realDeltaParts;
-
         newCandidate.properties = this.fixProperties(newCandidate.properties);
 
         return newCandidate;
@@ -71,9 +70,8 @@ class CandidateFactory extends BaseCandidateFactory {
                 const delta = c2.properties[i] - c1.properties[i];
                 newCandidate.properties[i] = c1.properties[i] + (delta * ((this.generator.random() * 0.6) + 0.2));
             }
-        }
+        }      
 
-        newCandidate.properties = this.fixProperties(newCandidate.properties);
         return newCandidate;
     }
 

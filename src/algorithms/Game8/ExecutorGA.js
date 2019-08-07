@@ -1,13 +1,18 @@
 import BaseExecutor from '../BaseExecutor';
+import { randomSelection } from '../util';
+
 
 class ExecutorGA extends BaseExecutor {
 
-    constructor(generationCount, seedValue, populationSize, timeout, mutationRate, CandidateFactory, uiHandler, msgHandler) {
-        super(populationSize, timeout, generationCount, seedValue, mutationRate, CandidateFactory, uiHandler, msgHandler);
+    constructor(generationCount, seedValue, populationSize, timeout, selectionPressure, mutationRate, CandidateFactory, uiHandler, msgHandler, selectionFunction, replacementFunction, useOptimization) {
+        super(populationSize, timeout, generationCount, seedValue, selectionPressure, mutationRate, CandidateFactory, uiHandler, msgHandler, selectionFunction, replacementFunction, useOptimization);
+         
         this.population = this.generateBasePopulation();
         this.evaluateBasePopulation();
 
         this.imitationRate = 0.6;
+        this.playerCount = 3;
+
     }
 
     generateBasePopulation() {
@@ -45,8 +50,11 @@ class ExecutorGA extends BaseExecutor {
     }
 
     runCycle(that) {
-        const newPopulation = [];
         let tmpPopulation = [];
+        let offspringBuffer = [];
+        let tempOffspringBuffer = [];
+        const offspringCount = that.useOptimization ? that.populationSize * 0.5 : 0;
+        const multiplicator = Math.max(that.selectionPressure, 3);
 
         const firstPopulation = that.population.filter(candidate => candidate.playerNumber === 0);
         const secondPopulation = that.population.filter(candidate => candidate.playerNumber === 1);
@@ -54,54 +62,72 @@ class ExecutorGA extends BaseExecutor {
 
         const splittedPop = [firstPopulation, secondPopulation, thirdPopulation];
 
+        const newPopulation = new Array(splittedPop.length);
+
+        for (let i = 0; i < newPopulation.length; i++) {
+            newPopulation[i] = [];
+        }
+
         for (let i = 0; i < splittedPop.length; i++) {
-            for (let j = 0; j < splittedPop[i].length; j++) {
-                const firstCandidateIndex = that.generator.range(splittedPop[i].length);
-                let secondCandidateIndex = that.generator.range(splittedPop[i].length);
-                while (firstCandidateIndex === secondCandidateIndex && splittedPop[i] > 1) {
-                    secondCandidateIndex = that.generator.range(splittedPop[i].length);
-                }
-    
+            let j = 0;
+            while ((j < (splittedPop[i].length*that.selectionPressure) || tempOffspringBuffer.length < offspringCount) && newPopulation[i].length < (splittedPop[i].length*multiplicator)){
+                const candidates = that.selectionFunction(splittedPop[i], 2, that.generator, j===0);               
                 let newCandidate;
 
-                if (splittedPop[i][firstCandidateIndex].playerNumber > 0) {
+                if (candidates[0].playerNumber > 0) {
                     if (that.generator.random() < that.imitationRate) {
-                        let idx = that.generator.range(splittedPop[1].length + splittedPop[2].length);
-                        while ((((i-1) * splittedPop[1].length) + firstCandidateIndex) === idx && splittedPop[i] > 1) {
-                            idx = that.generator.range(splittedPop[1].length + splittedPop[2].length);
-                        }
-                        const thirdCandidate = idx >= splittedPop[1].length ? splittedPop[2][idx-splittedPop[1].length] : splittedPop[1][idx];
-                        newCandidate = that.candidateFactory.imitate(splittedPop[i][firstCandidateIndex], thirdCandidate);
+                        candidates[1] = randomSelection(splittedPop[1].concat(splittedPop[2]), 1, that.generator, j===0)[0];
+                        newCandidate = that.candidateFactory.imitate(...candidates);
                     } else {
-                        newCandidate = that.candidateFactory.cross(splittedPop[i][firstCandidateIndex], splittedPop[i][secondCandidateIndex]);
+                        newCandidate = that.candidateFactory.cross(...candidates);
                     }
                 } else {
-                    newCandidate = that.candidateFactory.cross(splittedPop[i][firstCandidateIndex], splittedPop[i][secondCandidateIndex]);
+                    newCandidate = that.candidateFactory.cross(...candidates);
                 }
                 if (that.generator.random() < that.mutationRate) {
                     newCandidate = that.candidateFactory.mutate(newCandidate);
                 }
 
                 if (i === 0) {
-                    splittedPop[i][j].fitness = that.candidateFactory.evaluate(splittedPop[i][j],
+                    newCandidate.fitness = that.candidateFactory.evaluate(newCandidate,
                         secondPopulation[that.generator.range(secondPopulation.length)], thirdPopulation[that.generator.range(thirdPopulation.length)]);
                 } else {
-                    splittedPop[i][j].fitness = that.candidateFactory.evaluate(splittedPop[i][j],
+                    newCandidate.fitness = that.candidateFactory.evaluate(newCandidate,
                         firstPopulation[that.generator.range(firstPopulation.length)]);
                 }
 
-                newPopulation.push(newCandidate);
+                if (that.useOptimization && (newCandidate.fitness > candidates[0].fitness && newCandidate.fitness > candidates[1].fitness)) {
+                    tempOffspringBuffer.push(newCandidate);
+                } else {
+                    newPopulation[i].push(newCandidate);
+                }
+
+                j++;
             }
+
+            offspringBuffer = offspringBuffer.concat(tempOffspringBuffer);
+            tempOffspringBuffer = [];
         }
 
         for (let i = 0; i < splittedPop.length; i++) {
-            const partOfPopulation = that.select(that.population.concat(newPopulation).filter(candidate => candidate.playerNumber === i));
-            that.uiHandler({x: that.counter, y: partOfPopulation[0].fitness, playerNumber: i});
+            let partOfPopulation;
+            const filteredOffspringBuffer = offspringBuffer.filter(candidate => candidate.playerNumber === i);
+            const filteredPopulation = that.population.filter(candidate => candidate.playerNumber === i);
+            if (filteredOffspringBuffer.length >= filteredPopulation.length) {
+                partOfPopulation = that.sortByFitness(filteredOffspringBuffer).slice(0, filteredPopulation.length);
+            } else {
+                const fillCandidates = that.sortByFitness(that.replacementFunction(filteredPopulation, newPopulation[i], that.generator)).slice(0, filteredPopulation.length - filteredOffspringBuffer.length);
+                const candidates = filteredOffspringBuffer.concat(fillCandidates);
+                partOfPopulation = that.sortByFitness(candidates);
+            }
             that.msgHandler(that.counter, 'status', `Best Candidate: ${JSON.stringify(partOfPopulation[0])}`);
+            that.uiHandler({x: that.counter, y: partOfPopulation[0].fitness, playerNumber: i, properties: partOfPopulation[0].properties});
+
             tmpPopulation = tmpPopulation.concat(partOfPopulation);
         }
         that.population = tmpPopulation;
-        that.counter += 1;      
+        that.counter += 1;     
+        
         
         if (that.counter >= that.generationCount) {
             that.stop();

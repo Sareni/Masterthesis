@@ -9,7 +9,7 @@ class CandidateFactory extends BaseCandidateFactory {
         this.max = 10;
         this.min = 2;
         this.playerTable = this.generatePlayerTable();
-
+        this.discountFactor = 1.00;
     }
     
     cross(c1, c2) {
@@ -24,7 +24,7 @@ class CandidateFactory extends BaseCandidateFactory {
         return newCandidate;
     }
 
-    mutate(c) {
+    mutate(c, sigma=1) {
         const newCandidate = {
             fitness: 0,
             strategy: '',
@@ -67,8 +67,9 @@ class CandidateFactory extends BaseCandidateFactory {
                 strategy2 = c2.strategy.charAt(i);
             }
             const strategy2Idx = this.strategyPool.indexOf(strategy2);
+            const calcValue = this.playerTable[strategy2Idx * this.strategyCount + strategy1Idx] * Math.pow(this.discountFactor, (c1.strategy.length - i - 1));
 
-            count += this.playerTable[strategy2Idx * this.strategyCount + strategy1Idx];
+            count += calcValue;
 
             if (strategy1 === 'B') {
                 trusted = false;
@@ -103,6 +104,13 @@ class CandidateFactory extends BaseCandidateFactory {
                        sixth, sixth, fifth];
 
         return playerTable;
+    }
+
+    getMaxValue() {
+        const candidate = {
+            strategy: 'A'.repeat(this.gameRounds-1) + 'C',            
+        }
+        return this.evaluate(candidate);
     }
 }
 
