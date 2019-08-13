@@ -2,9 +2,10 @@ import BaseExecutor from '../BaseExecutor';
 
 class ExecutorES extends BaseExecutor {
 
-    constructor(generationCount, seedValue, populationSize, timeout, selectionPressure, mutationRate, CandidateFactory, uiHandler, msgHandler, selectionFunction, replacementFunction, useOptimization) {
+    constructor(generationCount, seedValue, populationSize, timeout, selectionPressure, mutationRate, CandidateFactory, uiHandler, msgHandler, selectionFunction, replacementFunction, useOptimization, calculator) {
         super(populationSize, timeout, generationCount, seedValue, selectionPressure, mutationRate, CandidateFactory, uiHandler, msgHandler, selectionFunction, replacementFunction, useOptimization);
         this.population = this.generateBasePopulation();
+        this.calculator = calculator;
 
         this.maxSigma = 4;
         this.minSigma = 0.001;
@@ -62,6 +63,10 @@ class ExecutorES extends BaseExecutor {
         
         that.uiHandler({x: that.counter, y: that.population[0].fitness});
         that.msgHandler(that.counter, 'status', `Best Candidate: ${JSON.stringify(that.population[0])}`);
+        if (that.calculator) {
+            that.calculator.add(that.counter, that.population[0].fitness)
+        }
+
         that.counter += 1;
 
         that.addToHistory(that.population[0]);

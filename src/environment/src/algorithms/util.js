@@ -1,3 +1,5 @@
+import fs from 'fs';
+
 function buildIndices(len) {
     const res = [];
     for (let i = 0; i < len; i++) {
@@ -167,8 +169,70 @@ function completeReplacement(oldPop, newPop, generator) {
     return filteredPopulation.slice(0, oldPop.length);
 }
 
+class Calculator {
+    constructor () {
+        this.aggregationArray = [];
+        this.aggregationCountArray = [];
+        this.lastArray = [];
+        this.bestArray = [];
+    }
+
+    add(generation, fitness) {
+        if (generation === 0) {
+            this.lastArray = [];
+        }
+
+        this.lastArray[generation] = fitness;
+        if (this.aggregationArray[generation]) {
+            this.aggregationArray[generation] += fitness;
+            this.aggregationCountArray[generation] += 1;
+        } else {
+            this.aggregationArray[generation] = fitness;
+            this.aggregationCountArray[generation] = 1;
+        }
+    }
+
+    lastIsBest() {
+        this.bestArray = [...this.lastArray];
+    }
+
+    finish(path) {
+        let data = 'Generation;Fitness\n';
+        for (let i = 0; i < this.aggregationCountArray.length; i++) {
+            if (this.aggregationArray[i]) {
+                const fitness = this.aggregationArray[i] / this.aggregationCountArray[i];
+                data = `${data}${i};${fitness}\n`;
+            } else {
+                data = `${data}${i};0\n`;
+            }
+        }
+
+        fs.writeFile(`${path}/average.csv`, data, function(err) {
+            if(err) {
+                return console.log(err);
+            }
+        });
+
+        data = 'Generation;Fitness\n';
+        for (let i = 0; i < this.bestArray.length; i++) {
+            if (this.bestArray[i]) {
+                data = `${data}${i};${this.bestArray[i]}\n`;
+            } else {
+                data = `${data}${i};0\n`;
+            }
+        }
+
+        fs.writeFile(`${path}/best.csv`, data, function(err) {
+            if(err) {
+                return console.log(err);
+            }
+        });
+    }
+}
+
 
 export {
+    Calculator,
     randomReplacement,
     completeReplacement,
     elitismReplacement,
