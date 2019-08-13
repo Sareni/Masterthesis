@@ -72,7 +72,7 @@ class BaseExecutor {
     }
 
     noChangesInHistory() {
-        if (this.history.length < this.historyLength) {
+        /* if (this.history.length < this.historyLength) {
             return false;
         }
         for(var i = 0; i < this.history.length - 1; i++) {
@@ -81,6 +81,8 @@ class BaseExecutor {
             }
         }
         return true;
+        */
+       return false;
     }
 }
 
