@@ -180,7 +180,7 @@ function testGame1a2Execution(type='NE', candidateFactory, executorGA, executorE
     log('-------------- GA ----------------');
 
     if (name === 'game1') {
-        calculator = new Calculator();
+        calculator = new Calculator('GA');
     }
     
     testLoop(candidateFactory, executorGA, seedValue, type, false, 0, 'GA', calculator);
@@ -203,7 +203,7 @@ function testGame1a2Execution(type='NE', candidateFactory, executorGA, executorE
 
     if (calculator) {
         calculator.finish(`results/${name}`);
-        calculator = new Calculator();
+        calculator = new Calculator('ES');
     }
 
     log('-------------- ES ----------------');
