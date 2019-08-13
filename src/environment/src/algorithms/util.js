@@ -235,7 +235,7 @@ class Calculator {
         data = 'Generation;Fitness\n';
         for (let i = 0; i < this.bestArray.length; i++) {
             if (this.bestArray[i]) {
-                const fitness = this.bestArray[i] / this.bestCountArray[i];
+                const fitness = this.bestArray[i] / this.lastCountArray[i];
                 data = `${data}${i};${fitness}\n`;
             } else {
                 data = `${data}${i};0\n`;
