@@ -174,27 +174,41 @@ class Calculator {
         this.aggregationArray = [];
         this.aggregationCountArray = [];
         this.lastArray = [];
+        this.lastCountArray = [];
         this.bestArray = [];
         this.postfix = postfix;
+        this.lastAggregationGeneration = -1;
         this.lastGeneration = -1;
     }
 
     add(generation, fitness) {
-        if (generation === 0) {
-            this.lastArray = [];
+        if (this.lastArray[generation]) {
+            this.lastArray[generation] += fitness;
+            if (this.lastGeneration !== generation) {
+                this.lastCountArray[generation] += 1;
+                this.lastGeneration = generation;
+            }
+        } else {
+            this.lastArray[generation] = fitness;
+            this.lastCountArray[generation] = 1;
         }
 
-        this.lastArray[generation] = fitness;
         if (this.aggregationArray[generation]) {
             this.aggregationArray[generation] += fitness;
-            if (this.lastGeneration !== generation) {
+            if (this.lastAggregationGeneration !== generation) {
                 this.aggregationCountArray[generation] += 1;
-                this.lastGeneration = generation;
+                this.lastAggregationGeneration = generation;
             }
         } else {
             this.aggregationArray[generation] = fitness;
             this.aggregationCountArray[generation] = 1;
         }
+    }
+
+    resetLast() {
+        this.lastArray = [];
+        this.lastCountArray = [];
+        this.lastGeneration = -1;
     }
 
     lastIsBest() {
@@ -221,7 +235,8 @@ class Calculator {
         data = 'Generation;Fitness\n';
         for (let i = 0; i < this.bestArray.length; i++) {
             if (this.bestArray[i]) {
-                data = `${data}${i};${this.bestArray[i]}\n`;
+                const fitness = this.bestArray[i] / this.bestCountArray[i];
+                data = `${data}${i};${fitness}\n`;
             } else {
                 data = `${data}${i};0\n`;
             }
