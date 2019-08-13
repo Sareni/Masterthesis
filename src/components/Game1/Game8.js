@@ -7,7 +7,7 @@ import ExecutorGA8 from '../../algorithms/Game8/ExecutorGA';
 import ExecutorES8 from '../../algorithms/Game8/ExecutorES';
 import ExecutorBF8 from '../../algorithms/Game8/ExecutorBF';
 import CandidateFactory8 from '../../algorithms/Game8/CandidateFactory';
-import { proportionalSelection, randomSelection, tournamentSelection, completeReplacement, randomReplacement, elitismReplacement } from '../../algorithms/util';
+import { getSelectionFunction, getReplacementFunction } from '../../algorithms/util';
 
 class Game1 extends React.Component {
     constructor(props) {
@@ -64,9 +64,9 @@ class Game1 extends React.Component {
             factory,
             this.newGameState,
             this.newMessage,
-            proportionalSelection, // sel
-            completeReplacement, // rep
-            false // opt
+            getSelectionFunction(data.selectionFunction),
+            getReplacementFunction(data.replacementFunction),
+            data.optimization,
             ); break;
           case 'ES': executor = new ExecutorES8(
             parseInt(data.generationCount),
@@ -78,9 +78,9 @@ class Game1 extends React.Component {
             factory,
             this.newGameState,
             this.newMessage,
-            proportionalSelection, // sel
-            completeReplacement, // rep
-            false // opt
+            getSelectionFunction(data.selectionFunction),
+            getReplacementFunction(data.replacementFunction),
+            data.optimization,
             ); break;
           default: executor = new ExecutorBF8(
             parseInt(data.generationCount),
@@ -92,9 +92,9 @@ class Game1 extends React.Component {
             factory,
             this.newGameState,
             this.newMessage,
-            proportionalSelection, // sel
-            completeReplacement, // rep
-            false // opt
+            getSelectionFunction(data.selectionFunction),
+            getReplacementFunction(data.replacementFunction),
+            data.optimization,
             );
         }
         this.gameCounter += 3; // !!

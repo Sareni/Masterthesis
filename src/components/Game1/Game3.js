@@ -6,9 +6,9 @@ import Screen from './Screen';
 import ExecutorGA3 from '../../algorithms/Game3/ExecutorGA';
 import ExecutorES3 from '../../algorithms/Game3/ExecutorES';
 import CandidateFactory3 from '../../algorithms/Game3/CandidateFactory';
-import { proportionalSelection, randomSelection, tournamentSelection, completeReplacement, randomReplacement, elitismReplacement } from '../../algorithms/util';
+import { getSelectionFunction, getReplacementFunction } from '../../algorithms/util';
 
-class Game1 extends React.Component {
+class Game3 extends React.Component {
     constructor(props) {
       super(props);
 
@@ -66,9 +66,9 @@ class Game1 extends React.Component {
             factory,
             this.newGameState,
             this.newMessage,
-            proportionalSelection, // sel
-            completeReplacement, // rep
-            false // opt
+            getSelectionFunction(data.selectionFunction),
+            getReplacementFunction(data.replacementFunction),
+            data.optimization,
             ); break;
           case 'ES': executor = new ExecutorES3(
             parseInt(data.generationCount),
@@ -80,9 +80,9 @@ class Game1 extends React.Component {
             factory,
             this.newGameState,
             this.newMessage,
-            proportionalSelection, // sel
-            completeReplacement, // rep
-            false // opt
+            getSelectionFunction(data.selectionFunction),
+            getReplacementFunction(data.replacementFunction),
+            data.optimization,
             ); break;
           default: executor = null;
         }
@@ -117,4 +117,4 @@ class Game1 extends React.Component {
     }
 }
 
-export default Game1;
+export default Game3;

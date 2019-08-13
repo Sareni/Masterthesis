@@ -70,7 +70,7 @@ class Game1 extends React.Component {
             this.newMessage,
             getSelectionFunction(data.selectionFunction),
             getReplacementFunction(data.replacementFunction),
-            data.optimization, // opt
+            data.optimization,
             );
             break;
           case 'ES': executor = new ExecutorES1(
@@ -85,7 +85,7 @@ class Game1 extends React.Component {
             this.newMessage,
             getSelectionFunction(data.selectionFunction),
             getReplacementFunction(data.replacementFunction),
-            data.optimization, // opt
+            data.optimization,
             );
             break;
           default: executor = new ExecutorBF1(
@@ -100,7 +100,7 @@ class Game1 extends React.Component {
             this.newMessage,
             getSelectionFunction(data.selectionFunction),
             getReplacementFunction(data.replacementFunction),
-            data.optimization, // opt
+            data.optimization,
             );
         }
         this.gameCounter += 1;

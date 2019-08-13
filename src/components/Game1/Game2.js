@@ -7,9 +7,9 @@ import ExecutorGA2 from '../../algorithms/Game2/ExecutorGA';
 import ExecutorES2 from '../../algorithms/Game2/ExecutorES';
 import ExecutorBF2 from '../../algorithms/Game2/ExecutorBF';
 import CandidateFactory2 from '../../algorithms/Game2/CandidateFactory';
-import { proportionalSelection, randomSelection, tournamentSelection, completeReplacement, randomReplacement, elitismReplacement } from '../../algorithms/util';
+import { getSelectionFunction, getReplacementFunction } from '../../algorithms/util';
 
-class Game1 extends React.Component {
+class Game2 extends React.Component {
     constructor(props) {
       super(props);
 
@@ -67,9 +67,9 @@ class Game1 extends React.Component {
             factory,
             this.newGameState,
             this.newMessage,
-            proportionalSelection, // sel
-            completeReplacement, // rep
-            false // opt
+            getSelectionFunction(data.selectionFunction),
+            getReplacementFunction(data.replacementFunction),
+            data.optimization,
             );
             break;
           case 'ES': executor = new ExecutorES2(
@@ -82,9 +82,9 @@ class Game1 extends React.Component {
             factory,
             this.newGameState,
             this.newMessage,
-            proportionalSelection, // sel
-            completeReplacement, // rep
-            false // opt
+            getSelectionFunction(data.selectionFunction),
+            getReplacementFunction(data.replacementFunction),
+            data.optimization,
             );
             break;
           default: executor = new ExecutorBF2(
@@ -97,9 +97,9 @@ class Game1 extends React.Component {
             factory,
             this.newGameState,
             this.newMessage,
-            proportionalSelection, // sel
-            completeReplacement, // rep
-            false // opt
+            getSelectionFunction(data.selectionFunction),
+            getReplacementFunction(data.replacementFunction),
+            data.optimization,
             );
         }
         this.gameCounter += 1;
@@ -132,4 +132,4 @@ class Game1 extends React.Component {
     }
 }
 
-export default Game1;
+export default Game2;

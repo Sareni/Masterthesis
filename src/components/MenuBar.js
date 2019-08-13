@@ -7,7 +7,7 @@ class MenuBar extends React.Component {
     render() {
       return (
         <div className="menu-bar">
-          <div className="left">v0.1</div>
+          <div className="left">v0.2</div>
           <div className="center">Masterthesis: Martin Limberger</div>
           {this.renderNavigation()}
         </div>

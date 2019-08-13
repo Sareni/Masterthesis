@@ -7,7 +7,7 @@ import ExecutorGA9 from '../../algorithms/Game9/ExecutorGA';
 import ExecutorES9 from '../../algorithms/Game9/ExecutorES';
 import ExecutorBF9 from '../../algorithms/Game9/ExecutorBF';
 import CandidateFactory9 from '../../algorithms/Game9/CandidateFactory';
-import { proportionalSelection, randomSelection, tournamentSelection, completeReplacement, randomReplacement, elitismReplacement } from '../../algorithms/util';
+import { getSelectionFunction, getReplacementFunction } from '../../algorithms/util';
 
 class Game1 extends React.Component {
     constructor(props) {
@@ -67,9 +67,9 @@ class Game1 extends React.Component {
             factory,
             this.newGameState,
             this.newMessage,
-            proportionalSelection, // sel
-            completeReplacement, // rep
-            false // opt
+            getSelectionFunction(data.selectionFunction),
+            getReplacementFunction(data.replacementFunction),
+            data.optimization,
             );
             break;
           case 'ES': executor = new ExecutorES9(
@@ -82,9 +82,9 @@ class Game1 extends React.Component {
             factory,
             this.newGameState,
             this.newMessage,
-            proportionalSelection, // sel
-            completeReplacement, // rep
-            false // opt
+            getSelectionFunction(data.selectionFunction),
+            getReplacementFunction(data.replacementFunction),
+            data.optimization,
             );
             break;
           default: executor = new ExecutorBF9(
@@ -97,9 +97,9 @@ class Game1 extends React.Component {
             factory,
             this.newGameState,
             this.newMessage,
-            proportionalSelection, // sel
-            completeReplacement, // rep
-            false // opt
+            getSelectionFunction(data.selectionFunction),
+            getReplacementFunction(data.replacementFunction),
+            data.optimization,
             );
         }
         this.gameCounter += data.playerCount; // !!

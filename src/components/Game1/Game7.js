@@ -7,7 +7,8 @@ import ExecutorGA7 from '../../algorithms/Game7/ExecutorGA';
 import ExecutorES7 from '../../algorithms/Game7/ExecutorES';
 import ExecutorBF7 from '../../algorithms/Game7/ExecutorBF';
 import CandidateFactory7 from '../../algorithms/Game7/CandidateFactory';
-import { proportionalSelection, randomSelection, tournamentSelection, completeReplacement, randomReplacement, elitismReplacement } from '../../algorithms/util';
+import { getSelectionFunction, getReplacementFunction } from '../../algorithms/util';
+
 
 class Game1 extends React.Component {
     constructor(props) {
@@ -66,9 +67,9 @@ class Game1 extends React.Component {
             factory,
             this.newGameState,
             this.newMessage,
-            proportionalSelection, // sel
-            completeReplacement, // rep
-            false // opt
+            getSelectionFunction(data.selectionFunction),
+            getReplacementFunction(data.replacementFunction),
+            data.optimization,
             );
             break;
           case 'ES': executor = new ExecutorES7(
@@ -81,9 +82,9 @@ class Game1 extends React.Component {
             factory,
             this.newGameState,
             this.newMessage,
-            proportionalSelection, // sel
-            completeReplacement, // rep
-            false // opt
+            getSelectionFunction(data.selectionFunction),
+            getReplacementFunction(data.replacementFunction),
+            data.optimization,
             );
             break;
           default: executor = new ExecutorBF7(
@@ -96,9 +97,9 @@ class Game1 extends React.Component {
             factory,
             this.newGameState,
             this.newMessage,
-            proportionalSelection, // sel
-            completeReplacement, // rep
-            false // opt
+            getSelectionFunction(data.selectionFunction),
+            getReplacementFunction(data.replacementFunction),
+            data.optimization,
             );
         }
         this.gameCounter += 1;
