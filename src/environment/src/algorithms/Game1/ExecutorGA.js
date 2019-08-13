@@ -52,7 +52,7 @@ class ExecutorGA extends BaseExecutor {
         that.msgHandler(that.counter, 'status', `Best Candidate: ${JSON.stringify(that.population[0])}`);
 
         if (that.calculator) {
-            that.calculator.add(that.counter, that.population[0].fitness)
+            that.calculator.add(that.counter, that.population[0].fitness);
         }
 
         that.counter += 1;

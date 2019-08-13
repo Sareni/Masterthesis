@@ -2,10 +2,11 @@ import BaseExecutor from '../BaseExecutor';
 
 class ExecutorGA extends BaseExecutor {
 
-    constructor(generationCount, seedValue, populationSize, timeout, selectionPressure, mutationRate, CandidateFactory, uiHandler, msgHandler, selectionFunction, replacementFunction, useOptimization) {
+    constructor(generationCount, seedValue, populationSize, timeout, selectionPressure, mutationRate, CandidateFactory, uiHandler, msgHandler, selectionFunction, replacementFunction, useOptimization, calculator) {
         super(populationSize, timeout, generationCount, seedValue, selectionPressure, mutationRate, CandidateFactory, uiHandler, msgHandler, selectionFunction, replacementFunction, useOptimization);
         this.population = this.generateBasePopulation();
-        this.population = this.evaluateBasePopulation();        
+        this.population = this.evaluateBasePopulation();
+        this.calculator = calculator;     
     }
 
     generateBasePopulation() {
@@ -110,6 +111,10 @@ class ExecutorGA extends BaseExecutor {
             }
             that.msgHandler(that.counter, 'status', `Best Candidate: ${JSON.stringify(partOfPopulation[0])}`);
             that.uiHandler({x: that.counter, y: partOfPopulation[0].fitness, playerNumber: i});
+
+            if (that.calculator) {
+                that.calculator.add(that.counter, partOfPopulation[0].fitness);
+            }
 
             tmpPopulation = tmpPopulation.concat(partOfPopulation);
         }

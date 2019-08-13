@@ -170,11 +170,13 @@ function completeReplacement(oldPop, newPop, generator) {
 }
 
 class Calculator {
-    constructor () {
+    constructor (postfix) {
         this.aggregationArray = [];
         this.aggregationCountArray = [];
         this.lastArray = [];
         this.bestArray = [];
+        this.postfix = postfix;
+        this.lastGeneration = -1;
     }
 
     add(generation, fitness) {
@@ -185,7 +187,10 @@ class Calculator {
         this.lastArray[generation] = fitness;
         if (this.aggregationArray[generation]) {
             this.aggregationArray[generation] += fitness;
-            this.aggregationCountArray[generation] += 1;
+            if (this.lastGeneration !== generation) {
+                this.aggregationCountArray[generation] += 1;
+                this.lastGeneration = generation;
+            }
         } else {
             this.aggregationArray[generation] = fitness;
             this.aggregationCountArray[generation] = 1;
@@ -207,7 +212,7 @@ class Calculator {
             }
         }
 
-        fs.writeFile(`${path}/average.csv`, data, function(err) {
+        fs.writeFile(`${path}/average${this.postfix}.csv`, data, function(err) {
             if(err) {
                 return console.log(err);
             }
@@ -222,7 +227,7 @@ class Calculator {
             }
         }
 
-        fs.writeFile(`${path}/best.csv`, data, function(err) {
+        fs.writeFile(`${path}/best${this.postfix}.csv`, data, function(err) {
             if(err) {
                 return console.log(err);
             }

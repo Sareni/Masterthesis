@@ -1,7 +1,7 @@
 
 import Generator from 'random-seed';
 import fs from 'fs';
-import { proportionalSelection, randomSelection, tournamentSelection, completeReplacement, randomReplacement, elitismReplacement } from './algorithms/util';
+import { Calculator, proportionalSelection, randomSelection, tournamentSelection, completeReplacement, randomReplacement, elitismReplacement } from './algorithms/util';
 
 
 let parameters = {};
@@ -64,7 +64,7 @@ function newGameState(data) {
 }
 
 
-function testLoop(Factory, Executor, seedValue, type, useOptimization, mi, algoType) {
+function testLoop(Factory, Executor, seedValue, type, useOptimization, mi, algoType, calculator) {
     modeIndex = mi;
     resultArray[modeIndex] = new Array(parameters.populationSizeArray.length);
     const timeout = '0';
@@ -109,7 +109,7 @@ function testLoop(Factory, Executor, seedValue, type, useOptimization, mi, algoT
                                 roundIndex = p;
                                 const dynSeedValue = generator.range(10000);
                                 const factory = new Factory(parameters.playerCount, parameters.strategyCount, dynSeedValue, parameters.findBoth || false);
-                                const executor = new Executor(parameters.generationCountArray[generationCountIndex], dynSeedValue, parameters.populationSizeArray[populationIndex], timeout, parameters.selectionPressureArray[selectionPressureIndex], parameters.mutationRateArray[mutationIndex], factory, newGameState, newMessage, selectionFunctionArray[selectionFunctionIndex], replacementFunctionArray[replacementFunctionIndex], useOptimization);
+                                const executor = new Executor(parameters.generationCountArray[generationCountIndex], dynSeedValue, parameters.populationSizeArray[populationIndex], timeout, parameters.selectionPressureArray[selectionPressureIndex], parameters.mutationRateArray[mutationIndex], factory, newGameState, newMessage, selectionFunctionArray[selectionFunctionIndex], replacementFunctionArray[replacementFunctionIndex], useOptimization, calculator);
                                 executor.start();
                             }
 
@@ -129,6 +129,10 @@ function testLoop(Factory, Executor, seedValue, type, useOptimization, mi, algoT
                                 bestSetting[modeIndex].replacementFunctionIndex = replacementFunctionIndex;
                                 bestSetting[modeIndex].selectionPressureIndex = selectionPressureIndex;
                                 bestSetting[modeIndex].result = result;
+
+                                if (calculator) {
+                                    calculator.lastIsBest();
+                                }
                             }
                         }
                     }
@@ -153,6 +157,8 @@ function testGame3Execution(type='NE', candidateFactory, executorGA, executorES,
     const parametersFile = fs.readFileSync(`${name}.json`);
     parameters = JSON.parse(parametersFile);
 
+    let calculator = null;
+
     const seedValue = Math.random() * 10000; // = 6664.58;
     resultArray = new Array(4);
 
@@ -173,7 +179,11 @@ function testGame3Execution(type='NE', candidateFactory, executorGA, executorES,
     log('+--------------------------------+');
 
     log('-------------- GA ----------------');
-    testLoop(candidateFactory, executorGA, seedValue, type, false, 0, 'GA');
+
+    if (name === 'game5') {
+        calculator = new Calculator();
+    }
+    testLoop(candidateFactory, executorGA, seedValue, type, false, 0, 'GA', calculator);
 
     log('0:', zeroCount);
     zeroCount = 0;
@@ -181,7 +191,7 @@ function testGame3Execution(type='NE', candidateFactory, executorGA, executorES,
     noneZeroCount = 0;
 
     log('-------------- optimiert');
-    testLoop(candidateFactory, executorGA, seedValue, type, true, 1, 'GA');
+    testLoop(candidateFactory, executorGA, seedValue, type, true, 1, 'GA', calculator);
 
     log('0:', zeroCount);
     zeroCount = 0;
@@ -190,9 +200,13 @@ function testGame3Execution(type='NE', candidateFactory, executorGA, executorES,
 
     log('--------------');
 
+    if (calculator) {
+        calculator.finish(`results/${name}`);
+        calculator = new Calculator();
+    }
 
     log('-------------- ES ----------------');
-    testLoop(candidateFactory, executorES, seedValue, type, false, 2, 'ES');
+    testLoop(candidateFactory, executorES, seedValue, type, false, 2, 'ES', calculator);
 
     log('0:', zeroCount);
     zeroCount = 0;
@@ -201,7 +215,7 @@ function testGame3Execution(type='NE', candidateFactory, executorGA, executorES,
 
     log('-------------- optimiert');
     
-    testLoop(candidateFactory, executorES, seedValue, type, true, 3, 'ES');
+    testLoop(candidateFactory, executorES, seedValue, type, true, 3, 'ES', calculator);
 
     log('0:', zeroCount);
     zeroCount = 0;
@@ -209,6 +223,10 @@ function testGame3Execution(type='NE', candidateFactory, executorGA, executorES,
     noneZeroCount = 0;
 
     log('--------------');
+
+    if (calculator) {
+        calculator.finish(`results/${name}`);
+    }
 
     fs.writeFile(`results/${name}.txt`, output, function(err) {
         if(err) {

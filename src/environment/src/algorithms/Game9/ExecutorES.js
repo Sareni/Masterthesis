@@ -2,10 +2,11 @@ import BaseExecutor from '../BaseExecutor';
 
 class ExecutorES extends BaseExecutor {
 
-    constructor(generationCount, seedValue, populationSize, timeout, selectionPressure, mutationRate, CandidateFactory, uiHandler, msgHandler, selectionFunction, replacementFunction, useOptimization) {
+    constructor(generationCount, seedValue, populationSize, timeout, selectionPressure, mutationRate, CandidateFactory, uiHandler, msgHandler, selectionFunction, replacementFunction, useOptimization, calculator) {
         super(populationSize, timeout, generationCount, seedValue, selectionPressure, mutationRate, CandidateFactory, uiHandler, msgHandler, selectionFunction, replacementFunction, useOptimization);
         this.population = this.generateBasePopulation();
         this.population = this.evaluateBasePopulation();
+        this.calculator = calculator;
 
         this.maxSigma = 4;
         this.minSigma = 0.001;
@@ -102,6 +103,9 @@ class ExecutorES extends BaseExecutor {
             const partOfPopulation = that.select(that.population.concat(newPopulation).filter(candidate => candidate.playerNumber === i));
             that.uiHandler({x: that.counter, y: partOfPopulation[0].fitness, playerNumber: i});
             that.msgHandler(that.counter, 'status', `Best Candidate: ${JSON.stringify(partOfPopulation[0])}`);
+            if (that.calculator) {
+                that.calculator.add(that.counter, partOfPopulation[0].fitness);
+            }
             tmpPopulation = tmpPopulation.concat(partOfPopulation);
         }
 
