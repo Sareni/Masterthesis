@@ -182,18 +182,18 @@ function testGame9Execution(type='NE', candidateFactory, executorGA, executorES,
     if (name === 'game9') {
         calculator = new Calculator('GA');
     }
-    testLoop(candidateFactory, executorGA, seedValue, type, false, 0, 'GA');
+    testLoop(candidateFactory, executorGA, seedValue, type, false, 0, 'GA', calculator);
     log('-------------- optimiert');
-    testLoop(candidateFactory, executorGA, seedValue, type, true, 1, 'GA');
+    testLoop(candidateFactory, executorGA, seedValue, type, true, 1, 'GA', calculator);
     log('--------------');
     if (calculator) {
         calculator.finish(`results/${name}`);
         calculator = new Calculator('ES');
     }
     log('-------------- ES ----------------');
-    testLoop(candidateFactory, executorES, seedValue, type, false, 2, 'ES');
+    testLoop(candidateFactory, executorES, seedValue, type, false, 2, 'ES', calculator);
     log('-------------- optimiert');
-    testLoop(candidateFactory, executorES, seedValue, type, true, 3, 'ES');
+    testLoop(candidateFactory, executorES, seedValue, type, true, 3, 'ES', calculator);
     log('--------------');
 
     if (calculator) {
