@@ -17,6 +17,10 @@ class ExecutorES extends BaseExecutor {
             this.history[i] = [];
             this.candidateFactory.setPlayerNumber(i);
             this.population[i] = this.generateBasePopulation();
+
+            if (this.calculator) {
+                this.calculator.add(0, this.population[i][0].fitness);
+            }
         }
     }
 
@@ -25,7 +29,7 @@ class ExecutorES extends BaseExecutor {
         for(let i = 0; i < this.populationSize; i++) {
             population.push(this.candidateFactory.generate());
         }
-        return population;
+        return this.sortByFitness(population);
     }
 
     runCycle(that) {
@@ -75,7 +79,7 @@ class ExecutorES extends BaseExecutor {
             that.addToHistory(that.population[h][0], h);     
             
             if (that.calculator) {
-                that.calculator.add(that.counter, that.population[h][0].fitness);
+                that.calculator.add(that.counter+1, that.population[h][0].fitness);
             }
         } 
         

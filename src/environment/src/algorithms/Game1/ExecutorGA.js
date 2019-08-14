@@ -5,6 +5,10 @@ class ExecutorGA extends BaseExecutor {
         super(populationSize, timeout, generationCount, seedValue, selectionPressure, mutationRate, CandidateFactory, uiHandler, msgHandler, selectionFunction, replacementFunction, useOptimization);
         this.population = this.generateBasePopulation();
         this.calculator = calculator;
+
+        if (this.calculator) {
+            this.calculator.add(0, this.population[0].fitness);
+        }
     }
 
     generateBasePopulation() {
@@ -12,7 +16,7 @@ class ExecutorGA extends BaseExecutor {
         for(let i = 0; i < this.populationSize; i++) {
             population.push(this.candidateFactory.generate());
         }
-        return population;
+        return this.sortByFitness(population);
     }
 
     runCycle(that) {
@@ -52,7 +56,7 @@ class ExecutorGA extends BaseExecutor {
         that.msgHandler(that.counter, 'status', `Best Candidate: ${JSON.stringify(that.population[0])}`);
 
         if (that.calculator) {
-            that.calculator.add(that.counter, that.population[0].fitness);
+            that.calculator.add(that.counter+1, that.population[0].fitness);
         }
 
         that.counter += 1;

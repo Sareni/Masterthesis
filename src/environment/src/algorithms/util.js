@@ -233,13 +233,13 @@ class Calculator {
             }
         });
 
-        data = 'Generation;Fitness;\n';
+        data = 'Generation;Fitness\n';
         for (let i = 0; i < this.bestArray.length; i++) {
             if (this.bestArray[i]) {
-                const fitness = this.bestArray[i]; // / this.bestCountArray[i];
-                data = `${data}${i};${fitness};${this.bestCountArray[i]}\n`;
+                const fitness = this.bestArray[i] / this.bestCountArray[i];
+                data = `${data}${i};${fitness}\n`;
             } else {
-                data = `${data}${i};0;0\n`;
+                data = `${data}${i};0\n`;
             }
         }
 

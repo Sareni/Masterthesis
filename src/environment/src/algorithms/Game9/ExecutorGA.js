@@ -6,7 +6,15 @@ class ExecutorGA extends BaseExecutor {
         super(populationSize, timeout, generationCount, seedValue, selectionPressure, mutationRate, CandidateFactory, uiHandler, msgHandler, selectionFunction, replacementFunction, useOptimization);
         this.population = this.generateBasePopulation();
         this.population = this.evaluateBasePopulation();
-        this.calculator = calculator;     
+        this.calculator = calculator;
+        
+        if (this.calculator) {
+            for (let i = 0; i < this.candidateFactory.playerCount; i++) {
+                let group = this.population.filter(candidate => candidate.playerNumber === i);
+                group = this.sortByFitness(group);
+                this.calculator.add(0, group[0].fitness);
+            }
+        } 
     }
 
     generateBasePopulation() {
@@ -113,7 +121,7 @@ class ExecutorGA extends BaseExecutor {
             that.uiHandler({x: that.counter, y: partOfPopulation[0].fitness, playerNumber: i});
 
             if (that.calculator) {
-                that.calculator.add(that.counter, partOfPopulation[0].fitness);
+                that.calculator.add(that.counter+1, partOfPopulation[0].fitness);
             }
 
             tmpPopulation = tmpPopulation.concat(partOfPopulation);

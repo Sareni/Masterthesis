@@ -8,6 +8,14 @@ class ExecutorES extends BaseExecutor {
         this.population = this.evaluateBasePopulation();
         this.calculator = calculator;
 
+        if (this.calculator) {
+            for (let i = 0; i < this.candidateFactory.playerCount; i++) {
+                let group = this.population.filter(candidate => candidate.playerNumber === i);
+                group = this.sortByFitness(group);
+                this.calculator.add(0, group[0].fitness);
+            }
+        }
+
         this.maxSigma = 4;
         this.minSigma = 0.001;
         this.sigma = 2;
@@ -104,7 +112,7 @@ class ExecutorES extends BaseExecutor {
             that.uiHandler({x: that.counter, y: partOfPopulation[0].fitness, playerNumber: i});
             that.msgHandler(that.counter, 'status', `Best Candidate: ${JSON.stringify(partOfPopulation[0])}`);
             if (that.calculator) {
-                that.calculator.add(that.counter, partOfPopulation[0].fitness);
+                that.calculator.add(that.counter+1, partOfPopulation[0].fitness);
             }
             tmpPopulation = tmpPopulation.concat(partOfPopulation);
         }
