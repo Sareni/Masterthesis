@@ -90,7 +90,7 @@ class ExecutorGA extends BaseExecutor {
 
     // override
     noChangesInHistory() {
-        for (let h = 0; h < this.candidateFactory.playerCount; h++) {
+        /* for (let h = 0; h < this.candidateFactory.playerCount; h++) {
             if (this.history[h].length < this.historyLength) {
                 return false;
             }
@@ -100,7 +100,8 @@ class ExecutorGA extends BaseExecutor {
                 }
             }
         }
-        return true;
+        return true; */
+        return false;
     }
 }
 
