@@ -236,29 +236,75 @@ function testGame7Execution(type='NE', candidateFactory, executorGA, executorES,
     let gaEq = 0;
     let esEq = 0;
 
-    for (let i = 0; i < parameters.maxRounds; i++) {
-        for (let j = 0; j < resultArray[0][i].length; j++) {
-            if (resultArray[2][i][j] - resultArray[0][i][j] !== 0) {
-                gaDiff += 1;
-            } else {
-                gaEq += 1;
+    let gaOptDiff = 0;
+    let esOptDiff = 0;
+
+    let gaOptEq = 0;
+    let esOptEq = 0;
+
+
+    let diffs = new Array(4).fill(0);
+    let eqs = new Array(4).fill(0);
+
+
+    for (let i = 0; i < parameters.populationSizeArray.length; i++) {
+        for (let j = 0; j < parameters.generationCountArray.length; j++) {
+            for (let k = 0; k < parameters.mutationRateArray.length; k++) {
+                for (let l = 0; l < selectionFunctionArray.length; l++) {
+                    for (let m = 0; m < replacementFunctionArray.length; m++) {
+                        for (let n = 0; n < parameters.selectionPressureArray.length; n++) {
+                            for (let p = 0; p < parameters.maxRounds; p++) {
+                                for (let q = 0; q < 4; q++) {
+                                    if (resultArray[q][i][j][k][l][m][n][p] === 0) {
+                                        if (q === 0) {
+                                            gaEq += 1;
+                                        } else if (q === 1) {
+                                            gaOptEq += 1;
+                                        } else if (q === 2) {
+                                            esEq += 1;
+                                        } else if (q === 3) {
+                                            esOptEq += 1;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
 
-    for (let i = 0; i < parameters.maxRounds; i++) {
-        for (let j = 0; j < resultArray[1][i].length; j++) {
-            if (resultArray[2][i][j] - resultArray[1][i][j] !== 0) {
-                esDiff += 1;
-            } else {
-                esEq += 1;
+
+    for (let i = 0; i < bestSetting.length; i++) {
+        const bs = bestSetting[i];
+        for (let j = 0; j < parameters.maxRounds; j++) {
+            if (resultArray[i][bs.populationIndex][bs.generationCountIndex][bs.mutationIndex][bs.selectionFunctionIndex][bs.replacementFunctionIndex][bs.selectionPressureIndex][j] === resultArray[4][j]) {
+                diffs[i] += 1;
+            }
+            if (resultArray[i][bs.populationIndex][bs.generationCountIndex][bs.mutationIndex][bs.selectionFunctionIndex][bs.replacementFunctionIndex][bs.selectionPressureIndex][j] === 0) {
+                eqs[i] += 1;
             }
         }
     }
 
-    log('Diff - GA: ', gaDiff, ', ES: ', esDiff);
+    let bfEq = 0;
+    for (let k = 0; k < parameters.maxRounds; k++) {
+        if (resultArray[4][k] === 0) {
+            bfEq += 1;
+        }
+    }
+    
+
+    log('Diff - GA: ', diffs[0], ', ES: ', diffs[2]);
     log('--------------\n');
-    log('Eq - GA: ', gaEq, ', ES: ', esEq);
+    log('Diff - GA (opt): ', diffs[1], ', ES (opt): ', diffs[3]);
+    log('--------------\n');
+    log('Eq - GA: ', eqs[0], ', ES: ', eqs[2]);
+    log('--------------\n');
+    log('Eq - GA (opt): ', eqs[1], ', ES (opt): ', eqs[3]);
+    log('--------------\n');
+    log('Eq - GA (new): ', gaEq, ', BF (new): ', bfEq);
     log('--------------\n');
 
     fs.writeFile(`results/${name}.txt`, output, function(err) {
