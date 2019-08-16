@@ -43,17 +43,16 @@ function newMessage(gen, type, msg) {
         if (modeIndex !== 4) {
             for (let i = 0; i < parameters.playerCount; i++) {
                 resultArray[modeIndex][populationIndex][generationCountIndex][mutationIndex][selectionFunctionIndex][replacementFunctionIndex][selectionPressureIndex][roundIndex] = lastResult[i];
-                lastResult[i] = 0;
                 result += lastResult[i];
+                lastResult[i] = 0;
             }
         } else {
             for (let i = 0; i < parameters.playerCount; i++) {
                 resultArray[modeIndex][roundIndex] = lastResult[i];
-                lastResult[i] = 0;
                 result += lastResult[i];
+                lastResult[i] = 0;
             }
         }
-
     }
 }
 
