@@ -121,8 +121,6 @@ function testLoop(Factory, Executor, seedValue, type, useOptimization, mi, algoT
                             for (let p = 0; p < parameters.maxRounds; p++) {
                                 roundIndex = p;
 
-                                    
-
                                 propertyArray[modeIndex][populationIndex][generationCountIndex][mutationIndex][selectionFunctionIndex][replacementFunctionIndex][selectionPressureIndex][roundIndex] = new Array(playerCount);
                                 const dynSeedValue = generator.range(10000);
                                 const factory = new Factory(dynSeedValue);
@@ -148,7 +146,7 @@ function testLoop(Factory, Executor, seedValue, type, useOptimization, mi, algoT
 
                             
                 
-                            const newOutputLine = `${algoType};${type};${parameters.populationSizeArray[populationIndex]};${parameters.generationCountArray[generationCountIndex]};${parameters.selectionPressureArray[selectionPressureIndex]};${parameters.mutationRateArray[mutationIndex]};${selectionFunctionArray[selectionFunctionIndex].name};${replacementFunctionArray[replacementFunctionIndex].name};${useOptimization};${propertyString};${time};${result}\n`;
+                            const newOutputLine = `${algoType};${type};${parameters.populationSizeArray[populationIndex]};${parameters.generationCountArray[generationCountIndex]};${parameters.selectionPressureArray[selectionPressureIndex]};${parameters.mutationRateArray[mutationIndex]};${selectionFunctionArray[selectionFunctionIndex].name};${replacementFunctionArray[replacementFunctionIndex].name};${useOptimization};${propertyString}${time};${result}\n`;
                             console.log('Line added', lineCount);
                             lineCount++;
                             csvStream.write(newOutputLine, 'utf-8');
