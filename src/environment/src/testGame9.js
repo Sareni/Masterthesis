@@ -64,6 +64,7 @@ function testLoop(Factory, Executor, seedValue, type, useOptimization, mi, algoT
     modeIndex = mi;
     resultArray[modeIndex] = new Array(parameters.populationSizeArray.length);
     const timeout = '0';
+    bestSetting[modeIndex] = { populationIndex: -1 };
 
     for (let i = 0; i < parameters.populationSizeArray.length; i++) {
         populationIndex = i;
@@ -93,7 +94,6 @@ function testLoop(Factory, Executor, seedValue, type, useOptimization, mi, algoT
                         for (let n = 0; n < parameters.selectionPressureArray.length; n++) {
                             selectionPressureIndex = n;
                             resultArray[modeIndex][populationIndex][generationCountIndex][mutationIndex][selectionFunctionIndex][replacementFunctionIndex][selectionPressureIndex] = new Array(parameters.maxRounds);
-                            bestSetting[modeIndex] = { populationIndex: -1 };
 
                             result = 0;
                             const startDate = Date.now();
@@ -116,7 +116,7 @@ function testLoop(Factory, Executor, seedValue, type, useOptimization, mi, algoT
                             const time = Date.now() - startDate;
 
                             const newOutputLine = `${algoType};${type};${parameters.populationSizeArray[populationIndex]};${parameters.generationCountArray[generationCountIndex]};${parameters.playerCount};${parameters.strategyCount};${parameters.selectionPressureArray[selectionPressureIndex]};${parameters.mutationRateArray[mutationIndex]};${selectionFunctionArray[selectionFunctionIndex].name};${replacementFunctionArray[replacementFunctionIndex].name};${useOptimization};${time};${result}\n`;
-                            console.log('Line added', lineCount);
+                            //console.log('Line added', lineCount);
                             lineCount++;
                             csvStream.write(newOutputLine, 'utf-8');
 

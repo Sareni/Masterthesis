@@ -68,6 +68,7 @@ function testLoop(Factory, Executor, seedValue, type, useOptimization, mi, algoT
     resultArray[modeIndex] = new Array(parameters.populationSizeArray.length);
     propertyArray[modeIndex] = new Array(parameters.populationSizeArray.length);
     const timeout = '0';
+    bestSetting[modeIndex] = { populationIndex: -1 };
 
     for (let i = 0; i < parameters.populationSizeArray.length; i++) {
         populationIndex = i;
@@ -103,7 +104,6 @@ function testLoop(Factory, Executor, seedValue, type, useOptimization, mi, algoT
                             selectionPressureIndex = n;
                             resultArray[modeIndex][populationIndex][generationCountIndex][mutationIndex][selectionFunctionIndex][replacementFunctionIndex][selectionPressureIndex] = new Array(parameters.maxRounds);
                             propertyArray[modeIndex][populationIndex][generationCountIndex][mutationIndex][selectionFunctionIndex][replacementFunctionIndex][selectionPressureIndex] = new Array(parameters.maxRounds);
-                            bestSetting[modeIndex] = { populationIndex: -1 };
 
                             result = 0;
 
@@ -114,7 +114,6 @@ function testLoop(Factory, Executor, seedValue, type, useOptimization, mi, algoT
                             for (let a = 0; a < playerCount; a++) {
                                 propertiesPlayers[a] = new Array(propertyValueCount).fill(0);
                             }
-
 
                             console.log(`${algoType};${type};${parameters.populationSizeArray[populationIndex]};${parameters.generationCountArray[generationCountIndex]};${parameters.selectionPressureArray[selectionPressureIndex]};${parameters.mutationRateArray[mutationIndex]};${selectionFunctionArray[selectionFunctionIndex].name};${replacementFunctionArray[replacementFunctionIndex].name};${useOptimization};`);
 

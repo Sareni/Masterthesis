@@ -92,7 +92,7 @@ class ExecutorGA extends BaseExecutor {
             }
             that.msgHandler(that.counter, 'status', `Best Candidate: ${JSON.stringify(partOfPopulation[0])}`);
 
-            for (let j = 0; j < 10; j++) {
+            for (let j = 9; j >= 0; j--) {
                 if (partOfPopulation.length > j) {
                     that.uiHandler({x: partOfPopulation[j].x, y: partOfPopulation[j].y, playerNumber: partOfPopulation[j].playerNumber+1, fitness: partOfPopulation[j].fitness});
                 }
