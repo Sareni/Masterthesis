@@ -186,7 +186,7 @@ class Calculator {
             this.lastArray[generation] += fitness;
             if (this.lastGeneration !== generation) {
                 this.lastCountArray[generation] += 1;
-                this.lastGeneration = generation;s
+                this.lastGeneration = generation;
             }
         } else {
             this.lastArray[generation] = fitness;
