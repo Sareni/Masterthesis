@@ -186,11 +186,12 @@ class Calculator {
             this.lastArray[generation] += fitness;
             if (this.lastGeneration !== generation) {
                 this.lastCountArray[generation] += 1;
-                this.lastGeneration = generation;
+                this.lastGeneration = generation;s
             }
         } else {
             this.lastArray[generation] = fitness;
             this.lastCountArray[generation] = 1;
+            this.lastGeneration = generation;
         }
 
         if (this.aggregationArray[generation]) {
@@ -202,6 +203,7 @@ class Calculator {
         } else {
             this.aggregationArray[generation] = fitness;
             this.aggregationCountArray[generation] = 1;
+            this.lastAggregationGeneration = generation;
         }
     }
 
