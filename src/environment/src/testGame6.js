@@ -50,16 +50,19 @@ function log() {
 
 function newMessage(gen, type, msg) {
     if (type === 'fin') {
-        let avg = 0;
+        let avgX = 0;
+        let avgY = 0;
         let tmpResult = 0;
 
         for (let j = 0; j < playerCount; j++) {
-            avg += lastResultsFitness[j];
+            avgX += lastResultsX[j];
+            avgY += lastResultsY[j];
         }
-        avg = avg / playerCount;
+        avgX = avgX / playerCount;
+        avgY = avgY / playerCount;
 
         for (let i = 0; i < playerCount; i++) {
-            tmpResult += Math.abs(lastResultsFitness[i] - avg);
+            tmpResult += Math.sqrt(Math.pow((lastResultsX[i] - avgX),2) + Math.pow((lastResultsY[i] - avgY),2));
             lastResultsFitness[i] = 0;
         }
 
