@@ -30,8 +30,6 @@ node_modules
 # local build directory
 build
 
-public
-
 environment/.DS_Store
 
 environment/src/.DS_Store
