@@ -8,8 +8,8 @@ class CandidateFactory extends BaseCandidateFactory {
         this.xMax = xMax;
         this.yMax = yMax;
 
-        this.deltaX = 2;
-        this.deltaY = 2;
+        this.deltaX = 10;
+        this.deltaY = 10;
 
         this.maxDist = 1000;
 
@@ -27,7 +27,7 @@ class CandidateFactory extends BaseCandidateFactory {
         return newCandidate;
     }
 
-    mutate(c) {
+    mutate(c, sigma = 1) {
         const newCandidate = {
             fitness: 0,
             x: c.x,
@@ -35,9 +35,9 @@ class CandidateFactory extends BaseCandidateFactory {
             playerNumber: c.playerNumber,
         }
         if (this.generator.random() < 0.5) {
-            newCandidate.x += this.deltaX * (this.generator.random() - 0.5);
+            newCandidate.x += this.deltaX * (this.generator.random() - 0.5) * sigma;
         } else {
-            newCandidate.y += this.deltaY * (this.generator.random() - 0.5);
+            newCandidate.y += this.deltaY * (this.generator.random() - 0.5) * sigma;
         }
         return newCandidate;
     }

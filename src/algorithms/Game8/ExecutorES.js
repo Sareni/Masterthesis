@@ -2,10 +2,17 @@ import BaseExecutor from '../BaseExecutor';
 
 class ExecutorES extends BaseExecutor {
 
-    constructor(generationCount, seedValue, populationSize, timeout, mutationRate, CandidateFactory, uiHandler, msgHandler) {
-        super(populationSize, timeout, generationCount, seedValue, mutationRate, CandidateFactory, uiHandler, msgHandler);
+    constructor(generationCount, seedValue, populationSize, timeout, selectionPressure, mutationRate, CandidateFactory, uiHandler, msgHandler, selectionFunction, replacementFunction, useOptimization) {
+        super(populationSize, timeout, generationCount, seedValue, selectionPressure, mutationRate, CandidateFactory, uiHandler, msgHandler, selectionFunction, replacementFunction, useOptimization);
+        
         this.population = this.generateBasePopulation();
         this.evaluateBasePopulation();
+        this.playerCount = 3;
+
+        this.maxSigma = 4;
+        this.minSigma = 0.001;
+        this.sigma = new Array(this.playerCount).fill(2);
+        this.sigmaDelta = 1.2;
     }
 
     generateBasePopulation() {
@@ -45,6 +52,8 @@ class ExecutorES extends BaseExecutor {
     runCycle(that) {
         const newPopulation = [];
         let tmpPopulation = [];
+        let successCounter = 0;
+        let baseFitness = 0;
 
         const firstPopulation = that.population.filter(candidate => candidate.playerNumber === 0);
         const secondPopulation = that.population.filter(candidate => candidate.playerNumber === 1);
@@ -53,35 +62,49 @@ class ExecutorES extends BaseExecutor {
         const splittedPop = [firstPopulation, secondPopulation, thirdPopulation];
 
         for (let i = 0; i < splittedPop.length; i++) {
-            for (let j = 0; j < splittedPop[i].length; j++) {
-                const candidateIndex = that.generator.range(splittedPop[i].length);
-
+            for (let j = 0; j < splittedPop[i].length * that.selectionPressure; j++) {
+                const candidate = that.selectionFunction(splittedPop[i], 1, that.generator, j === 0);
+               
                 let newCandidate = {
-                    fitness: splittedPop[i][candidateIndex].fitness,
-                    properties: splittedPop[i][candidateIndex].properties,
-                    playerNumber: splittedPop[i][candidateIndex].playerNumber,
+                    fitness: candidate[0].fitness,
+                    properties: candidate[0].properties,
+                    playerNumber: candidate[0].playerNumber,
                 }
 
-                //let newCandidate = JSON.parse(JSON.stringify(splittedPop[i][candidateIndex]));
                 if (that.generator.random() < that.mutationRate) {
-                    newCandidate = that.candidateFactory.mutate(newCandidate);
+                    newCandidate = that.candidateFactory.mutate(newCandidate, that.useOptimization ? that.sigma[i] : 1);
                 }
 
                 if (i === 0) {
-                    splittedPop[i][j].fitness = that.candidateFactory.evaluate(splittedPop[i][j],
+                    newCandidate.fitness = that.candidateFactory.evaluate(newCandidate,
                         secondPopulation[that.generator.range(secondPopulation.length)], thirdPopulation[that.generator.range(thirdPopulation.length)]);
                 } else {
-                    splittedPop[i][j].fitness = that.candidateFactory.evaluate(splittedPop[i][j],
+                    newCandidate.fitness = that.candidateFactory.evaluate(newCandidate,
                         firstPopulation[that.generator.range(firstPopulation.length)]);
                 }
 
                 newPopulation.push(newCandidate);
+                if (baseFitness < newCandidate.fitness) {
+                    successCounter += 1;
+                }
+            }
+
+            if (successCounter < (that.populationSize / 5)) {
+                that.sigma[i] /= that.sigmaDelta;
+            } else if  (successCounter > (that.populationSize / 5)) {
+                that.sigma[i] *= that.sigmaDelta;
+            }
+    
+            if (that.sigma[i] < that.minSigma) {
+                that.sigma[i] = that.minSigma;
+            } else if (that.sigma[i] > that.maxSigma) {
+                that.sigma[i] = that.maxSigma;
             }
         }
 
         for (let i = 0; i < splittedPop.length; i++) {
             const partOfPopulation = that.select(that.population.concat(newPopulation).filter(candidate => candidate.playerNumber === i));
-            that.uiHandler({x: that.counter, y: partOfPopulation[0].fitness, playerNumber: i});
+            that.uiHandler({x: that.counter, y: partOfPopulation[0].fitness, playerNumber: i, properties: partOfPopulation[0].properties});
             that.msgHandler(that.counter, 'status', `Best Candidate: ${JSON.stringify(partOfPopulation[0])}`);
             tmpPopulation = tmpPopulation.concat(partOfPopulation);
         }

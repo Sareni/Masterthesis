@@ -7,6 +7,8 @@ import ExecutorGA7 from '../../algorithms/Game7/ExecutorGA';
 import ExecutorES7 from '../../algorithms/Game7/ExecutorES';
 import ExecutorBF7 from '../../algorithms/Game7/ExecutorBF';
 import CandidateFactory7 from '../../algorithms/Game7/CandidateFactory';
+import { getSelectionFunction, getReplacementFunction } from '../../algorithms/util';
+
 
 class Game1 extends React.Component {
     constructor(props) {
@@ -60,30 +62,45 @@ class Game1 extends React.Component {
             data.seedValue,
             parseInt(data.populationSize),
             parseInt(data.timeout),
+            1, // selectionPressure
             data.mutationRate,
             factory,
             this.newGameState,
-            this.newMessage);
+            this.newMessage,
+            getSelectionFunction(data.selectionFunction),
+            getReplacementFunction(data.replacementFunction),
+            data.optimization,
+            );
             break;
           case 'ES': executor = new ExecutorES7(
             parseInt(data.generationCount),
             data.seedValue,
             parseInt(data.populationSize),
             parseInt(data.timeout),
+            1, // selectionPressure
             data.mutationRate,
             factory,
             this.newGameState,
-            this.newMessage);
+            this.newMessage,
+            getSelectionFunction(data.selectionFunction),
+            getReplacementFunction(data.replacementFunction),
+            data.optimization,
+            );
             break;
           default: executor = new ExecutorBF7(
             parseInt(data.generationCount),
             data.seedValue,
             parseInt(data.populationSize),
             parseInt(data.timeout),
+            1, // selectionPressure
             data.mutationRate,
             factory,
             this.newGameState,
-            this.newMessage);
+            this.newMessage,
+            getSelectionFunction(data.selectionFunction),
+            getReplacementFunction(data.replacementFunction),
+            data.optimization,
+            );
         }
         this.gameCounter += 1;
         this.setState({ executor, running: true, gameCounter: this.gameCounter, fitnessType: data.fitnessType, generationCount: data.generationCount });

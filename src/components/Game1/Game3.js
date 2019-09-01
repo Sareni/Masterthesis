@@ -5,10 +5,10 @@ import Menu from './Menu';
 import Screen from './Screen';
 import ExecutorGA3 from '../../algorithms/Game3/ExecutorGA';
 import ExecutorES3 from '../../algorithms/Game3/ExecutorES';
-import ExecutorBF3 from '../../algorithms/Game3/ExecutorBF';
 import CandidateFactory3 from '../../algorithms/Game3/CandidateFactory';
+import { getSelectionFunction, getReplacementFunction } from '../../algorithms/util';
 
-class Game1 extends React.Component {
+class Game3 extends React.Component {
     constructor(props) {
       super(props);
 
@@ -61,28 +61,30 @@ class Game1 extends React.Component {
             data.seedValue,
             parseInt(data.populationSize),
             parseInt(data.timeout),
+            1, // selectionPressure
             data.mutationRate,
             factory,
             this.newGameState,
-            this.newMessage); break;
+            this.newMessage,
+            getSelectionFunction(data.selectionFunction),
+            getReplacementFunction(data.replacementFunction),
+            data.optimization,
+            ); break;
           case 'ES': executor = new ExecutorES3(
             parseInt(data.generationCount),
             data.seedValue,
             parseInt(data.populationSize),
             parseInt(data.timeout),
+            1, // selectionPressure
             data.mutationRate,
             factory,
             this.newGameState,
-            this.newMessage); break;
-          default: executor = new ExecutorBF3(
-            parseInt(data.generationCount),
-            data.seedValue,
-            parseInt(data.populationSize),
-            parseInt(data.timeout),
-            data.mutationRate,
-            factory,
-            this.newGameState,
-            this.newMessage);
+            this.newMessage,
+            getSelectionFunction(data.selectionFunction),
+            getReplacementFunction(data.replacementFunction),
+            data.optimization,
+            ); break;
+          default: executor = null;
         }
         this.gameCounter += data.playerCount;
         this.setState({ executor, running: true, gameCounter: this.gameCounter, fitnessType: data.fitnessType, generationCount: data.generationCount });
@@ -115,4 +117,4 @@ class Game1 extends React.Component {
     }
 }
 
-export default Game1;
+export default Game3;

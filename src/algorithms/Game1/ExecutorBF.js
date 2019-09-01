@@ -4,8 +4,8 @@ const charCode = 'A'.charCodeAt(0);
 
 class ExecutorBF extends BaseExecutor {
 
-    constructor(generationCount, seedValue, populationSize, timeout, mutationRate, candidateFactory, uiHandler, msgHandler) {
-        super(populationSize, timeout, generationCount, seedValue, mutationRate, candidateFactory, uiHandler, msgHandler, true);
+    constructor(generationCount, seedValue, populationSize, timeout, selectionPressure, mutationRate, candidateFactory, uiHandler, msgHandler) {
+        super(populationSize, timeout, generationCount, seedValue, selectionPressure, mutationRate, candidateFactory, uiHandler, msgHandler, null, null, false, true);
         this.strategy = 'A'.repeat(candidateFactory.playerCount);
         this.maxCounter = Math.pow(candidateFactory.strategyCount, candidateFactory.playerCount);
         this.bestCandidate = {
@@ -42,6 +42,7 @@ class ExecutorBF extends BaseExecutor {
         if (that.counter >= that.maxCounter) {
             that.stop();
             that.candidateFactory.fitnessType = that.candidateFactory.fitnessType === 'NE' ? 'MAX' : 'NE';
+            that.uiHandler({x: that.counter, y: that.bestCandidate.fitness});
             that.msgHandler(0, 'fin', `Best Candidate: ${JSON.stringify(that.bestCandidate)}. Best Candidate alternative fitness (${that.candidateFactory.fitnessType}): ${that.candidateFactory.evaluate(that.bestCandidate)}`);
         }
     }

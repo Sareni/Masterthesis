@@ -15,6 +15,10 @@ class Menu extends React.Component {
             gameType: 'GA',
             xMax: 50,
             yMax: 50,
+            fitnessType: props.fitnessType,
+            selectionFunction: 'proportional',
+            replacementFunction: 'complete',
+            optimization: true,
         }
 
         this.startOrReset = this.startOrReset.bind(this);
@@ -29,6 +33,14 @@ class Menu extends React.Component {
         this.setES = this.setES.bind(this);
         this.setGA = this.setGA.bind(this);
         this.setBF = this.setBF.bind(this);
+        this.setSelProportional = this.setSelProportional.bind(this);
+        this.setSelRandom = this.setSelRandom.bind(this);
+        this.setSelTournament = this.setSelTournament.bind(this);
+        this.setRepComplete = this.setRepComplete.bind(this);
+        this.setRepRandom = this.setRepRandom.bind(this);
+        this.setRepElitism = this.setRepElitism.bind(this);
+        this.setOptTrue = this.setOptTrue.bind(this);
+        this.setOptFalse = this.setOptFalse.bind(this);
     }
 
     startOrReset() {
@@ -44,6 +56,9 @@ class Menu extends React.Component {
                 gameType: this.state.gameType,
                 xMax: this.state.xMax,
                 yMax: this.state.yMax,
+                selectionFunction: this.state.selectionFunction,
+                replacementFunction: this.state.replacementFunction,
+                optimization: this.state.optimization,
             }
 
             this.props.triggerStart(data);
@@ -112,6 +127,38 @@ class Menu extends React.Component {
         this.setState({ gameType: 'BF' });
     }
 
+    setSelProportional() {
+        this.setState({ selectionFunction: 'proportional' });
+    }
+
+    setSelRandom() {
+        this.setState({ selectionFunction: 'random' });
+    }
+
+    setSelTournament() {
+        this.setState({ selectionFunction: 'tournament' });
+    }
+
+    setRepComplete() {
+        this.setState({ replacementFunction: 'complete' });
+    }
+
+    setRepRandom() {
+        this.setState({ replacementFunction: 'random' });
+    }
+
+    setRepElitism() {
+        this.setState({ replacementFunction: 'elitism' });
+    }
+
+    setOptTrue() {
+        this.setState({ optimization: true });
+    }
+
+    setOptFalse() {
+        this.setState({ optimization: false });
+    }
+
     render() {
         return (
             <div className="game1-menu">
@@ -140,12 +187,37 @@ class Menu extends React.Component {
                     <input type="text" onChange={ this.onPopulationSizeChange } value={this.state.populationSize}/>
                 </div>
                 <div className="inputBox">
-                    <div className="inputLabel">xMax</div>
-                    <input type="text" onChange={ this.onXMaxChange } value={this.state.xMax}/>
+                    <div className="inputSwitch">
+                        <div className="inputLabel">xMax</div>
+                        <div className="inputLabel">yMax</div>
+                    </div>
+                    <div className="inputSwitch">
+                        <input type="text" onChange={ this.onXMaxChange } value={this.state.xMax}/>
+                        <input type="text" onChange={ this.onYMaxChange } value={this.state.yMax}/>
+                    </div>
                 </div>
                 <div className="inputBox">
-                    <div className="inputLabel">yMax</div>
-                    <input type="text" onChange={ this.onYMaxChange } value={this.state.yMax}/>
+                    <div className="inputLabel">Selektionsfunktion</div>
+                    <div className="inputSwitch">
+                        <button className={this.state.selectionFunction === 'proportional' ? 'buttonActive' : 'button'} onClick={this.setSelProportional}>proportional</button>
+                        <button className={this.state.selectionFunction === 'random' ? 'buttonActive' : 'button'} onClick={this.setSelRandom}>random</button>
+                        <button className={this.state.selectionFunction === 'tournament' ? 'buttonActive' : 'button'} onClick={this.setSelTournament}>tournament</button>
+                    </div>
+                </div>
+                <div className="inputBox">
+                    <div className="inputLabel">Ersetzungsfunktion</div>
+                    <div className="inputSwitch">
+                        <button className={this.state.replacementFunction === 'complete' ? 'buttonActive' : 'button'} onClick={this.setRepComplete}>complete</button>
+                        <button className={this.state.replacementFunction === 'random' ? 'buttonActive' : 'button'} onClick={this.setRepRandom}>random</button>
+                        <button className={this.state.replacementFunction === 'elitism' ? 'buttonActive' : 'button'} onClick={this.setRepElitism}>elitism</button>
+                    </div>
+                </div>
+                <div className="inputBox">
+                    <div className="inputLabel">Optimierung</div>
+                    <div className="inputSwitch">
+                        <button className={this.state.optimization ? 'buttonActive' : 'button'} onClick={this.setOptTrue}>Ja</button>
+                        <button className={!this.state.optimization ? 'buttonActive' : 'button'} onClick={this.setOptFalse}>Nein</button>
+                    </div>
                 </div>
                 <div className="inputBox">
                     <div className="inputLabel">Verzögerung</div>

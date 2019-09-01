@@ -5,8 +5,8 @@ import Menu from './Menu6';
 import Screen from './Screen6';
 import ExecutorGA6 from '../../algorithms/Game6/ExecutorGA';
 import ExecutorES6 from '../../algorithms/Game6/ExecutorES';
-import ExecutorBF6 from '../../algorithms/Game6/ExecutorBF';
 import CandidateFactory6 from '../../algorithms/Game6/CandidateFactory';
+import { getSelectionFunction, getReplacementFunction } from '../../algorithms/util';
 
 class Game1 extends React.Component {
     constructor(props) {
@@ -66,30 +66,32 @@ class Game1 extends React.Component {
             data.seedValue,
             parseInt(data.populationSize),
             parseInt(data.timeout),
+            1, // selectionPressure
             data.mutationRate,
             factory,
             this.newGameState,
-            this.newMessage);
+            this.newMessage,
+            getSelectionFunction(data.selectionFunction),
+            getReplacementFunction(data.replacementFunction),
+            data.optimization,
+            );
             break;
           case 'ES': executor = new ExecutorES6(
             parseInt(data.generationCount),
             data.seedValue,
             parseInt(data.populationSize),
             parseInt(data.timeout),
+            1, // selectionPressure
             data.mutationRate,
             factory,
             this.newGameState,
-            this.newMessage);
+            this.newMessage,
+            getSelectionFunction(data.selectionFunction),
+            getReplacementFunction(data.replacementFunction),
+            data.optimization,
+            );
             break;
-          default: executor = new ExecutorBF6(
-            parseInt(data.generationCount),
-            data.seedValue,
-            parseInt(data.populationSize),
-            parseInt(data.timeout),
-            data.mutationRate,
-            factory,
-            this.newGameState,
-            this.newMessage);
+          default: executor = null;
         }
         this.gameCounter += data.playerCount;
         this.setState({ executor, running: true, gameCounter: this.gameCounter, generationCount: data.generationCount, xMax: data.xMax, yMax: data.yMax });

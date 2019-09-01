@@ -7,8 +7,9 @@ import ExecutorGA2 from '../../algorithms/Game2/ExecutorGA';
 import ExecutorES2 from '../../algorithms/Game2/ExecutorES';
 import ExecutorBF2 from '../../algorithms/Game2/ExecutorBF';
 import CandidateFactory2 from '../../algorithms/Game2/CandidateFactory';
+import { getSelectionFunction, getReplacementFunction } from '../../algorithms/util';
 
-class Game1 extends React.Component {
+class Game2 extends React.Component {
     constructor(props) {
       super(props);
 
@@ -61,30 +62,45 @@ class Game1 extends React.Component {
             data.seedValue,
             parseInt(data.populationSize),
             parseInt(data.timeout),
+            1, // selectionPressure
             data.mutationRate,
             factory,
             this.newGameState,
-            this.newMessage);
+            this.newMessage,
+            getSelectionFunction(data.selectionFunction),
+            getReplacementFunction(data.replacementFunction),
+            data.optimization,
+            );
             break;
           case 'ES': executor = new ExecutorES2(
             parseInt(data.generationCount),
             data.seedValue,
             parseInt(data.populationSize),
             parseInt(data.timeout),
+            1, // selectionPressure
             data.mutationRate,
             factory,
             this.newGameState,
-            this.newMessage);
+            this.newMessage,
+            getSelectionFunction(data.selectionFunction),
+            getReplacementFunction(data.replacementFunction),
+            data.optimization,
+            );
             break;
           default: executor = new ExecutorBF2(
             parseInt(data.generationCount),
             data.seedValue,
             parseInt(data.populationSize),
             parseInt(data.timeout),
+            1, // selectionPressure
             data.mutationRate,
             factory,
             this.newGameState,
-            this.newMessage);
+            this.newMessage,
+            getSelectionFunction(data.selectionFunction),
+            getReplacementFunction(data.replacementFunction),
+            data.optimization,
+            );
         }
         this.gameCounter += 1;
         this.setState({ executor, running: true, gameCounter: this.gameCounter, fitnessType: data.fitnessType, generationCount: data.generationCount });
@@ -116,4 +132,4 @@ class Game1 extends React.Component {
     }
 }
 
-export default Game1;
+export default Game2;
