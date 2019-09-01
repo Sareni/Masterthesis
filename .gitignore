@@ -29,3 +29,13 @@ node_modules
 
 # local build directory
 build
+
+environment/.DS_Store
+
+environment/src/.DS_Store
+
+environment/src/algorithms/.DS_Store
+
+src/.DS_Store
+
+src/algorithms/.DS_Store
